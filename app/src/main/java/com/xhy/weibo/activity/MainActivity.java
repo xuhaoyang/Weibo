@@ -43,6 +43,7 @@ import com.xhy.weibo.entity.StatusReciver;
 import com.xhy.weibo.entity.Status;
 import com.xhy.weibo.entity.User;
 import com.xhy.weibo.entity.UserReciver;
+import com.xhy.weibo.network.CustomRequest;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.network.VolleyQueueSingleton;
@@ -132,6 +133,7 @@ public class MainActivity extends BaseActivity
             }
         });
 
+        //启动推送
         Intent intent = new Intent(this, MessageService.class);
         intent.putExtra("ACCOUNT", CommonConstants.account);
         intent.putExtra("PASSWORD", CommonConstants.password);
@@ -155,7 +157,8 @@ public class MainActivity extends BaseActivity
         dbManager.closeDatabase();
         if (!users.isEmpty()) {
             long time = System.currentTimeMillis() - users.get(0).getUptime();
-            if (time > 0) {
+            //大于半天刷新下缓存的用户数据
+            if (time > 43200000) {
                 initUserInfo();
             } else {
                 String url = URLs.AVATAR_IMG_URL + users.get(0).getFace();
@@ -175,41 +178,15 @@ public class MainActivity extends BaseActivity
     }
 
     private void initUserInfo() {
-        GsonRequest<UserReciver> request = new GsonRequest<UserReciver>(Request.Method.POST,
-                URLs.WEIBO_GET_USERINFO, UserReciver.class, null, new Response.Listener<UserReciver>() {
-            @Override
-            public void onResponse(UserReciver response) {
-                showLog(response.toString());
-                if (response.getCode() == 200) {
-                    User user = response.getInfo();
-                    initDB();
-                    List<User> users = userDB.QueryUsers(db, "id=?", new String[]{user.getUid() + ""});
-                    if (!users.isEmpty()) {
-                        userDB.updateUser(db, user);
-                    } else {
-                        userDB.insertUser(db, user);
-                    }
-                    String url = URLs.AVATAR_IMG_URL + user.getFace();
-                    ImageUtils.setImage(headerView_iv_avatar, url);
-                    headerView_tv_username.setText(user.getUsername());
-                    dbManager.closeDatabase();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                showLog(error.toString());
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                map.put("uid", CommonConstants.USER_ID + "");
-                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-                return map;
-            }
-        };
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", CommonConstants.USER_ID + "");
+        map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
+
+        CustomRequest request = new CustomRequest.RequestBuilder().url(URLs.WEIBO_GET_USERINFO)
+                .post().clazz(UserReciver.class).params(map).successListener(userReciverListener)
+                .errorListener(showLogErrorListener).build();
+
+        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request, "userinfo");
     }
 
     private void initDB() {
@@ -220,12 +197,18 @@ public class MainActivity extends BaseActivity
         userDB = new UserDB(this);
     }
 
+    /**
+     * 记得做缓存
+     */
     private void initNavigationMenu() {
         final Menu menu = navigationView.getMenu();
         //參數1:群組id, 參數2:itemId, 參數3:item順序, 參數4:item名稱
         menu.add(GROUP, ALL_ITEMID, ALL_ITEMID, "全部");
-        GsonRequest<StatusGroupReciver> request = new GsonRequest<StatusGroupReciver>(Request.Method.POST,
-                URLs.WEIBO_GET_GROUP, StatusGroupReciver.class, null, new Response.Listener<StatusGroupReciver>() {
+
+        final Map<String, String> map = new HashMap<String, String>();
+        map.put("uid", CommonConstants.USER_ID + "");
+        map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
+        final Response.Listener<StatusGroupReciver> statusGroupReciverListener = new Response.Listener<StatusGroupReciver>() {
             @Override
             public void onResponse(StatusGroupReciver response) {
                 showLog("-->" + response.toString());
@@ -236,88 +219,108 @@ public class MainActivity extends BaseActivity
                     }
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("uid", CommonConstants.USER_ID + "");
-                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-                return map;
-            }
         };
+        CustomRequest request = new CustomRequest.RequestBuilder().post().url( URLs.WEIBO_GET_GROUP)
+                .clazz(StatusGroupReciver.class).params(map).
+                        successListener(statusGroupReciverListener).build();
 
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request,"StatusGroupReciver");
 
     }
 
     private void LoadData() {
 
-//        NetParams.getWeiboList(CommonConstants.USER_ID,
-        //CommonConstants.TOKEN, begin, CommonConstants.STATUS_COUNT_PAGE)
-        GsonRequest<StatusReciver> request = new GsonRequest<StatusReciver>(Request.Method.POST,
-                URLs.WEIBO_LIST,
-                StatusReciver.class, null, new Response.Listener<StatusReciver>() {
-            @Override
-            public void onResponse(StatusReciver response) {
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (statuses != null) {
-                        if (currPage == 1) {
-                            statuses.clear();
-                            statuses.addAll(response.getInfo());
-                        } else {
-                            //要判断是否有重复的
-                            for (Status s : response.getInfo()) {
-                                if (!statuses.contains(s)) {
-                                    statuses.add(s);
-                                }
+
+        Map<String, String> dataMap = new HashMap<String, String>();
+        dataMap.put("uid", CommonConstants.USER_ID + "");
+        dataMap.put("token", CommonConstants.ACCESS_TOKEN.getToken());
+        dataMap.put("page", currPage + "");
+        if (!TextUtils.isEmpty(gid)) {
+            dataMap.put("gid", gid);
+        }
+
+
+        CustomRequest customRequest = new CustomRequest.RequestBuilder().post().url(URLs.WEIBO_LIST)
+                .clazz(StatusReciver.class).params(dataMap).successListener(statusReciverListener)
+                .errorListener(errorListener).build();
+
+        VolleyQueueSingleton.getInstance(this).addToRequestQueue(customRequest, "status");
+
+    }
+
+    private Response.Listener<StatusReciver> statusReciverListener = new Response.Listener<StatusReciver>() {
+        @Override
+        public void onResponse(StatusReciver response) {
+            if (response.getCode() == 200) {
+                totalPage = response.getTotalPage();
+                if (statuses != null) {
+                    if (currPage == 1) {
+                        statuses.clear();
+                        statuses.addAll(response.getInfo());
+                    } else {
+                        //要判断是否有重复的
+                        for (Status s : response.getInfo()) {
+                            if (!statuses.contains(s)) {
+                                statuses.add(s);
                             }
                         }
-                    } else {
-                        //第一次获取到数据
-                        statuses = response.getInfo();
                     }
-                    statusAdpater.notifyDataSetChanged();
-                    showLog("-->statuses size:" + statuses.size());
-                    showLog("-->statusAdpater size:" + statusAdpater.getItemCount());
                 } else {
-                    //错误信息处理
-                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    //第一次获取到数据
+                    statuses = response.getInfo();
                 }
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (statusAdpater != null) {
-                    statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
+                statusAdpater.notifyDataSetChanged();
+                showLog("-->statuses size:" + statuses.size());
+                showLog("-->statusAdpater size:" + statusAdpater.getItemCount());
+            } else {
+                //错误信息处理
+                Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+            mSwipeRefreshLayout.setRefreshing(false);
+            if (statusAdpater != null) {
+                statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
+            }
+            isLoading = false;
+        }
+    };
+
+    private Response.Listener<UserReciver> userReciverListener = new Response.Listener<UserReciver>() {
+        @Override
+        public void onResponse(UserReciver response) {
+            showLog(response.toString());
+            if (response.getCode() == 200) {
+                User user = response.getInfo();
+                initDB();
+                List<User> users = userDB.QueryUsers(db, "id=?", new String[]{user.getUid() + ""});
+                if (!users.isEmpty()) {
+                    userDB.updateUser(db, user);
+                } else {
+                    userDB.insertUser(db, user);
                 }
-                isLoading = false;
+                String url = URLs.AVATAR_IMG_URL + user.getFace();
+                ImageUtils.setImage(headerView_iv_avatar, url);
+                headerView_tv_username.setText(user.getUsername());
+                dbManager.closeDatabase();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                MainActivity.this.showLog("-->" + error.toString());
-                isLoading = false;
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("uid", CommonConstants.USER_ID + "");
-                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-                map.put("page", currPage + "");
-                if (!TextUtils.isEmpty(gid)) {
-                    map.put("gid", gid);
-                }
-                return map;
-            }
-        };
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
-    }
+        }
+    };
+
+    private Response.ErrorListener errorListener = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            MainActivity.this.showLog("-->" + error.toString());
+            isLoading = false;
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+    };
+
+    private Response.ErrorListener showLogErrorListener = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            showLog(error.toString());
+        }
+    };
 
     private void initListener() {
         navigationView.setNavigationItemSelectedListener(this);
@@ -378,7 +381,6 @@ public class MainActivity extends BaseActivity
                     }
                 }
             }
-
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);

@@ -25,8 +25,8 @@ public class VolleyQueueSingleton {
     private ImageLoader mImageLoader;
     private static Context mContext;
 
-    private VolleyQueueSingleton(Context context){
-        mContext= context;
+    private VolleyQueueSingleton(Context context) {
+        mContext = context;
         mRequestQueue = getRequestQueue();
         mImageLoader = new ImageLoader(mRequestQueue,
                 new ImageLoader.ImageCache() {
@@ -37,6 +37,7 @@ public class VolleyQueueSingleton {
                     public Bitmap getBitmap(String url) {
                         return cache.get(url);
                     }
+
                     @Override
                     public void putBitmap(String url, Bitmap bitmap) {
                         cache.put(url, bitmap);
@@ -58,9 +59,21 @@ public class VolleyQueueSingleton {
         return mRequestQueue;
     }
 
-    public <T> void addToRequestQueue(Request<T> req) {
-        getRequestQueue().add(req);
+    public <T> void addToRequestQueue(Request<T> request) {
+        getRequestQueue().add(request);
     }
+
+    public void cancelAllRequests(String tag) {
+        if (getRequestQueue() != null) {
+            getRequestQueue().cancelAll(tag);
+        }
+    }
+
+    public <T> void addToRequestQueue(Request<T> request, String tag) {
+        request.setTag(tag);
+        getRequestQueue().add(request);
+    }
+
 
     public ImageLoader getImageLoader() {
         return mImageLoader;
@@ -75,7 +88,7 @@ public class VolleyQueueSingleton {
             BufferedReader in = new BufferedReader(reader);
             StringBuilder sb = new StringBuilder();
             String read;
-            while ((read = in.readLine()) != null){
+            while ((read = in.readLine()) != null) {
                 sb.append(read);
             }
             String json = sb.toString();

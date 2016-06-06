@@ -112,20 +112,6 @@ public class MessageService extends Service {
             accessToken.setToken(token);
         }
 
-//        //初始化
-//        messageNotification = new Notification();
-//        messageNotification.icon = R.drawable.ic_launcher;
-//        messageNotification.tickerText = "新消息";
-//        messageNotification.defaults = Notification.DEFAULT_SOUND;
-//        messageNotificatioManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        messageIntent = new Intent(this, MainActivity.class);
-//        messagePendingIntent = PendingIntent.getActivity(this,0,messageIntent,0);
-
-//        //开启线程
-//        messageThread = new MessageThread();
-//        messageThread.isRunning = true;
-//        messageThread.start();
         builder = new NotificationCompat.Builder(this);
         //跳转到Activity
         messageIntent = new Intent(this, NotificationReceiver.class);
@@ -214,12 +200,5 @@ public class MessageService extends Service {
         }
     }
 
-    /**
-     * 这里以此方法为服务器Demo，仅作示例
-     *
-     * @return 返回服务器要推送的消息，否则如果为空的话，不推送
-     */
-    public String getServerMessage() {
-        return "YES!";
-    }
+
 }
