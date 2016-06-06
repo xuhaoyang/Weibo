@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cv_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    >
+
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_white2gray"
+        android:orientation="vertical">
+
+        <include layout="@layout/include_avatar" />
+
+        <!--文字内容-->
+        <TextView
+            android:id="@+id/tv_content"
+            style="@style/TextViewBody"
+            android:layout_width="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            />
+
+        <!--图片-->
+        <include
+            android:id="@+id/include_status_image"
+            layout="@layout/include_status_image"
+            android:visibility="gone" />
+
+        <!--转发内容-->
+        <include
+            android:id="@+id/include_forward_status"
+            layout="@layout/include_forward_status"
+            android:visibility="gone" />
+
+        <include layout="@layout/include_bottom_btn" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>

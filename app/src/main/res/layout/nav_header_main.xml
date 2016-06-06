@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nav_header_height"
+        android:background="@drawable/userinfo_header"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:elevation="8dp"
+            android:src="@drawable/user_avatar"
+            app:border_color="#FFF"
+            app:border_width="2dp"
+            app:layout_scrollFlags="scroll" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            android:textSize="20sp"
+            android:layout_marginLeft="@dimen/lay_4"
+            android:text="Android Studio"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <!--<TextView-->
+        <!--android:id="@+id/textView"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="android.studio@android.com" />-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/lay_8"
+        android:layout_marginRight="@dimen/lay_8"
+        android:layout_marginTop="@dimen/lay_8">
+
+        <net.qiujuer.genius.ui.widget.Button
+            android:id="@+id/btnHot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:drawableLeft="@drawable/ic_hot_colorful"
+            android:text="热点"
+            android:textColor="@color/txt_black"
+            android:textSize="18dp"
+            app:gTouchCornerRadius="0dp"
+            app:gTouchDurationRate="0.5"
+            app:gTouchEffect="ripple" />
+
+        <net.qiujuer.genius.ui.widget.Button
+            android:id="@+id/btnKeep"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:drawableLeft="@drawable/ic_star_colorful"
+            android:text="收藏"
+            android:textColor="@color/txt_black"
+            android:textSize="18dp"
+            app:gTouchCornerRadius="0dp"
+            app:gTouchDurationRate="0.5"
+            app:gTouchEffect="ripple" />
+
+        <net.qiujuer.genius.ui.widget.Button
+            android:id="@+id/btnSettings"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:drawableLeft="@drawable/ic_settings_colorful"
+            android:text="设置"
+            android:textColor="@color/txt_black"
+            android:textSize="18dp"
+            app:gTouchCornerRadius="0dp"
+            app:gTouchDurationRate="0.5"
+            app:gTouchEffect="ripple" />
+
+
+        <!--<LinearLayout-->
+        <!--android:id="@+id/ll_hot"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:gravity="center">-->
+
+        <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/ic_hot_colorful" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/nav_hot_text"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="?android:selectableItemBackground"-->
+        <!--android:gravity="center"-->
+        <!--android:paddingBottom="10dp"-->
+        <!--android:paddingTop="10dp"-->
+        <!--android:text="@string/hot_content"-->
+        <!--android:textColor="@color/colorPrimarytext"-->
+        <!--android:textSize="18.0sp" />-->
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+        <!--android:id="@+id/ll_keep"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:gravity="center">-->
+
+        <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/ic_star_colorful" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/nav_action_collect"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="?android:selectableItemBackground"-->
+        <!--android:gravity="center"-->
+        <!--android:paddingBottom="10dp"-->
+        <!--android:paddingTop="10dp"-->
+        <!--android:text="@string/nav_action_collect"-->
+        <!--android:textColor="@color/colorPrimarytext"-->
+        <!--android:textSize="18.0sp" />-->
+
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+        <!--android:id="@+id/ll_settings"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:gravity="center">-->
+
+        <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/ic_settings_colorful" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/nav_action_settings"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="?android:selectableItemBackground"-->
+        <!--android:gravity="center"-->
+        <!--android:paddingBottom="10dp"-->
+        <!--android:paddingTop="10dp"-->
+        <!--android:text="@string/action_settings"-->
+        <!--android:textColor="@color/colorPrimarytext"-->
+        <!--android:textSize="18.0sp" />-->
+
+        <!--</LinearLayout>-->
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/lay_8"
+        android:layout_marginLeft="@dimen/lay_8"
+        android:layout_marginRight="@dimen/lay_8"
+        android:layout_marginTop="@dimen/lay_8"
+        android:background="@color/nav_fenge" />
+</LinearLayout>
+
+

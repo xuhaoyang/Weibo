@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activity.WriteStatusActivity"
+    tools:showIn="@layout/activity_write_comment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/send_layout"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/new_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:cursorVisible="true"
+                android:gravity="top"
+                android:hint="请输入"
+                android:maxLength="140"
+                android:minLines="3"
+                android:padding="10dp"
+                android:textColor="@color/txt_black"
+                android:textColorHint="@color/txt_light_gray"
+                android:textCursorDrawable="@null"
+                android:textSize="16sp" />
+
+
+            <com.xhy.weibo.widget.WrapHeightGridView
+                android:id="@+id/gv_write_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:horizontalSpacing="8dp"
+                android:listSelector="@color/transparent"
+                android:numColumns="3"
+                android:scrollbars="none"
+                android:verticalSpacing="8dp">
+
+            </com.xhy.weibo.widget.WrapHeightGridView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/send_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?actionBarSize">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?actionBarSize"
+            android:orientation="horizontal">
+
+
+            <ImageButton
+                android:id="@+id/new_take_photo"
+                android:layout_width="48.0dip"
+                android:layout_height="48.0dip"
+                android:layout_gravity="center_vertical"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/image_deccribtion"
+                android:gravity="center_vertical"
+                android:padding="10.0dip"
+                android:src="@drawable/ic_photo_light" />
+
+            <ImageButton
+                android:id="@+id/new_emotion"
+                android:layout_width="48.0dip"
+                android:layout_height="48.0dip"
+                android:layout_gravity="center_vertical"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/image_deccribtion"
+                android:padding="10.0dip"
+                android:src="@drawable/ic_emoticon_light" />
+
+            <ImageButton
+                android:id="@+id/new_friend"
+                android:layout_width="48.0dip"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_vertical"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/image_deccribtion"
+                android:gravity="center_vertical"
+                android:padding="10.0dip"
+                android:src="@drawable/ic_at_inactive_light" />
+
+            <ImageButton
+                android:id="@+id/new_trend"
+                android:layout_width="48.0dip"
+                android:layout_height="48.0dip"
+                android:layout_gravity="center_vertical"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/image_deccribtion"
+                android:gravity="center_vertical"
+                android:padding="10.0dip"
+                android:src="@drawable/ic_sharp_light" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/new_send"
+            android:layout_width="48.0dip"
+            android:layout_height="48.0dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="?android:selectableItemBackground"
+            android:contentDescription="@string/image_deccribtion"
+            android:padding="10.0dip"
+            android:src="@drawable/ic_send_light" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_emotion_dashboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_emotion_dashboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></android.support.v4.view.ViewPager>
+    </LinearLayout>
+
+</LinearLayout>
