@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
@@ -18,6 +19,8 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.xhy.weibo.IMessageListener;
+import com.xhy.weibo.IMessageServiceRemoteBinder;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.MainActivity;
 import com.xhy.weibo.constants.AccessToken;
@@ -95,8 +98,37 @@ public class MessageService extends Service {
         }
     };
 
+    private IMessageListener mListener;
+
+    @Override
     public IBinder onBind(Intent intent) {
-        return null;
+//        return new Binder();
+        return new IMessageServiceRemoteBinder.Stub() {
+
+
+            @Override
+            public void setAccount(String account) throws RemoteException {
+                MessageService.this.account = account;
+            }
+
+            @Override
+            public void setIsNotify(boolean flag) throws RemoteException {
+                CommonConstants.isNotify = flag;
+            }
+
+            @Override
+            public void setMessageListener(IMessageListener listener) throws RemoteException {
+                mListener = listener;
+            }
+
+        };
+    }
+
+
+    public class Binder extends android.os.Binder {
+        public void setAccount(String account) {
+            MessageService.this.account = account;
+        }
     }
 
     @Override
@@ -160,39 +192,49 @@ public class MessageService extends Service {
                     //休息
                     Thread.sleep(15000);
                     Logger.show("MessageService", "休息时间过了,运行了");
+                    if (CommonConstants.isNotify){
+                        try {
+                            if (mListener != null) {
+                                mListener.setAccessToken(accessToken.getToken(), accessToken.getTokenStartTime());
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                        GsonRequest<NotifyReciver> request = new GsonRequest<NotifyReciver>(Request.Method.POST,
+                                URLs.WEIBO_GET_MSG, NotifyReciver.class, null, new Response.Listener<NotifyReciver>() {
+                            @Override
+                            public void onResponse(NotifyReciver response) {
+                                if (response.getCode() == 200) {
+                                    NotifyInfo info = response.getInfo();
 
-                    GsonRequest<NotifyReciver> request = new GsonRequest<NotifyReciver>(Request.Method.POST,
-                            URLs.WEIBO_GET_MSG, NotifyReciver.class, null, new Response.Listener<NotifyReciver>() {
-                        @Override
-                        public void onResponse(NotifyReciver response) {
-                            if (response.getCode() == 200) {
-                                NotifyInfo info = response.getInfo();
+                                    Message message = new Message();
+                                    message.what = 0;
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable("NOTIFYINFO", info);
+                                    message.setData(bundle);
+                                    mHandler.sendMessage(message);
 
-                                Message message = new Message();
-                                message.what = 0;
-                                Bundle bundle = new Bundle();
-                                bundle.putSerializable("NOTIFYINFO", info);
-                                message.setData(bundle);
-                                mHandler.sendMessage(message);
-                            } else {
+                                } else {
+
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
 
                             }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() throws AuthFailureError {
+                                Map<String, String> map = new HashMap<>();
+                                map.put("token", accessToken.getToken());
+                                map.put("uid", user_id);
+                                return map;
+                            }
+                        };
+                        VolleyQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+                    }
 
-                        }
-                    }) {
-                        @Override
-                        protected Map<String, String> getParams() throws AuthFailureError {
-                            Map<String, String> map = new HashMap<>();
-                            map.put("token", accessToken.getToken());
-                            map.put("uid", user_id);
-                            return map;
-                        }
-                    };
-                    VolleyQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -164,13 +164,15 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                     case DETAIL_ATY_CODE:
                         status = (Status) getIntent().getSerializableExtra(STATUS_INTENT);
                         getSupportActionBar().setTitle("发表评论");
+                        new_take_photo.setVisibility(View.GONE);
                         break;
                     //来自评论列表的回复[获得是Comment信息]
                     case COMMENT_ADPATER_CODE:
                         comment = (Comment) getIntent().getSerializableExtra(COMMENT_INTENT);
                         getSupportActionBar().setTitle("回复评论");
-                        original = "@" + comment.getUsername() + ":" + comment.getContent();
+                        original = "@" + comment.getUsername() + ": " + comment.getContent();
                         new_edit.setHint(original);
+                        new_take_photo.setVisibility(View.GONE);
                         break;
                 }
                 break;
@@ -357,7 +359,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         break;
                     //来自评论列表的回复[获得是Comment信息]
                     case COMMENT_ADPATER_CODE:
-                        commentStr += original;
+                        commentStr = commentStr + "//" +original;
                         url = NetParams.setComment(CommonConstants.USER_ID, comment.getWid(),
                                 commentStr, CommonConstants.ACCESS_TOKEN.getToken());
                         break;

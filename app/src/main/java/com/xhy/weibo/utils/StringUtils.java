@@ -118,7 +118,7 @@ public class StringUtils {
 
         @Override
         public void updateDrawState(TextPaint ds) {
-            ds.setColor(ContextCompat.getColor(context, R.color.txt_at_blue));
+            ds.setColor(ContextCompat.getColor(context, R.color.txt_at_blue_detail));
             ds.setUnderlineText(false);//无下划线
         }
     }

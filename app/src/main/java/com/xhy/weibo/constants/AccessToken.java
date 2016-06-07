@@ -40,6 +40,10 @@ public class AccessToken implements Serializable {
         initToken(now);
     }
 
+    public long getTokenStartTime() {
+        return tokenStartTime;
+    }
+
     public static synchronized AccessToken getInstance(String account, String password, Context context) {
         if (mAccessToken == null) {
             mAccessToken = new AccessToken(account, password, context);

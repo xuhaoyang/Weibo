@@ -1,14 +1,20 @@
 package com.xhy.weibo.activity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -30,6 +36,8 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.xhy.weibo.IMessageListener;
+import com.xhy.weibo.IMessageServiceRemoteBinder;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseActivity;
@@ -59,15 +67,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ServiceConnection {
 
     public static final int REQUEST_CODE_WRITE_FORWARD = 2;
     public static final int REQUEST_CODE_WRITE_STATUS = 3;
 
     public static final int GROUP = 0;
     public static final int ALL_ITEMID = 0;
-
-//    RecyclerView mNavRecyclerView;
 
     @BindView(R.id.recycler_view_home)
     RecyclerView mRecyclerView;
@@ -98,17 +104,19 @@ public class MainActivity extends BaseActivity
     private ActionBarDrawerToggle toggle;
     private List<StatusGroup> statusGroups;
     private String gid = "";
-    //    private HotAdpater navAdpater ;
     private StatusAdpater statusAdpater = new StatusAdpater(statuses, this);
     private boolean isLoading;
     private Handler handler = new Handler();
     private int currPage = 1;
+
+
     private int totalPage = 1;
     private int lastVisibleItemPosition;
     private SearchView.SearchAutoComplete mEditSearch;
     private DBManager dbManager;
     private SQLiteDatabase db;
     private UserDB userDB;
+    private IMessageServiceRemoteBinder binder;
 
 
     @Override
@@ -139,6 +147,9 @@ public class MainActivity extends BaseActivity
         intent.putExtra("PASSWORD", CommonConstants.password);
         intent.putExtra("USERID", CommonConstants.USER_ID + "");
         intent.putExtra("TOKEN", CommonConstants.ACCESS_TOKEN.getToken());
+
+//        Intent i = new Intent();
+//        i.setComponent(new ComponentName())
         startService(intent);
     }
 
@@ -158,7 +169,7 @@ public class MainActivity extends BaseActivity
         if (!users.isEmpty()) {
             long time = System.currentTimeMillis() - users.get(0).getUptime();
             //大于半天刷新下缓存的用户数据
-            if (time > 43200000) {
+            if (time > 43200000 || TextUtils.isEmpty(users.get(0).getUsername())) {
                 initUserInfo();
             } else {
                 String url = URLs.AVATAR_IMG_URL + users.get(0).getFace();
@@ -220,11 +231,11 @@ public class MainActivity extends BaseActivity
                 }
             }
         };
-        CustomRequest request = new CustomRequest.RequestBuilder().post().url( URLs.WEIBO_GET_GROUP)
+        CustomRequest request = new CustomRequest.RequestBuilder().post().url(URLs.WEIBO_GET_GROUP)
                 .clazz(StatusGroupReciver.class).params(map).
                         successListener(statusGroupReciverListener).build();
 
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request,"StatusGroupReciver");
+        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request, "StatusGroupReciver");
 
     }
 
@@ -253,21 +264,17 @@ public class MainActivity extends BaseActivity
         public void onResponse(StatusReciver response) {
             if (response.getCode() == 200) {
                 totalPage = response.getTotalPage();
-                if (statuses != null) {
-                    if (currPage == 1) {
-                        statuses.clear();
-                        statuses.addAll(response.getInfo());
-                    } else {
-                        //要判断是否有重复的
-                        for (Status s : response.getInfo()) {
-                            if (!statuses.contains(s)) {
-                                statuses.add(s);
-                            }
+                if (currPage == 1) {
+                    statuses.clear();
+                    statuses.addAll(response.getInfo());
+                    statusAdpater.setLastAnimatedPosition(5);
+                } else {
+                    //要判断是否有重复的
+                    for (Status s : response.getInfo()) {
+                        if (!statuses.contains(s)) {
+                            statuses.add(s);
                         }
                     }
-                } else {
-                    //第一次获取到数据
-                    statuses = response.getInfo();
                 }
                 statusAdpater.notifyDataSetChanged();
                 showLog("-->statuses size:" + statuses.size());
@@ -381,11 +388,21 @@ public class MainActivity extends BaseActivity
                     }
                 }
             }
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
 
+            }
+        });
+
+        headerView_iv_avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent data = new Intent(MainActivity.this, UserInfoActivity.class);
+                data.putExtra(UserInfoActivity.USER_ID, CommonConstants.USER_ID);
+                startActivity(data);
             }
         });
     }
@@ -394,6 +411,7 @@ public class MainActivity extends BaseActivity
     public void initRecyclerView() {
         linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(statusAdpater);
     }
 
@@ -530,5 +548,50 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        binder = IMessageServiceRemoteBinder.Stub.asInterface(service);
+        try {
+            binder.setMessageListener(new IMessageListener.Stub() {
+                @Override
+                public void setAccessToken(String token, long time) throws RemoteException {
+                    CommonConstants.ACCESS_TOKEN.setToken(token);
+                    CommonConstants.ACCESS_TOKEN.setTokenStartTime(time);
+                    showLog("-->更新TOKEN成功");
+                }
 
+            });
+//            binder.
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+//        binder.
+        showLog("binder is " + binder.toString());
+        showLog("Service Connected");
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        showLog("Service disConnected");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bindService(new Intent(this, MessageService.class), this, Context.BIND_AUTO_CREATE);
+        showLog("onResume");
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        showLog("onStop");
+        try {
+            binder.setMessageListener(null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        unbindService(this);
+    }
 }

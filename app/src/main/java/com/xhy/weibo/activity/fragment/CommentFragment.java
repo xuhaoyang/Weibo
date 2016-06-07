@@ -146,6 +146,7 @@ public class CommentFragment extends BaseFragment {
                         if (page == 1) {
                             comments.clear();
                             comments.addAll(response.getInfo());
+                            commentAdpater.setLastAnimatedPosition(-1);
                         } else {
                             //要判断是否有重复的
                             for (Comment c : response.getInfo()) {

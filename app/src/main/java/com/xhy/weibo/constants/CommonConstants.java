@@ -19,5 +19,6 @@ public class CommonConstants implements Serializable {
     public static String password;
     public static final int STATUS_COUNT_PAGE = 10;//加载多少条为一页
     public static AccessToken ACCESS_TOKEN;
+    public static boolean isNotify = true;
 
 }

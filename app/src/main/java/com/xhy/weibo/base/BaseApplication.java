@@ -1,6 +1,7 @@
 package com.xhy.weibo.base;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -40,9 +41,12 @@ public class BaseApplication extends Application {
                         new VolleyUrlLoader.Factory(VolleyQueueSingleton.getInstance(this.getApplicationContext()).
                                 getRequestQueue()));
 
-
+        SharedPreferences preferences = getSharedPreferences("setting", MODE_PRIVATE);
+        CommonConstants.isNotify = preferences.getBoolean("isNotify", true);
         mDBManager = new DBManager(getApplicationContext());
         mDBManager.openDatabase();
         mDBManager.closeDatabase();
     }
+
+
 }

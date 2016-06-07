@@ -1,5 +1,6 @@
 package com.xhy.weibo.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +22,7 @@ import com.xhy.weibo.activity.WriteStatusActivity;
 import com.xhy.weibo.entity.Comment;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.utils.DateUtils;
+import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.StringUtils;
 
 import java.util.List;
@@ -36,6 +39,11 @@ public class CommentAdpater extends RecyclerView.Adapter {
     private static final int TYPE_FOOTER = 1;
     private Context mContext;
     private List<Comment> mComments;
+    private int lastAnimatedPosition = -1;
+
+    public void setLastAnimatedPosition(int lastAnimatedPosition) {
+        this.lastAnimatedPosition = lastAnimatedPosition;
+    }
 
     public CommentAdpater(Context mContext, List<Comment> comments) {
         this.mContext = mContext;
@@ -85,6 +93,7 @@ public class CommentAdpater extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        runEnterAnimation(holder.itemView, position);
         if (holder instanceof ItemViewHolder) {
             final ItemViewHolder viewHolder = (ItemViewHolder) holder;
             final Comment comment = mComments.get(position);
@@ -92,10 +101,10 @@ public class CommentAdpater extends RecyclerView.Adapter {
 
             //设置头像
             if (TextUtils.isEmpty(comment.getFace())) {
-                viewHolder.iv_avatar.setImageResource(R.mipmap.ic_launcher);
+                viewHolder.iv_avatar.setImageResource(R.drawable.user_avatar);
             } else {
                 String url = URLs.AVATAR_IMG_URL + comment.getFace();
-                Glide.with(viewHolder.iv_avatar.getContext()).load(url).
+                Glide.with(viewHolder.iv_avatar.getContext()).load(url).error(R.drawable.user_avatar).
                         fitCenter().into(viewHolder.iv_avatar);
             }
 
@@ -126,6 +135,26 @@ public class CommentAdpater extends RecyclerView.Adapter {
             });
         }
 
+    }
+
+    private void runEnterAnimation(View itemView, int position) {
+//        if (!animateItems || position >= 10) {
+//            return;
+//        }
+        if (position <= 8) {
+            return;
+        }
+
+        if (position > lastAnimatedPosition) {
+            lastAnimatedPosition = position;
+            itemView.setTranslationY(DisplayUtils.getScreenHeightPixels((Activity) mContext) / 2);
+            itemView.animate()
+                    .translationY(0)
+                    .setInterpolator(new DecelerateInterpolator(2.f))
+                    .setDuration(500)
+                    .start();
+
+        }
     }
 
     public void showPopupMenu(View view, final Comment comment) {
