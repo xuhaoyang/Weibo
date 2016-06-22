@@ -2,18 +2,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="@dimen/lay_16"
+    android:paddingBottom="@dimen/lay_16"
     android:background="@drawable/bg_agray2gray"
-    android:layout_marginTop="10dp"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_retweeted_content"
         style="@style/TextViewBody"
-        android:padding="16dp"
+        android:paddingLeft="@dimen/lay_16"
+        android:paddingRight="@dimen/lay_16"
         android:textColor="@color/txt_gray" />
 
-    <include
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/include_status_image_forward"
-        layout="@layout/include_status_image"
-        android:visibility="gone" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingTop="@dimen/lay_4"
+        android:paddingBottom="@dimen/lay_4"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/iv_image_forward"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>

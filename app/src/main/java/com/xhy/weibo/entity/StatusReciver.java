@@ -39,7 +39,6 @@ public class StatusReciver {
         this.error = error;
     }
 
-
     public int getCode() {
         return code;
     }

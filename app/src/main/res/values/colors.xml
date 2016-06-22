@@ -14,10 +14,12 @@
     <color name="bg_gray_light">#fcfcfc</color>
     <color name="bg_gray_pressed">#e8e8e8</color>
     <color name="txt_at_blue">#507daf</color>
+    <color name="txt_at_blue_detail">#65a0e1</color>
     <color name="bg_gray_bar">#f9f9f9</color>
     <color name="divider_gray">#d7d7d7</color>
     <color name="grey">#8C8C8C</color>
     <color name="transparent">#00000000</color>
     <color name="nav_gray">#eeeeee</color>
     <color name="nav_fenge">#bfbfbf</color>
+    <color name="status_detail_forward">#5b6fea</color>
 </resources>

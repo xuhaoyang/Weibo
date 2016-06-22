@@ -474,7 +474,6 @@ public class MainActivity extends BaseActivity
                 if (TextUtils.isEmpty(query)) {
                     return false;
                 }
-
                 Intent data = new Intent(MainActivity.this, SearchActivity.class);
                 data.putExtra(SearchActivity.SEARCH_CONTENT, query);
                 startActivity(data);

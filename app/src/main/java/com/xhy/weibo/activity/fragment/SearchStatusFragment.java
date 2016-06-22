@@ -94,6 +94,8 @@ public class SearchStatusFragment extends BaseFragment {
             }
         });
 
+
+
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
