@@ -55,15 +55,12 @@ public class MessageService extends Service {
     private NotificationCompat.Builder builder;
     private TaskStackBuilder stackBuilder;
 
-    private AccessToken accessToken;
-    private String account;
-    private String password;
-    private String user_id;
     private NotifyInfo oldInfo;
 
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+            super.handleMessage(msg);
             switch (msg.what) {
                 case 0:
                     final Bundle data = msg.getData();
@@ -91,10 +88,8 @@ public class MessageService extends Service {
                         manager.notify(messageNotificationID, notification);
                     }
                     oldInfo = info;
-
                     break;
             }
-            super.handleMessage(msg);
         }
     };
 
@@ -108,7 +103,7 @@ public class MessageService extends Service {
 
             @Override
             public void setAccount(String account) throws RemoteException {
-                MessageService.this.account = account;
+                CommonConstants.account = account;
             }
 
             @Override
@@ -127,21 +122,20 @@ public class MessageService extends Service {
 
     public class Binder extends android.os.Binder {
         public void setAccount(String account) {
-            MessageService.this.account = account;
+            CommonConstants.account = account;
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Logger.show("MessageService", "onStartCommand");
-        account = intent.getStringExtra("ACCOUNT");
-        password = intent.getStringExtra("PASSWORD");
-        user_id = intent.getStringExtra("USERID");
+        CommonConstants.account = intent.getStringExtra("ACCOUNT");
+        CommonConstants.password = intent.getStringExtra("PASSWORD");
+        CommonConstants.USER_ID = Integer.parseInt(intent.getStringExtra("USERID"));
         String token = intent.getStringExtra("TOKEN");
-        if (!TextUtils.isEmpty(account) || !TextUtils.isEmpty(password)) {
-            accessToken = AccessToken.getInstance(account, password, getApplicationContext());
-            accessToken.setToken(token);
+        if (!TextUtils.isEmpty(CommonConstants.account) || !TextUtils.isEmpty(CommonConstants.password)) {
+            CommonConstants.ACCESS_TOKEN = AccessToken.getInstance(CommonConstants.account, CommonConstants.password, getApplicationContext());
+            CommonConstants.ACCESS_TOKEN.setToken(token);
         }
 
         builder = new NotificationCompat.Builder(this);
@@ -150,7 +144,6 @@ public class MessageService extends Service {
 //        stackBuilder = TaskStackBuilder.create(this);
 //        stackBuilder.addParentStack(MainActivity.class);
 //        stackBuilder.addNextIntent(messageIntent);
-
 //        messagePendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         messagePendingIntent = PendingIntent.getBroadcast(this, 0, messageIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(messagePendingIntent);
@@ -192,14 +185,20 @@ public class MessageService extends Service {
                     //休息
                     Thread.sleep(15000);
                     Logger.show("MessageService", "休息时间过了,运行了");
-                    if (CommonConstants.isNotify){
-                        try {
-                            if (mListener != null) {
-                                mListener.setAccessToken(accessToken.getToken(), accessToken.getTokenStartTime());
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
+                    if (CommonConstants.isNotify) {
+//                        try {
+//                            if (mListener != null) {
+//                                mListener.setAccessToken(accessToken.getToken(), accessToken.getTokenStartTime());
+//                            }
+//                        } catch (RemoteException e) {
+//                            e.printStackTrace();
+//                        }
+                        Intent data = new Intent();
+                        data.setAction("com.xhy.weibo.UPDATE_TOKEN");
+                        data.putExtra(CommonConstants.KEEP_TOKEN, CommonConstants.ACCESS_TOKEN.getToken());
+                        data.putExtra(CommonConstants.KEEP_TOKEN_START_TIME, CommonConstants.ACCESS_TOKEN.getTokenStartTime());
+                        sendBroadcast(data);
+
                         GsonRequest<NotifyReciver> request = new GsonRequest<NotifyReciver>(Request.Method.POST,
                                 URLs.WEIBO_GET_MSG, NotifyReciver.class, null, new Response.Listener<NotifyReciver>() {
                             @Override
@@ -213,7 +212,6 @@ public class MessageService extends Service {
                                     bundle.putSerializable("NOTIFYINFO", info);
                                     message.setData(bundle);
                                     mHandler.sendMessage(message);
-
                                 } else {
 
                                 }
@@ -227,8 +225,8 @@ public class MessageService extends Service {
                             @Override
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> map = new HashMap<>();
-                                map.put("token", accessToken.getToken());
-                                map.put("uid", user_id);
+                                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
+                                map.put("uid", String.valueOf(CommonConstants.USER_ID));
                                 return map;
                             }
                         };

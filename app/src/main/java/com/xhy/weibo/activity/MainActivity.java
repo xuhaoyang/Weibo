@@ -560,11 +560,9 @@ public class MainActivity extends BaseActivity
                 }
 
             });
-//            binder.
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-//        binder.
         showLog("binder is " + binder.toString());
         showLog("Service Connected");
     }
@@ -577,7 +575,7 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onResume() {
         super.onResume();
-        bindService(new Intent(this, MessageService.class), this, Context.BIND_AUTO_CREATE);
+//        bindService(new Intent(this, MessageService.class), this, Context.BIND_AUTO_CREATE);
         showLog("onResume");
 
     }
@@ -586,11 +584,11 @@ public class MainActivity extends BaseActivity
     protected void onStop() {
         super.onStop();
         showLog("onStop");
-        try {
-            binder.setMessageListener(null);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        unbindService(this);
+//        try {
+//            binder.setMessageListener(null);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//        unbindService(this);
     }
 }

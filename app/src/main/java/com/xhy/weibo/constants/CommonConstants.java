@@ -10,6 +10,9 @@ public class CommonConstants implements Serializable {
     private CommonConstants() {
     }
 
+    public static final String KEEP_TOKEN = "TOKEN";
+    public static final String KEEP_TOKEN_START_TIME = "TOKEN_START_TIME";
+
     public static final boolean isShowLog = true;
     public static String TOKEN = "VlBTTQRNAhBRTwZUAU4GGAIQBxgHL1FhB2UAYVtpVD8BZQJqAzMHYVcy";
     public static final int TOKEN_EXPIRES_IN = 7200;
