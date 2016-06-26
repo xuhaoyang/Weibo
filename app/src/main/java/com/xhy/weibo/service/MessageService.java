@@ -197,6 +197,9 @@ public class MessageService extends Service {
                         data.setAction("com.xhy.weibo.UPDATE_TOKEN");
                         data.putExtra(CommonConstants.KEEP_TOKEN, CommonConstants.ACCESS_TOKEN.getToken());
                         data.putExtra(CommonConstants.KEEP_TOKEN_START_TIME, CommonConstants.ACCESS_TOKEN.getTokenStartTime());
+                        //传递账户id比对是否是帐号
+                        data.putExtra(CommonConstants.KEEP_TOKEN_ACCOUNT,CommonConstants.account);
+                        data.putExtra(CommonConstants.KEEP_TOKEN_USER_ID,CommonConstants.account);
                         sendBroadcast(data);
 
                         GsonRequest<NotifyReciver> request = new GsonRequest<NotifyReciver>(Request.Method.POST,
