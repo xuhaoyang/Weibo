@@ -5,7 +5,6 @@ import android.content.Context;
 import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.entity.Login;
 import com.xhy.weibo.entity.LoginReciver;
-import com.xhy.weibo.entity.User;
 import com.xhy.weibo.utils.Logger;
 
 import retrofit2.Call;
@@ -15,8 +14,8 @@ import retrofit2.Response;
 /**
  * Created by xuhaoyang on 16/7/19.
  */
-public class UserLogic {
-    public static final String TAG = UserLogic.class.getSimpleName();
+public class UserLoginLogic {
+    public static final String TAG = UserLoginLogic.class.getSimpleName();
 
     public static void login(final Context context, final String account, final String password, final LoginCallback callback) {
         Call<LoginReciver> callLogin = ApiClient.getApi().login(account, password);
@@ -29,7 +28,7 @@ public class UserLogic {
                         Login login = loginReciver.getInfo();
                         callback.onLoginSuccess(login);
                     } else {
-                        callback.onLoginFailure(loginReciver.getCode(), "登录失败");
+                        callback.onLoginFailure(loginReciver.getCode(), loginReciver.getError());
                     }
                 } else {
                     Logger.show(TAG, "ErrorCode:" + response.code());

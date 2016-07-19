@@ -3,7 +3,6 @@ package com.xhy.weibo.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
@@ -44,20 +43,19 @@ import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.constants.AccessToken;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
-import com.xhy.weibo.db.DatabaseHelper;
 import com.xhy.weibo.db.UserDB;
 import com.xhy.weibo.entity.Login;
 import com.xhy.weibo.entity.LoginReciver;
+import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends BaseActivity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends BaseActivity implements LoaderCallbacks<Cursor>, UserLoginLogic.LoginCallback {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -83,6 +81,8 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
     private View mLoginFormView;
     private View focusView;
     private UserDB userDB;
+    private String account;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +90,6 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
-        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -191,11 +190,6 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
     }
 
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
     private void attemptLogin() {
 //        if (mAuthTask != null) {
 //            return;
@@ -206,8 +200,8 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        final String account = mUsernameView.getText().toString();
-        final String password = mPasswordView.getText().toString();
+        account = mUsernameView.getText().toString();
+        password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         focusView = null;
@@ -224,26 +218,11 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
             cancel = true;
         }
 
-//        // Check for a valid account address.
-//        if (TextUtils.isEmpty(account)) {
-//            mUsernameView.setError(getString(R.string.error_field_required));
-//            focusView = mUsernameView;
-//            cancel = true;
-//        } else if (!isEmailValid(account)) {
-//            mUsernameView.setError(getString(R.string.error_invalid_email));
-//            focusView = mUsernameView;
-//            cancel = true;
-//        }
-
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             showProgress(true);
-            GsonRequest<LoginReciver> request = new GsonRequest<LoginReciver>(Request.Method.POST,
+           /* GsonRequest<LoginReciver> request = new GsonRequest<LoginReciver>(Request.Method.POST,
                     URLs.WEIBO_USER_LOGIN, LoginReciver.class, null,
                     new Response.Listener<LoginReciver>() {
                         @Override
@@ -258,13 +237,13 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
                                 DBManager dbManager = new DBManager(LoginActivity.this);
                                 dbManager.openDatabase();
                                 SQLiteDatabase db = dbManager.getDatabase();
-                                if (userDB.insertLogin(db,login)){
+                                if (userDB.insertLogin(db, login)) {
                                     CommonConstants.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
                                     CommonConstants.ACCESS_TOKEN.setToken(login.getToken());
                                     CommonConstants.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
                                     intent2Activity(InitActivity.class);
                                     finish();
-                                }else {
+                                } else {
                                     showProgress(false);
                                     mPasswordView.setError("数据库错误");
                                     focusView = mPasswordView;
@@ -294,10 +273,49 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
                     return map;
                 }
             };
-            VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+            /*VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);*/
+            UserLoginLogic.login(this, account, password, this);
 //            mAuthTask = new UserLoginTask(account, password);
 //            mAuthTask.execute((Void) null);
         }
+    }
+
+    @Override
+    public void onLoginSuccess(Login login) {
+        //设置密码 请求返回中不会返回密码 返回不安全
+        login.setTokenStartTime(System.currentTimeMillis());
+        login.setPassword(password);
+        //数据库操作
+        DBManager dbManager = new DBManager(LoginActivity.this);
+        dbManager.openDatabase();
+        SQLiteDatabase db = dbManager.getDatabase();
+        if (userDB.insertLogin(db, login)) {
+            CommonConstants.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
+            CommonConstants.ACCESS_TOKEN.setToken(login.getToken());
+            CommonConstants.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
+            intent2Activity(InitActivity.class);
+            finish();
+        } else {
+            showProgress(false);
+            mPasswordView.setError("数据库错误");
+            focusView = mPasswordView;
+            focusView.requestFocus();
+        }
+        dbManager.closeDatabase();
+    }
+
+    @Override
+    public void onLoginFailure(int errorCode, String errorMessage) {
+        showProgress(false);
+        mPasswordView.setError(errorMessage);
+        focusView = mPasswordView;
+        focusView.requestFocus();
+    }
+
+    @Override
+    public void onLoginError(Throwable error) {
+        showProgress(false);
+        mPasswordView.setError("错误,请稍后重试");
     }
 
     private boolean isPasswordValid(String password) {

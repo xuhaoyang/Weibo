@@ -2,26 +2,16 @@ package com.xhy.weibo.constants;
 
 import android.content.Context;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.entity.Login;
-import com.xhy.weibo.entity.LoginReciver;
-import com.xhy.weibo.logic.UserLogic;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
+import com.xhy.weibo.logic.UserLoginLogic;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by xuhaoyang on 16/5/30.
  */
-public class AccessToken implements Serializable, UserLogic.LoginCallback {
+public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
 
     private static AccessToken mAccessToken;
 
@@ -82,7 +72,7 @@ public class AccessToken implements Serializable, UserLogic.LoginCallback {
     private void initToken(final long refreshTime) {
         oldTIme = this.tokenStartTime;
         this.tokenStartTime = refreshTime;
-        UserLogic.login(mContext, account, password, this);
+        UserLoginLogic.login(mContext, account, password, this);
 /*
         GsonRequest<LoginReciver> request =
                 new GsonRequest<LoginReciver>(Request.Method.POST, URLs.WEIBO_USER_LOGIN,
