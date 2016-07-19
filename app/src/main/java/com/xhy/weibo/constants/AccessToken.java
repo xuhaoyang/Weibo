@@ -8,6 +8,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.xhy.weibo.entity.Login;
 import com.xhy.weibo.entity.LoginReciver;
+import com.xhy.weibo.logic.UserLogic;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.network.VolleyQueueSingleton;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by xuhaoyang on 16/5/30.
  */
-public class AccessToken implements Serializable {
+public class AccessToken implements Serializable, UserLogic.LoginCallback {
 
     private static AccessToken mAccessToken;
 
@@ -30,6 +31,7 @@ public class AccessToken implements Serializable {
     private String password;
     private long tokenStartTime;
     private Context mContext;
+    private long oldTIme;
 
     private AccessToken(String account, String password, Context context) {
         this.account = account;
@@ -78,8 +80,10 @@ public class AccessToken implements Serializable {
     }
 
     private void initToken(final long refreshTime) {
-        final long oldTIme = this.tokenStartTime;
+        oldTIme = this.tokenStartTime;
         this.tokenStartTime = refreshTime;
+        UserLogic.login(mContext, account, password, this);
+/*
         GsonRequest<LoginReciver> request =
                 new GsonRequest<LoginReciver>(Request.Method.POST, URLs.WEIBO_USER_LOGIN,
                         LoginReciver.class, null,
@@ -97,7 +101,6 @@ public class AccessToken implements Serializable {
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        tokenRefreshing.set(false);
                         tokenStartTime = oldTIme;
                     }
                 }) {
@@ -110,7 +113,28 @@ public class AccessToken implements Serializable {
                     }
                 };
 
-        VolleyQueueSingleton.getInstance(mContext).addToRequestQueue(request);
+        VolleyQueueSingleton.getInstance(mContext).addToRequestQueue(request);*/
+
+    }
+
+    @Override
+    public void onLoginSuccess(Login login) {
+        token = login.getToken();
+        tokenStartTime = login.getTokenStartTime();
+        tokenRefreshing.set(false);
+
+    }
+
+    @Override
+    public void onLoginFailure(int errorCode, String errorMessage) {
+        tokenStartTime = oldTIme;
+        tokenRefreshing.set(false);
+    }
+
+    @Override
+    public void onLoginError(Throwable error) {
+        tokenStartTime = oldTIme;
+        tokenRefreshing.set(false);
 
     }
 }
