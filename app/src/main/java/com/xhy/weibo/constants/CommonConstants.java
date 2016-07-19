@@ -15,6 +15,7 @@ public class CommonConstants implements Serializable {
     public static final String KEEP_TOKEN_START_TIME = "TOKEN_START_TIME";
     public static final String KEEP_TOKEN_ACCOUNT = "TOKEN_NAME";
     public static final String KEEP_TOKEN_USER_ID = "TOKEN_USER_ID";
+    public static final String KEEP_SETTING_ISNOTIFY = "SETTING_ISNOTIFY";
 
     public static final boolean isShowLog = true;
     public static String TOKEN = "VlBTTQRNAhBRTwZUAU4GGAIQBxgHL1FhB2UAYVtpVD8BZQJqAzMHYVcy";

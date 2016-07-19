@@ -82,6 +82,13 @@
                 <action android:name="com.xhy.weibo.UPDATE_TOKEN" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".receiver.UpdateOtherProcessReceiver"
+            android:process=":message">
+            <intent-filter>
+                <action android:name="com.xhy.weibo.UPDATE_OTHER_PROCESS" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".activity.LoginActivity"

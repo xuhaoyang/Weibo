@@ -131,6 +131,11 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
                     tv_weibo_count.setText(user.getWeibo() + "");
                     setImage(profile_image, URLs.AVATAR_IMG_URL + user.getFace());
                     uid = user.getUid();
+                    if(user.getUid()==CommonConstants.USER_ID){
+                        btnGZ.setVisibility(View.GONE);
+                    }else {
+                        btnGZ.setVisibility(View.VISIBLE);
+                    }
                     switch (user.getFollowed()) {
                         case 0:
                             btnGZ.setText("关注");
@@ -160,7 +165,6 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
                 if (uid != 0) {
                     map.put("uid", uid + "");
                 }
-
                 if (!TextUtils.isEmpty(username)) {
                     map.put("username", username);
                 }
@@ -223,7 +227,6 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
                                 new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-
                                     }
                                 }) {
                             @Override
@@ -385,7 +388,6 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
             mMaxScrollSize = appBarLayout.getTotalScrollRange();
 
         int percentage = (Math.abs(verticalOffset)) * 100 / mMaxScrollSize;
-        showLog("-->" + percentage);
         if (percentage >= PERCENTAGE_TO_ANIMATE_AVATAR && mIsAvatarShown) {
             mIsAvatarShown = false;
 //			mProfileImage.animate().scaleY(0).scaleX(0).setDuration(200).start();

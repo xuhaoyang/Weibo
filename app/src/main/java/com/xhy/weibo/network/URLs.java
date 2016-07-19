@@ -14,6 +14,8 @@ public interface URLs {
     String UPLOAD_URL = BASE_URL + "/Uploads/";
     String AVATAR_IMG_URL = UPLOAD_URL + "Face/";//头像
     String PIC_URL = UPLOAD_URL + "Pic/";
+
+
     //上传图片API
     String WEIBO_UPLOAD_PIC = API_URL + "uploadUserPic.html";
 
@@ -40,6 +42,7 @@ public interface URLs {
 
     //微博添加收藏
     String WEIBO_KEEP = API_URL + "keepWeibo.html";
+    //微博删除收藏
     String WEIBO_DEL_KEEP = API_URL + "delKeep.html";
 
 

@@ -25,6 +25,7 @@ import android.view.MenuItem;
 
 import com.xhy.weibo.R;
 import com.xhy.weibo.constants.CommonConstants;
+import com.xhy.weibo.receiver.UpdateOtherProcessReceiver;
 import com.xhy.weibo.utils.SharedUtils;
 
 import java.util.List;
@@ -220,6 +221,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     CommonConstants.isNotify = (boolean) newValue;
+                    Intent data = new Intent();
+                    data.setAction(UpdateOtherProcessReceiver.ACTION_NAME);
+                    data.putExtra(CommonConstants.KEEP_SETTING_ISNOTIFY,CommonConstants.isNotify);
+                    getContext().sendBroadcast(data);
                     return true;
                 }
             });
