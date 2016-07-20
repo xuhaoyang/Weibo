@@ -1,14 +1,10 @@
 package com.xhy.weibo.activity.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,7 +23,6 @@ import com.xhy.weibo.base.BaseFragment;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.entity.Comment;
 import com.xhy.weibo.entity.CommentReciver;
-import com.xhy.weibo.entity.Status;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.NetParams;
 import com.xhy.weibo.network.VolleyQueueSingleton;

@@ -1,35 +1,19 @@
 package com.xhy.weibo.activity;
 
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.R;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.constants.AccessToken;
+import com.xhy.weibo.AccessToken;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
-import com.xhy.weibo.db.DatabaseHelper;
 import com.xhy.weibo.db.UserDB;
-import com.xhy.weibo.entity.Login;
-import com.xhy.weibo.entity.User;
-import com.xhy.weibo.entity.UserReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
+import com.xhy.weibo.model.Login;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class InitActivity extends BaseActivity {
 

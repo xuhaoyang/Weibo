@@ -5,11 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.xhy.weibo.constants.AccessToken;
+import com.xhy.weibo.AccessToken;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
-import com.xhy.weibo.entity.Login;
+import com.xhy.weibo.model.Login;
 import com.xhy.weibo.utils.Logger;
 
 import java.util.List;

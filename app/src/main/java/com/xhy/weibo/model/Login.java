@@ -1,4 +1,4 @@
-package com.xhy.weibo.entity;
+package com.xhy.weibo.model;
 
 import java.io.Serializable;
 
@@ -10,9 +10,6 @@ public class Login implements Serializable {
     private int id;
     private String account;
     private String password;
-
-
-
     private long registime;
     private int lock;
     private String token;

@@ -18,7 +18,7 @@ import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseFragment;
 import com.xhy.weibo.constants.CommonConstants;
-import com.xhy.weibo.entity.Status;
+import com.xhy.weibo.model.Status;
 import com.xhy.weibo.entity.StatusReciver;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;

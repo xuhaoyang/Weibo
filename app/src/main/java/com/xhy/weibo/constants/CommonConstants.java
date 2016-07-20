@@ -1,5 +1,7 @@
 package com.xhy.weibo.constants;
 
+import com.xhy.weibo.AccessToken;
+
 import java.io.Serializable;
 
 /**

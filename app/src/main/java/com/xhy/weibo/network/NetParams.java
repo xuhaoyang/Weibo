@@ -5,21 +5,7 @@ package com.xhy.weibo.network;
  */
 public class NetParams {
 
-    /**
-     * 获取当前用户的微博内容 缺少gid分组id
-     *
-     * @param uid
-     * @param token
-     * @param limit
-     * @return
-     */
-    public static String getWeiboList(int uid, String token, int... limit) {
-        String result = URLs.WEIBO_LIST + "?uid=" + uid + "&token=" + token;
-        if (limit.length == 2) {
-            result += "&limit=" + limit[0] + "," + limit[1];
-        }
-        return result;
-    }
+
 
     public static String getComment(int wid, int page, String token) {
 //getComment.html?wid=102&page=1&token=BgBXSQFIUkBXSQFTBkkCHFBCAxwGLgY2VjQAYQAyAWZbPVIxBDMDYANj

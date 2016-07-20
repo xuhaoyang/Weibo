@@ -1,9 +1,11 @@
-package com.xhy.weibo.constants;
+package com.xhy.weibo;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.xhy.weibo.entity.Login;
+import com.xhy.weibo.model.Login;
 import com.xhy.weibo.logic.UserLoginLogic;
+import com.xhy.weibo.utils.Logger;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -12,6 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by xuhaoyang on 16/5/30.
  */
 public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
+
+    private static final String TAG = AccessToken.class.getSimpleName();
 
     private static AccessToken mAccessToken;
 
@@ -73,38 +77,6 @@ public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
         oldTIme = this.tokenStartTime;
         this.tokenStartTime = refreshTime;
         UserLoginLogic.login(mContext, account, password, this);
-/*
-        GsonRequest<LoginReciver> request =
-                new GsonRequest<LoginReciver>(Request.Method.POST, URLs.WEIBO_USER_LOGIN,
-                        LoginReciver.class, null,
-                        new Response.Listener<LoginReciver>() {
-                            @Override
-                            public void onResponse(LoginReciver response) {
-                                if (response.getCode() == 200) {
-                                    Login login = response.getInfo();
-                                    token = login.getToken();
-                                } else {
-                                    tokenStartTime = oldTIme;
-                                }
-                                tokenRefreshing.set(false);
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        tokenStartTime = oldTIme;
-                    }
-                }) {
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> map = new HashMap<String, String>();
-                        map.put("account", account);
-                        map.put("password", password);
-                        return map;
-                    }
-                };
-
-        VolleyQueueSingleton.getInstance(mContext).addToRequestQueue(request);*/
-
     }
 
     @Override
@@ -119,12 +91,14 @@ public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
     public void onLoginFailure(int errorCode, String errorMessage) {
         tokenStartTime = oldTIme;
         tokenRefreshing.set(false);
+        Logger.show(TAG, errorMessage + errorCode);
     }
 
     @Override
     public void onLoginError(Throwable error) {
         tokenStartTime = oldTIme;
         tokenRefreshing.set(false);
+        Logger.show(TAG, error.getMessage(), Log.ERROR);
 
     }
 }

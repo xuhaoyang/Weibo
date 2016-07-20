@@ -1,6 +1,8 @@
 package com.xhy.weibo.entity;
 
 
+import com.xhy.weibo.model.Login;
+
 /**
  * Created by xuhaoyang on 16/5/19.
  */

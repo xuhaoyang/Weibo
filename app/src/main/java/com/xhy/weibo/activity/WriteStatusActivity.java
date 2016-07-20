@@ -42,7 +42,7 @@ import com.xhy.weibo.entity.Comment;
 import com.xhy.weibo.entity.NormalInfo;
 import com.xhy.weibo.entity.Picture;
 import com.xhy.weibo.entity.PictureReciver;
-import com.xhy.weibo.entity.Status;
+import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.ImageUpload;
 import com.xhy.weibo.network.NetParams;

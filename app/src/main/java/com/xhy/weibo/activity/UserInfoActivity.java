@@ -2,18 +2,14 @@ package com.xhy.weibo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -29,7 +25,8 @@ import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.entity.NormalInfo;
-import com.xhy.weibo.entity.Status;
+import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.model.Status;
 import com.xhy.weibo.entity.StatusReciver;
 import com.xhy.weibo.entity.User;
 import com.xhy.weibo.entity.UserReciver;
@@ -50,7 +47,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * Created by xuhaoyang on 16/5/21.
  */
-public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOffsetChangedListener {
+public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOffsetChangedListener, StatusLogic.GetStatusList {
 
 
     public static final String USER_ID = "UID";
@@ -131,9 +128,9 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
                     tv_weibo_count.setText(user.getWeibo() + "");
                     setImage(profile_image, URLs.AVATAR_IMG_URL + user.getFace());
                     uid = user.getUid();
-                    if(user.getUid()==CommonConstants.USER_ID){
+                    if (user.getUid() == CommonConstants.USER_ID) {
                         btnGZ.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         btnGZ.setVisibility(View.VISIBLE);
                     }
                     switch (user.getFollowed()) {
@@ -325,61 +322,106 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
     }
 
     private void LoadData() {
-        GsonRequest<StatusReciver> request = new GsonRequest<StatusReciver>(Request.Method.POST,
-                URLs.WEIBO_LIST,
-                StatusReciver.class, null, new Response.Listener<StatusReciver>() {
-            @Override
-            public void onResponse(StatusReciver response) {
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (statuses != null) {
-                        if (currPage == 1) {
-                            statuses.clear();
-                            statuses.addAll(response.getInfo());
-                        } else {
-                            //要判断是否有重复的
-                            for (Status s : response.getInfo()) {
-                                if (!statuses.contains(s)) {
-                                    statuses.add(s);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        statuses = response.getInfo();
-//                        updateRecyclerView();
-                    }
-                    statusAdpater.notifyDataSetChanged();
-                } else {
-                    //错误信息处理
-                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (statusAdpater != null) {
-                    statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
-                }
-                isLoading = false;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("uid", uid + "");
-                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-                map.put("page", currPage + "");
-                map.put("type", "1");
-                return map;
-            }
-        };
 
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
 
+        StatusLogic.getStatusList(this, CommonConstants.USER_ID, currPage,
+                CommonConstants.ACCESS_TOKEN.getToken(), null, 1, this);
+
+//        GsonRequest<StatusReciver> request = new GsonRequest<StatusReciver>(Request.Method.POST,
+//                URLs.WEIBO_LIST,
+//                StatusReciver.class, null, new Response.Listener<StatusReciver>() {
+//            @Override
+//            public void onResponse(StatusReciver response) {
+//                if (response.getCode() == 200) {
+//                    totalPage = response.getTotalPage();
+//                    if (statuses != null) {
+//                        if (currPage == 1) {
+//                            statuses.clear();
+//                            statuses.addAll(response.getInfo());
+//                        } else {
+//                            //要判断是否有重复的
+//                            for (Status s : response.getInfo()) {
+//                                if (!statuses.contains(s)) {
+//                                    statuses.add(s);
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        //第一次获取到数据
+//                        statuses = response.getInfo();
+////                        updateRecyclerView();
+//                    }
+//                    statusAdpater.notifyDataSetChanged();
+//                } else {
+//                    //错误信息处理
+//                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+//                }
+//                mSwipeRefreshLayout.setRefreshing(false);
+//                if (statusAdpater != null) {
+//                    statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
+//                }
+//                isLoading = false;
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                isLoading = false;
+//            }
+//        }) {
+//            @Override
+//            protected Map<String, String> getParams() throws AuthFailureError {
+//                Map<String, String> map = new HashMap<String, String>();
+//                map.put("uid", uid + "");
+//                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
+//                map.put("page", currPage + "");
+//                map.put("type", "1");
+//                return map;
+//            }
+//        };
+//
+//        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+
+    }
+
+    private void stopRefresh() {
+        mSwipeRefreshLayout.setRefreshing(false);
+        if (statusAdpater != null) {
+            statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
+        }
+        isLoading = false;
+    }
+
+    @Override
+    public void onStatusListSuccecc(List<Status> statuses, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.statuses.clear();
+            this.statuses.addAll(statuses);
+            statusAdpater.setLastAnimatedPosition(5);
+        } else {
+            //要判断是否有重复的
+            for (Status s : statuses) {
+                if (!this.statuses.contains(s)) {
+                    this.statuses.add(s);
+                }
+            }
+        }
+        statusAdpater.notifyDataSetChanged();
+        stopRefresh();
+    }
+
+    @Override
+    public void onStatusListFailure(String message) {
+        showSnackbar(message);
+        stopRefresh();
+    }
+
+    @Override
+    public void onStatusListError(Throwable t) {
+        showLog(t.getMessage());
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -401,4 +443,13 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
     public void setImage(ImageView view, String url) {
         Glide.with(view.getContext()).load(url).error(R.drawable.user_avatar).fitCenter().into(view);
     }
+
+    private void showSnackbar(String msg) {
+        showSnackbar(msg, Snackbar.LENGTH_SHORT);
+    }
+
+    private void showSnackbar(String msg, int length) {
+        Snackbar.make(mCoordinatorLayout, msg, length).show();
+    }
+
 }

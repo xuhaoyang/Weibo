@@ -1,6 +1,4 @@
-package com.xhy.weibo.entity;
-
-import com.google.gson.annotations.SerializedName;
+package com.xhy.weibo.model;
 
 import java.io.Serializable;
 

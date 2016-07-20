@@ -31,7 +31,7 @@ import com.xhy.weibo.activity.fragment.KeepFragment;
 import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.entity.NormalInfo;
-import com.xhy.weibo.entity.Status;
+import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.NetParams;
 import com.xhy.weibo.network.URLs;

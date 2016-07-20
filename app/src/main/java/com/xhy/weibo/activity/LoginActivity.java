@@ -30,25 +30,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.R;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.constants.AccessToken;
+import com.xhy.weibo.AccessToken;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
-import com.xhy.weibo.entity.Login;
-import com.xhy.weibo.entity.LoginReciver;
+import com.xhy.weibo.model.Login;
 import com.xhy.weibo.logic.UserLoginLogic;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

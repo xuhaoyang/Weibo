@@ -1,7 +1,6 @@
 package com.xhy.weibo.activity;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,11 +28,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.xhy.weibo.IMessageListener;
@@ -44,19 +40,19 @@ import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
-import com.xhy.weibo.entity.Login;
-import com.xhy.weibo.entity.StatusGroup;
+import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.model.StatusGroup;
 import com.xhy.weibo.entity.StatusGroupReciver;
 import com.xhy.weibo.entity.StatusReciver;
-import com.xhy.weibo.entity.Status;
+import com.xhy.weibo.model.Status;
 import com.xhy.weibo.entity.User;
 import com.xhy.weibo.entity.UserReciver;
 import com.xhy.weibo.network.CustomRequest;
-import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.network.VolleyQueueSingleton;
 import com.xhy.weibo.service.MessageService;
 import com.xhy.weibo.utils.ImageUtils;
+import com.xhy.weibo.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,7 +63,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ServiceConnection {
+        implements NavigationView.OnNavigationItemSelectedListener, ServiceConnection, StatusLogic.GetStatusGroupCallBack, StatusLogic.GetStatusList {
 
     public static final int REQUEST_CODE_WRITE_FORWARD = 2;
     public static final int REQUEST_CODE_WRITE_STATUS = 3;
@@ -102,7 +98,6 @@ public class MainActivity extends BaseActivity
 
     List<Status> statuses = new ArrayList<Status>();
     private ActionBarDrawerToggle toggle;
-    private List<StatusGroup> statusGroups;
     private String gid = "";
     private StatusAdpater statusAdpater = new StatusAdpater(statuses, this);
     private boolean isLoading;
@@ -117,6 +112,7 @@ public class MainActivity extends BaseActivity
     private SQLiteDatabase db;
     private UserDB userDB;
     private IMessageServiceRemoteBinder binder;
+    private Menu menu;
 
 
     @Override
@@ -212,85 +208,78 @@ public class MainActivity extends BaseActivity
      * 记得做缓存
      */
     private void initNavigationMenu() {
-        final Menu menu = navigationView.getMenu();
+        menu = navigationView.getMenu();
         //參數1:群組id, 參數2:itemId, 參數3:item順序, 參數4:item名稱
         menu.add(GROUP, ALL_ITEMID, ALL_ITEMID, "全部");
 
-        final Map<String, String> map = new HashMap<String, String>();
-        map.put("uid", CommonConstants.USER_ID + "");
-        map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-        final Response.Listener<StatusGroupReciver> statusGroupReciverListener = new Response.Listener<StatusGroupReciver>() {
-            @Override
-            public void onResponse(StatusGroupReciver response) {
-                showLog("-->" + response.toString());
-                if (response.getCode() == 200) {
-                    statusGroups = response.getInfo();
-                    for (StatusGroup sg : statusGroups) {
-                        menu.add(GROUP, sg.getId(), sg.getId(), sg.getName());
-                    }
-                }
-            }
-        };
-        CustomRequest request = new CustomRequest.RequestBuilder().post().url(URLs.WEIBO_GET_GROUP)
-                .clazz(StatusGroupReciver.class).params(map).
-                        successListener(statusGroupReciverListener).build();
 
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request, "StatusGroupReciver");
+        StatusLogic.getStatusGroup(this, CommonConstants.USER_ID, CommonConstants.ACCESS_TOKEN.getToken(), this);
 
+    }
+
+    @Override
+    public void onGroupSuccess(List<StatusGroup> statusGroups) {
+        for (StatusGroup sg : statusGroups) {
+            menu.add(GROUP, sg.getId(), sg.getId(), sg.getName());
+        }
+    }
+
+    @Override
+    public void onGroupFailure(String message) {
+        showSnackbar(message);
+        showLog(message);
+    }
+
+    @Override
+    public void onGroupError(Throwable t) {
+        showLog(t.getMessage());
     }
 
     private void LoadData() {
 
-
-        Map<String, String> dataMap = new HashMap<String, String>();
-        dataMap.put("uid", CommonConstants.USER_ID + "");
-        dataMap.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-        dataMap.put("page", currPage + "");
-        if (!TextUtils.isEmpty(gid)) {
-            dataMap.put("gid", gid);
-        }
-
-
-        CustomRequest customRequest = new CustomRequest.RequestBuilder().post().url(URLs.WEIBO_LIST)
-                .clazz(StatusReciver.class).params(dataMap).successListener(statusReciverListener)
-                .errorListener(errorListener).build();
-
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(customRequest, "status");
-
+        StatusLogic.getStatusList(this, CommonConstants.USER_ID, currPage, CommonConstants.ACCESS_TOKEN.getToken(), gid, 0, this);
     }
 
-    private Response.Listener<StatusReciver> statusReciverListener = new Response.Listener<StatusReciver>() {
-        @Override
-        public void onResponse(StatusReciver response) {
-            if (response.getCode() == 200) {
-                totalPage = response.getTotalPage();
-                if (currPage == 1) {
-                    statuses.clear();
-                    statuses.addAll(response.getInfo());
-                    statusAdpater.setLastAnimatedPosition(5);
-                } else {
-                    //要判断是否有重复的
-                    for (Status s : response.getInfo()) {
-                        if (!statuses.contains(s)) {
-                            statuses.add(s);
-                        }
-                    }
+    @Override
+    public void onStatusListSuccecc(List<Status> statuses, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.statuses.clear();
+            this.statuses.addAll(statuses);
+            statusAdpater.setLastAnimatedPosition(5);
+        } else {
+            //要判断是否有重复的
+            for (Status s : statuses) {
+                if (!this.statuses.contains(s)) {
+                    this.statuses.add(s);
                 }
-                statusAdpater.notifyDataSetChanged();
-                showLog("-->statuses size:" + statuses.size());
-                showLog("-->statusAdpater size:" + statusAdpater.getItemCount());
-            } else {
-                //错误信息处理
-                Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
-            mSwipeRefreshLayout.setRefreshing(false);
-            if (statusAdpater != null) {
-                statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
-            }
-            isLoading = false;
         }
-    };
+        statusAdpater.notifyDataSetChanged();
+        stopRefresh();
+    }
+
+    @Override
+    public void onStatusListFailure(String message) {
+        showSnackbar(message);
+        stopRefresh();
+    }
+
+    @Override
+    public void onStatusListError(Throwable t) {
+        showLog(t.getMessage());
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void stopRefresh() {
+        mSwipeRefreshLayout.setRefreshing(false);
+        if (statusAdpater != null) {
+            statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
+        }
+        isLoading = false;
+    }
+
 
     private Response.Listener<UserReciver> userReciverListener = new Response.Listener<UserReciver>() {
         @Override
@@ -313,14 +302,6 @@ public class MainActivity extends BaseActivity
         }
     };
 
-    private Response.ErrorListener errorListener = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            MainActivity.this.showLog("-->" + error.toString());
-            isLoading = false;
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
-    };
 
     private Response.ErrorListener showLogErrorListener = new Response.ErrorListener() {
         @Override
@@ -531,7 +512,6 @@ public class MainActivity extends BaseActivity
                 gid = id + "";
                 statuses.clear();
                 statusAdpater.notifyDataSetChanged();
-                showLog("--> currPage" + currPage);
                 mSwipeRefreshLayout.post(new Runnable() {
                     @Override
                     public void run() {
@@ -584,11 +564,17 @@ public class MainActivity extends BaseActivity
     protected void onStop() {
         super.onStop();
         showLog("onStop");
-//        try {
-//            binder.setMessageListener(null);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
-//        unbindService(this);
+
     }
+
+
+    private void showSnackbar(String msg) {
+        showSnackbar(msg, Snackbar.LENGTH_SHORT);
+    }
+
+    private void showSnackbar(String msg, int length) {
+        Snackbar.make(mCoordinatorLayout, msg, length).show();
+    }
+
+
 }

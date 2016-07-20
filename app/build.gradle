@@ -49,8 +49,12 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile "com.squareup.retrofit2:converter-gson:2.0.2"
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
 
     compile 'com.android.support:multidex:1.0.0'
 
+
+    //common
+    compile 'com.bobomee.android:common:1.3.3'
 }

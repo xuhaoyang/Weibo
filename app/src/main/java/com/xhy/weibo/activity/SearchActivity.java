@@ -10,16 +10,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.xhy.weibo.R;
-import com.xhy.weibo.activity.fragment.CommentFragment;
-import com.xhy.weibo.activity.fragment.MaterialUpConceptFakePage;
 import com.xhy.weibo.activity.fragment.SearchStatusFragment;
 import com.xhy.weibo.activity.fragment.SearchUsersFragment;
-import com.xhy.weibo.entity.Status;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

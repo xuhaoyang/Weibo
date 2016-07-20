@@ -3,8 +3,8 @@ package com.xhy.weibo.logic;
 import android.content.Context;
 
 import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.entity.Login;
-import com.xhy.weibo.entity.LoginReciver;
+import com.xhy.weibo.model.Login;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.utils.Logger;
 
 import retrofit2.Call;
@@ -18,17 +18,17 @@ public class UserLoginLogic {
     public static final String TAG = UserLoginLogic.class.getSimpleName();
 
     public static void login(final Context context, final String account, final String password, final LoginCallback callback) {
-        Call<LoginReciver> callLogin = ApiClient.getApi().login(account, password);
-        callLogin.enqueue(new Callback<LoginReciver>() {
+        Call<Result<Login>> callLogin = ApiClient.getApi().login(account, password);
+        callLogin.enqueue(new Callback<Result<Login>>() {
             @Override
-            public void onResponse(Call<LoginReciver> call, Response<LoginReciver> response) {
+            public void onResponse(Call<Result<Login>> call, Response<Result<Login>> response) {
                 if (response.isSuccessful()) {
-                    LoginReciver loginReciver = response.body();
-                    if (loginReciver.getCode() == 200) {
-                        Login login = loginReciver.getInfo();
+                    Result<Login> loginResult = response.body();
+                    if (loginResult.isSuccess()) {
+                        Login login = loginResult.getInfo();
                         callback.onLoginSuccess(login);
                     } else {
-                        callback.onLoginFailure(loginReciver.getCode(), loginReciver.getError());
+                        callback.onLoginFailure(loginResult.getCode(), loginResult.getMsg());
                     }
                 } else {
                     Logger.show(TAG, "ErrorCode:" + response.code());
@@ -37,7 +37,7 @@ public class UserLoginLogic {
             }
 
             @Override
-            public void onFailure(Call<LoginReciver> call, Throwable t) {
+            public void onFailure(Call<Result<Login>> call, Throwable t) {
                 callback.onLoginError(t);
             }
         });

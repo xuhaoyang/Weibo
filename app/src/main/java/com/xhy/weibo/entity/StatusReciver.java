@@ -1,5 +1,7 @@
 package com.xhy.weibo.entity;
 
+import com.xhy.weibo.model.Status;
+
 import java.util.List;
 
 /**

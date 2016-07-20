@@ -34,7 +34,7 @@ import com.xhy.weibo.entity.NormalInfo;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.NetParams;
 import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.entity.Status;
+import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.VolleyQueueSingleton;
 import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.DisplayUtils;

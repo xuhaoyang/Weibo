@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.SearchActivity;
 import com.xhy.weibo.entity.Hot;
-import com.xhy.weibo.entity.StatusGroup;
 
 import java.util.List;
 

@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,8 +21,7 @@ import com.android.volley.VolleyError;
 import com.xhy.weibo.IMessageListener;
 import com.xhy.weibo.IMessageServiceRemoteBinder;
 import com.xhy.weibo.R;
-import com.xhy.weibo.activity.MainActivity;
-import com.xhy.weibo.constants.AccessToken;
+import com.xhy.weibo.AccessToken;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.entity.NotifyInfo;
 import com.xhy.weibo.entity.NotifyReciver;
@@ -33,11 +31,12 @@ import com.xhy.weibo.network.VolleyQueueSingleton;
 import com.xhy.weibo.receiver.NotificationReceiver;
 import com.xhy.weibo.utils.Logger;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MessageService extends Service {
+
+    private static final String TAG = MessageService.class.getSimpleName();
 
     //获取消息线程
     private MessageThread messageThread = null;
@@ -127,6 +126,12 @@ public class MessageService extends Service {
     }
 
     @Override
+    public void onDestroy() {
+        Logger.show(TAG, "Destroy!!");
+        super.onDestroy();
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         CommonConstants.account = intent.getStringExtra("ACCOUNT");
@@ -198,8 +203,8 @@ public class MessageService extends Service {
                         data.putExtra(CommonConstants.KEEP_TOKEN, CommonConstants.ACCESS_TOKEN.getToken());
                         data.putExtra(CommonConstants.KEEP_TOKEN_START_TIME, CommonConstants.ACCESS_TOKEN.getTokenStartTime());
                         //传递账户id比对是否是帐号
-                        data.putExtra(CommonConstants.KEEP_TOKEN_ACCOUNT,CommonConstants.account);
-                        data.putExtra(CommonConstants.KEEP_TOKEN_USER_ID,CommonConstants.account);
+                        data.putExtra(CommonConstants.KEEP_TOKEN_ACCOUNT, CommonConstants.account);
+                        data.putExtra(CommonConstants.KEEP_TOKEN_USER_ID, CommonConstants.account);
                         sendBroadcast(data);
 
                         GsonRequest<NotifyReciver> request = new GsonRequest<NotifyReciver>(Request.Method.POST,

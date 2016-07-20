@@ -89,6 +89,11 @@
                 <action android:name="com.xhy.weibo.UPDATE_OTHER_PROCESS" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".receiver.NetWorkReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".activity.LoginActivity"
