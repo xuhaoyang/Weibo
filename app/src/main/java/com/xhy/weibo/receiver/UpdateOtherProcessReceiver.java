@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.constants.CommonConstants;
 
 /**
@@ -16,7 +17,7 @@ public class UpdateOtherProcessReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        CommonConstants.isNotify = intent.getBooleanExtra(CommonConstants.KEEP_SETTING_ISNOTIFY, false);
+        CommonConstants.isNotify = intent.getBooleanExtra(AppConfig.KEEP_SETTING_ISNOTIFY, false);
 
     }
 }

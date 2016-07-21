@@ -30,8 +30,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.IMessageListener;
 import com.xhy.weibo.IMessageServiceRemoteBinder;
 import com.xhy.weibo.R;
@@ -41,29 +40,22 @@ import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
 import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.StatusGroup;
-import com.xhy.weibo.entity.StatusGroupReciver;
-import com.xhy.weibo.entity.StatusReciver;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.entity.User;
-import com.xhy.weibo.entity.UserReciver;
-import com.xhy.weibo.network.CustomRequest;
+import com.xhy.weibo.model.User;
 import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
 import com.xhy.weibo.service.MessageService;
 import com.xhy.weibo.utils.ImageUtils;
-import com.xhy.weibo.utils.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ServiceConnection, StatusLogic.GetStatusGroupCallBack, StatusLogic.GetStatusList {
+        implements NavigationView.OnNavigationItemSelectedListener, ServiceConnection, StatusLogic.GetStatusGroupCallBack, StatusLogic.GetStatusListCallBack, UserLoginLogic.GetUserinfoCallBack {
 
     public static final int REQUEST_CODE_WRITE_FORWARD = 2;
     public static final int REQUEST_CODE_WRITE_STATUS = 3;
@@ -124,6 +116,13 @@ public class MainActivity extends BaseActivity
         init();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initUserinfo();
+
+    }
+
     private void init() {
         initView();
         initNavigationMenu();
@@ -139,13 +138,11 @@ public class MainActivity extends BaseActivity
 
         //启动推送
         Intent intent = new Intent(this, MessageService.class);
-        intent.putExtra("ACCOUNT", CommonConstants.account);
-        intent.putExtra("PASSWORD", CommonConstants.password);
-        intent.putExtra("USERID", CommonConstants.USER_ID + "");
-        intent.putExtra("TOKEN", CommonConstants.ACCESS_TOKEN.getToken());
+//        intent.putExtra("ACCOUNT", AppConfig.getAccount());
+//        intent.putExtra("PASSWORD", AppConfig.getPassword());
+//        intent.putExtra("USERID", AppConfig.getUserId());
+        intent.putExtra("TOKEN", AppConfig.ACCESS_TOKEN.getToken());
 
-//        Intent i = new Intent();
-//        i.setComponent(new ComponentName())
         startService(intent);
     }
 
@@ -159,24 +156,6 @@ public class MainActivity extends BaseActivity
         headerView_iv_avatar = (ImageView) headerView.findViewById(R.id.iv_avatar);
         headerView_tv_username = (TextView) headerView.findViewById(R.id.username);
 
-        initDB();
-        List<User> users = userDB.QueryUsers(db, "id=?", new String[]{CommonConstants.USER_ID + ""});
-        dbManager.closeDatabase();
-        if (!users.isEmpty()) {
-            long time = System.currentTimeMillis() - users.get(0).getUptime();
-            //大于半天刷新下缓存的用户数据
-            if (time > 43200000 || TextUtils.isEmpty(users.get(0).getUsername())) {
-                initUserInfo();
-            } else {
-                String url = URLs.AVATAR_IMG_URL + users.get(0).getFace();
-                ImageUtils.setImage(headerView_iv_avatar, url);
-                headerView_tv_username.setText(users.get(0).getUsername());
-            }
-        } else {
-            initUserInfo();
-        }
-
-
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -184,17 +163,55 @@ public class MainActivity extends BaseActivity
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
     }
 
-    private void initUserInfo() {
-        Map<String, String> map = new HashMap<>();
-        map.put("uid", CommonConstants.USER_ID + "");
-        map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-
-        CustomRequest request = new CustomRequest.RequestBuilder().url(URLs.WEIBO_GET_USERINFO)
-                .post().clazz(UserReciver.class).params(map).successListener(userReciverListener)
-                .errorListener(showLogErrorListener).build();
-
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request, "userinfo");
+    private void initUserinfo(){
+        initDB();
+        List<User> users = userDB.QueryUsers(db, "id=?", new String[]{AppConfig.getUserId() + ""});
+        dbManager.closeDatabase();
+        if (!users.isEmpty()) {
+            long time = System.currentTimeMillis() - users.get(0).getUptime();
+            //大于半天刷新下缓存的用户数据
+            if (time > 43200000 || TextUtils.isEmpty(users.get(0).getUsername())) {
+                UpdataUserinfo();
+            } else {
+                String url = URLs.AVATAR_IMG_URL + users.get(0).getFace();
+                ImageUtils.setImage(headerView_iv_avatar, url);
+                headerView_tv_username.setText(users.get(0).getUsername());
+            }
+        } else {
+            UpdataUserinfo();
+        }
     }
+    private void UpdataUserinfo() {
+
+        UserLoginLogic.getUserinfo(this, AppConfig.getUserId(), null, AppConfig.ACCESS_TOKEN.getToken(), this);
+
+    }
+
+    @Override
+    public void onUserInfoSuccess(User user) {
+        initDB();
+        List<User> users = userDB.QueryUsers(db, "id=?", new String[]{user.getUid() + ""});
+        if (!users.isEmpty()) {
+            userDB.updateUser(db, user);
+        } else {
+            userDB.insertUser(db, user);
+        }
+        String url = URLs.AVATAR_IMG_URL + user.getFace();
+        ImageUtils.setImage(headerView_iv_avatar, url);
+        headerView_tv_username.setText(user.getUsername());
+        dbManager.closeDatabase();
+    }
+
+    @Override
+    public void onUserInfoFailure(int errorCode, String errorMessage) {
+        showSnackbar("错误：" + errorCode + "," + errorMessage);
+    }
+
+    @Override
+    public void onUserInfoError(Throwable error) {
+        showSnackbar("获取用户信息失败");
+    }
+
 
     private void initDB() {
         //获取数据
@@ -213,7 +230,7 @@ public class MainActivity extends BaseActivity
         menu.add(GROUP, ALL_ITEMID, ALL_ITEMID, "全部");
 
 
-        StatusLogic.getStatusGroup(this, CommonConstants.USER_ID, CommonConstants.ACCESS_TOKEN.getToken(), this);
+        StatusLogic.getStatusGroup(this, AppConfig.getUserId(), AppConfig.ACCESS_TOKEN.getToken(), this);
 
     }
 
@@ -237,11 +254,11 @@ public class MainActivity extends BaseActivity
 
     private void LoadData() {
 
-        StatusLogic.getStatusList(this, CommonConstants.USER_ID, currPage, CommonConstants.ACCESS_TOKEN.getToken(), gid, 0, this);
+        StatusLogic.getStatusList(this, AppConfig.getUserId(), currPage, AppConfig.ACCESS_TOKEN.getToken(), gid, 0, this);
     }
 
     @Override
-    public void onStatusListSuccecc(List<Status> statuses, int totalPage) {
+    public void onStatusListSuccess(List<Status> statuses, int totalPage) {
         this.totalPage = totalPage;
         if (currPage == 1) {
             this.statuses.clear();
@@ -280,35 +297,6 @@ public class MainActivity extends BaseActivity
         isLoading = false;
     }
 
-
-    private Response.Listener<UserReciver> userReciverListener = new Response.Listener<UserReciver>() {
-        @Override
-        public void onResponse(UserReciver response) {
-            showLog(response.toString());
-            if (response.getCode() == 200) {
-                User user = response.getInfo();
-                initDB();
-                List<User> users = userDB.QueryUsers(db, "id=?", new String[]{user.getUid() + ""});
-                if (!users.isEmpty()) {
-                    userDB.updateUser(db, user);
-                } else {
-                    userDB.insertUser(db, user);
-                }
-                String url = URLs.AVATAR_IMG_URL + user.getFace();
-                ImageUtils.setImage(headerView_iv_avatar, url);
-                headerView_tv_username.setText(user.getUsername());
-                dbManager.closeDatabase();
-            }
-        }
-    };
-
-
-    private Response.ErrorListener showLogErrorListener = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            showLog(error.toString());
-        }
-    };
 
     private void initListener() {
         navigationView.setNavigationItemSelectedListener(this);
@@ -382,7 +370,7 @@ public class MainActivity extends BaseActivity
             @Override
             public void onClick(View v) {
                 Intent data = new Intent(MainActivity.this, UserInfoActivity.class);
-                data.putExtra(UserInfoActivity.USER_ID, CommonConstants.USER_ID);
+                data.putExtra(UserInfoActivity.USER_ID, AppConfig.getUserId());
                 startActivity(data);
             }
         });
@@ -529,22 +517,21 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        binder = IMessageServiceRemoteBinder.Stub.asInterface(service);
-        try {
-            binder.setMessageListener(new IMessageListener.Stub() {
-                @Override
-                public void setAccessToken(String token, long time) throws RemoteException {
-                    CommonConstants.ACCESS_TOKEN.setToken(token);
-                    CommonConstants.ACCESS_TOKEN.setTokenStartTime(time);
-                    showLog("-->更新TOKEN成功");
-                }
-
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        showLog("binder is " + binder.toString());
-        showLog("Service Connected");
+//        binder = IMessageServiceRemoteBinder.Stub.asInterface(service);
+//        try {
+//            binder.setMessageListener(new IMessageListener.Stub() {
+//                @Override
+//                public void setAccessToken(String token, long time) throws RemoteException {
+//                    AppConfig.ACCESS_TOKEN.setToken(token);
+//                    AppConfig.ACCESS_TOKEN.setTokenStartTime(time);
+//                    showLog("-->更新TOKEN成功");
+//                }
+//
+//            });
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//        showLog("Service Connected");
     }
 
     @Override

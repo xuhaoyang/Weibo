@@ -18,7 +18,7 @@ import com.xhy.weibo.utils.ToastUtils;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    protected String TAG;
+    protected String TAG=BaseActivity.class.getSimpleName();
     protected BaseApplication application;
     protected SharedPreferences sp;
 
@@ -26,8 +26,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TAG = this.getClass().getSimpleName();
-
         /**
          * 竖屏
          */

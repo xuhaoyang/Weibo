@@ -14,6 +14,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseFragment;
@@ -173,9 +174,9 @@ public class NotifyStatusFragment extends BaseFragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
-                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
+                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
                 map.put("page", currPage + "");
-                map.put("uid", CommonConstants.USER_ID + "");
+                map.put("uid", AppConfig.getUserId() + "");
 
                 return map;
             }

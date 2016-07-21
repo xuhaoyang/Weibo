@@ -32,6 +32,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.AccessToken;
@@ -229,9 +230,9 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
                                 dbManager.openDatabase();
                                 SQLiteDatabase db = dbManager.getDatabase();
                                 if (userDB.insertLogin(db, login)) {
-                                    CommonConstants.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
-                                    CommonConstants.ACCESS_TOKEN.setToken(login.getToken());
-                                    CommonConstants.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
+                                    AppConfig.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
+                                    AppConfig.ACCESS_TOKEN.setToken(login.getToken());
+                                    AppConfig.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
                                     intent2Activity(InitActivity.class);
                                     finish();
                                 } else {
@@ -281,9 +282,9 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
         dbManager.openDatabase();
         SQLiteDatabase db = dbManager.getDatabase();
         if (userDB.insertLogin(db, login)) {
-            CommonConstants.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
-            CommonConstants.ACCESS_TOKEN.setToken(login.getToken());
-            CommonConstants.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
+            AppConfig.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
+            AppConfig.ACCESS_TOKEN.setToken(login.getToken());
+            AppConfig.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
             intent2Activity(InitActivity.class);
             finish();
         } else {

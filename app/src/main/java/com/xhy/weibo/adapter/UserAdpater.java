@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.UserInfoActivity;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.entity.User;
+import com.xhy.weibo.model.User;
 import com.xhy.weibo.network.URLs;
 
 import java.util.List;

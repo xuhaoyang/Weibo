@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,24 +21,30 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.fragment.CommentFragment;
 import com.xhy.weibo.activity.fragment.KeepFragment;
 import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.entity.NormalInfo;
+import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.NetParams;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.network.VolleyQueueSingleton;
 import com.xhy.weibo.utils.DateUtils;
+import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.StringUtils;
+import com.xhy.weibo.utils.ToastUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -282,44 +289,48 @@ public class StatusDetailActivity extends BaseActivity {
                 break;
             case R.id.action_keep:
                 if (status.isKeep()) {
-                    GsonRequest<NormalInfo> request = new GsonRequest<NormalInfo>(Request.Method.GET,
-                            NetParams.delkeepWeibo(CommonConstants.USER_ID, status.getId(), CommonConstants.ACCESS_TOKEN.getToken()), NormalInfo.class, null,
-                            new Response.Listener<NormalInfo>() {
+
+                    StatusLogic.delKeepStatus(this, AppConfig.getUserId(), status.getId(),
+                            AppConfig.ACCESS_TOKEN.getToken(), new StatusLogic.DelKeepStatusCallBack() {
                                 @Override
-                                public void onResponse(NormalInfo response) {
-                                    if (response.getCode() == 200) {
-                                        status.setKeep(false);
-                                        status.setKeep(status.getKeep() - 1);
-                                        showToast(response.getInfo());
-                                    }
+                                public void onDelKeepSuccess(Result result) {
+                                    status.setKeep(false);
+                                    status.setKeep(status.getKeep() - 1);
+                                    showToast(result.getMsg());
                                 }
-                            }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
 
-                        }
-                    });
+                                @Override
+                                public void onDelKeepFailure(String message) {
+                                    showToast(message);
+                                }
 
-                    VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+                                @Override
+                                public void onDelKeepError(Throwable t) {
+                                    Logger.show(TAG, t.getMessage(), Log.ERROR);
+                                }
+                            });
+
                 } else {
-                    GsonRequest<NormalInfo> request = new GsonRequest<NormalInfo>(Request.Method.GET,
-                            NetParams.keepWeibo(CommonConstants.USER_ID, status.getId(), CommonConstants.ACCESS_TOKEN.getToken()), NormalInfo.class, null,
-                            new Response.Listener<NormalInfo>() {
+                    StatusLogic.addKeepStatus(this, AppConfig.getUserId(), status.getId(),
+                            AppConfig.ACCESS_TOKEN.getToken(), new StatusLogic.AddKeepStatusCallBack() {
                                 @Override
-                                public void onResponse(NormalInfo response) {
-                                    if (response.getCode() == 200) {
-                                        status.setKeep(true);
-                                        status.setKeep(status.getKeep() + 1);
-                                        showToast(response.getInfo());
-                                    }
+                                public void onAddKeepSuccess(Result result) {
+                                    status.setKeep(true);
+                                    status.setKeep(status.getKeep() + 1);
+                                    showToast(result.getMsg());
                                 }
-                            }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
 
-                        }
-                    });
-                    VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+                                @Override
+                                public void onAddKeepFailure(String message) {
+                                    showToast(message);
+                                }
+
+                                @Override
+                                public void onAddKeepError(Throwable t) {
+                                    Logger.show(TAG, t.getMessage(), Log.ERROR);
+                                }
+                            });
+
                 }
                 break;
 

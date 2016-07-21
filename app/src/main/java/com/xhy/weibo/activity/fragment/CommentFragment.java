@@ -16,11 +16,11 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.StatusDetailActivity;
 import com.xhy.weibo.adapter.CommentAdpater;
 import com.xhy.weibo.base.BaseFragment;
-import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.entity.Comment;
 import com.xhy.weibo.entity.CommentReciver;
 import com.xhy.weibo.network.GsonRequest;
@@ -131,7 +131,7 @@ public class CommentFragment extends BaseFragment {
     private void LoadData(final int page, int wid) {
         Logger.show("当前页", "当前页:" + page);
         GsonRequest<CommentReciver> request = new GsonRequest<CommentReciver>(Request.Method.GET,
-                NetParams.getComment(wid, page, CommonConstants.ACCESS_TOKEN.getToken()), CommentReciver.class, null, new Response.Listener<CommentReciver>() {
+                NetParams.getComment(wid, page, AppConfig.ACCESS_TOKEN.getToken()), CommentReciver.class, null, new Response.Listener<CommentReciver>() {
             @Override
             public void onResponse(CommentReciver response) {
                 Logger.show(getClass().getName(), response.toString());

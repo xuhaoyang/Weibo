@@ -1,6 +1,6 @@
 package com.xhy.weibo.entity;
 
-import java.util.List;
+import com.xhy.weibo.model.User;
 
 /**
  * Created by xuhaoyang on 16/5/21.

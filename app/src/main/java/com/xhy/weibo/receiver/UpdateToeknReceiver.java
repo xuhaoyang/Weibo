@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.xhy.weibo.AccessToken;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
@@ -25,13 +26,13 @@ public class UpdateToeknReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String token = intent.getStringExtra(CommonConstants.KEEP_TOKEN);
-        long tokenStartTime = intent.getLongExtra(CommonConstants.KEEP_TOKEN_START_TIME, 0);
+        String token = intent.getStringExtra(AppConfig.KEEP_TOKEN);
+        long tokenStartTime = intent.getLongExtra(AppConfig.KEEP_TOKEN_START_TIME, 0);
         Logger.show(UpdateToeknReceiver.class.getName(), "-->获得Token:" + token);
 
-        if (CommonConstants.ACCESS_TOKEN != null) {
-            CommonConstants.ACCESS_TOKEN.setToken(token);
-            CommonConstants.ACCESS_TOKEN.setTokenStartTime(tokenStartTime);
+        if (AppConfig.ACCESS_TOKEN != null) {
+            AppConfig.ACCESS_TOKEN.setToken(token);
+            AppConfig.ACCESS_TOKEN.setTokenStartTime(tokenStartTime);
         } else {
             initDB(context);
             String selection = "used=?";
@@ -39,12 +40,12 @@ public class UpdateToeknReceiver extends BroadcastReceiver {
             List<Login> logins = userDB.QueryLogin(db, selection, selectionArgs);
             if (!logins.isEmpty()) {
                 Login login = logins.get(0);
-                String account = intent.getStringExtra(CommonConstants.KEEP_TOKEN_ACCOUNT);
-                int user_id = intent.getIntExtra(CommonConstants.KEEP_TOKEN_USER_ID, 0);
+                String account = intent.getStringExtra(AppConfig.KEEP_TOKEN_ACCOUNT);
+                int user_id = intent.getIntExtra(AppConfig.KEEP_TOKEN_USER_ID, 0);
                 if (user_id == login.getId() && account.equals(login.getAccount())) {
-                    CommonConstants.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), login.getPassword(), context);
-                    CommonConstants.ACCESS_TOKEN.setToken(token);
-                    CommonConstants.ACCESS_TOKEN.setTokenStartTime(tokenStartTime);
+                    AppConfig.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), login.getPassword(), context);
+                    AppConfig.ACCESS_TOKEN.setToken(token);
+                    AppConfig.ACCESS_TOKEN.setTokenStartTime(tokenStartTime);
                 }
             }
         }

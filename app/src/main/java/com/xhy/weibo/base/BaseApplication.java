@@ -8,6 +8,7 @@ import android.support.multidex.MultiDexApplication;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.volley.VolleyUrlLoader;
 import com.bumptech.glide.load.model.GlideUrl;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.network.VolleyQueueSingleton;
@@ -27,6 +28,7 @@ public class BaseApplication extends MultiDexApplication {
         super.onCreate();
         getApplicationContext();
         context = getApplicationContext();
+        AppConfig.initialize(this);
 
         Glide.get(this)
                 .register(GlideUrl.class, InputStream.class,
@@ -34,7 +36,6 @@ public class BaseApplication extends MultiDexApplication {
                                 getRequestQueue()));
 
         SharedPreferences preferences = getSharedPreferences("setting", MODE_PRIVATE);
-        CommonConstants.isNotify = preferences.getBoolean("isNotify", true);
         mDBManager = new DBManager(context);
         mDBManager.openDatabase();
         mDBManager.closeDatabase();

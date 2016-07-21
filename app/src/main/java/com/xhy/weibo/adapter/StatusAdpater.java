@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,24 +19,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.KeepStatusActivity;
 import com.xhy.weibo.activity.MainActivity;
-import com.xhy.weibo.activity.UserInfoActivity;
 import com.xhy.weibo.activity.StatusDetailActivity;
+import com.xhy.weibo.activity.UserInfoActivity;
 import com.xhy.weibo.activity.ViewPicActivity;
 import com.xhy.weibo.activity.WriteStatusActivity;
 import com.xhy.weibo.constants.CommonConstants;
-import com.xhy.weibo.entity.NormalInfo;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.NetParams;
-import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.network.VolleyQueueSingleton;
+import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.Logger;
@@ -52,6 +49,7 @@ import butterknife.ButterKnife;
  */
 public class StatusAdpater extends RecyclerView.Adapter {
 
+    private static final String TAG = StatusAdpater.class.getSimpleName();
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FOOTER = 1;
     private List<Status> statuses;
@@ -308,55 +306,55 @@ public class StatusAdpater extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
 
-                    Logger.show("Test", NetParams.delkeepWeibo(status.getUid(), status.getId(), CommonConstants.ACCESS_TOKEN.getToken()));
                     if (status.isKeep()) {
-                        GsonRequest<NormalInfo> request = new GsonRequest<NormalInfo>(Request.Method.GET,
-                                NetParams.delkeepWeibo(CommonConstants.USER_ID, status.getId(), CommonConstants.ACCESS_TOKEN.getToken()), NormalInfo.class, null,
-                                new Response.Listener<NormalInfo>() {
+                        StatusLogic.delKeepStatus(context, AppConfig.getUserId(), status.getId(),
+                                AppConfig.ACCESS_TOKEN.getToken(), new StatusLogic.DelKeepStatusCallBack() {
                                     @Override
-                                    public void onResponse(NormalInfo response) {
-                                        if (response.getCode() == 200) {
-                                            status.setKeep(false);
-                                            status.setKeep(status.getKeep() - 1);
-                                            notifyItemChanged(position);
-                                            //收藏列表刷新
-                                            if (mHandler != null) {
-                                                Message message = new Message();
-                                                message.what = KeepStatusActivity.REFRESH_DATA;
-                                                mHandler.sendMessage(message);
-                                            }
+                                    public void onDelKeepSuccess(Result result) {
+                                        status.setKeep(false);
+                                        status.setKeep(status.getKeep() - 1);
+                                        notifyItemChanged(position);
+                                        ToastUtils.showToast(context, result.getMsg(), Toast.LENGTH_SHORT);
+                                        if (mHandler != null) {
+                                            Message message = new Message();
+                                            message.what = KeepStatusActivity.REFRESH_DATA;
+                                            mHandler.sendMessage(message);
                                         }
                                     }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
 
-                            }
-                        });
+                                    @Override
+                                    public void onDelKeepFailure(String message) {
 
-                        VolleyQueueSingleton.getInstance(context).addToRequestQueue(request);
+                                        ToastUtils.showToast(context, message, Toast.LENGTH_SHORT);
+
+                                    }
+
+                                    @Override
+                                    public void onDelKeepError(Throwable t) {
+                                        Logger.show(TAG, t.getMessage(), Log.ERROR);
+                                    }
+                                });
                     } else {
-                        GsonRequest<NormalInfo> request = new GsonRequest<NormalInfo>(Request.Method.GET,
-                                NetParams.keepWeibo(CommonConstants.USER_ID, status.getId(), CommonConstants.ACCESS_TOKEN.getToken()), NormalInfo.class, null,
-                                new Response.Listener<NormalInfo>() {
+                        StatusLogic.addKeepStatus(context, AppConfig.getUserId(), status.getId(),
+                                AppConfig.ACCESS_TOKEN.getToken(), new StatusLogic.AddKeepStatusCallBack() {
                                     @Override
-                                    public void onResponse(NormalInfo response) {
-                                        if (response.getCode() == 200) {
-                                            status.setKeep(true);
-                                            status.setKeep(status.getKeep() + 1);
-                                            notifyItemChanged(position);
-                                            ToastUtils.showToast(context, response.getInfo(), Toast.LENGTH_SHORT);
-
-                                        }
+                                    public void onAddKeepSuccess(Result result) {
+                                        status.setKeep(true);
+                                        status.setKeep(status.getKeep() + 1);
+                                        notifyItemChanged(position);
+                                        ToastUtils.showToast(context, result.getMsg(), Toast.LENGTH_SHORT);
                                     }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
 
-                            }
-                        });
+                                    @Override
+                                    public void onAddKeepFailure(String message) {
+                                        ToastUtils.showToast(context, message, Toast.LENGTH_SHORT);
+                                    }
 
-                        VolleyQueueSingleton.getInstance(context).addToRequestQueue(request);
+                                    @Override
+                                    public void onAddKeepError(Throwable t) {
+                                        Logger.show(TAG, t.getMessage(), Log.ERROR);
+                                    }
+                                });
                     }
 
                 }
@@ -406,7 +404,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(DisplayUtils.getScreenHeightPixels((Activity) context)/2);
+            itemView.setTranslationY(DisplayUtils.getScreenHeightPixels((Activity) context) / 2);
             itemView.animate()
                     .translationY(0)
 //                    .setStartDelay(100 * position)

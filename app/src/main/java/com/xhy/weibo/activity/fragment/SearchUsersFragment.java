@@ -14,11 +14,12 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.UserAdpater;
 import com.xhy.weibo.base.BaseFragment;
 import com.xhy.weibo.constants.CommonConstants;
-import com.xhy.weibo.entity.User;
+import com.xhy.weibo.model.User;
 import com.xhy.weibo.entity.UsersReciver;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;
@@ -183,10 +184,10 @@ public class SearchUsersFragment extends BaseFragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
-                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
+                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
                 map.put("page", currPage + "");
                 map.put("keyword", keyword);
-                map.put("uid", CommonConstants.USER_ID + "");
+                map.put("uid", AppConfig.getUserId() + "");
 
                 return map;
             }

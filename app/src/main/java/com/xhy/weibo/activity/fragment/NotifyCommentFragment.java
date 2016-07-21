@@ -17,6 +17,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.StatusDetailActivity;
 import com.xhy.weibo.adapter.CommentAdpater;
@@ -131,7 +132,7 @@ public class NotifyCommentFragment extends BaseFragment {
     }
 
     private void LoadData() {
-//        NetParams.getComment(wid, page, CommonConstants.ACCESS_TOKEN.getToken())
+//        NetParams.getComment(wid, page, AppConfig.ACCESS_TOKEN.getToken())
         GsonRequest<CommentReciver> request = new GsonRequest<CommentReciver>(Request.Method.POST,
                 URLs.WEIBO_GET_COMMENT_LIST, CommentReciver.class, null, new Response.Listener<CommentReciver>() {
             @Override
@@ -175,8 +176,8 @@ public class NotifyCommentFragment extends BaseFragment {
             protected Map<String, String> getParams() throws AuthFailureError {
 
                 Map<String, String> map = new HashMap<>();
-                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-                map.put("uid", CommonConstants.USER_ID + "");
+                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
+                map.put("uid", AppConfig.getUserId() + "");
                 map.put("page", currPage + "");
                 return map;
             }

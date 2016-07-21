@@ -73,7 +73,7 @@ public class StatusLogic {
      * @param callBack
      */
     public static void getStatusList(final Context context, final int uid, final int page,
-                                     final String token, final String gid, final int type, final GetStatusList callBack) {
+                                     final String token, final String gid, final int type, final GetStatusListCallBack callBack) {
         Call<Result<List<Status>>> resultCall = ApiClient.getApi().getStatusList(uid, page, token, gid, type);
         Logger.show(TAG, "uid:" + uid + ",page" + page + ",gid" + gid + "type" + type);
         resultCall.enqueue(new Callback<Result<List<Status>>>() {
@@ -83,11 +83,12 @@ public class StatusLogic {
                 Result<List<Status>> listResult = response.body();
                 if (response.isSuccessful()) {
                     if (listResult.isSuccess()) {
-                        callBack.onStatusListSuccecc(listResult.getInfo(), listResult.getTotalPage());
+                        callBack.onStatusListSuccess(listResult.getInfo(), listResult.getTotalPage());
                     } else {
                         callBack.onStatusListFailure(listResult.getMsg());
                     }
                 } else {
+                    callBack.onStatusListFailure("获取失败");
                     try {
                         Logger.show(TAG, response.errorBody().string());
                     } catch (IOException e) {
@@ -104,6 +105,81 @@ public class StatusLogic {
         });
     }
 
+    /**
+     * 微博添加收藏
+     * @param context
+     * @param uid
+     * @param wid
+     * @param token
+     * @param callBack
+     */
+    public static void addKeepStatus(final Context context, final int uid, final int wid,
+                                     final String token, final AddKeepStatusCallBack callBack) {
+        Call<Result> resultCall = ApiClient.getApi().addKeepStatus(uid, wid, token);
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                Result result = response.body();
+                if (response.isSuccessful()) {
+                    if (result.isSuccess()) {
+                        callBack.onAddKeepSuccess(result);
+                    } else {
+                        callBack.onAddKeepFailure(result.getMsg());
+                    }
+                } else {
+                    callBack.onAddKeepFailure("收藏失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                callBack.onAddKeepError(t);
+            }
+        });
+    }
+
+    /**
+     * 微博取消收藏
+     * @param context
+     * @param uid
+     * @param wid
+     * @param token
+     * @param callBack
+     */
+    public static void delKeepStatus(final Context context, final int uid, final int wid,
+                                     final String token, final DelKeepStatusCallBack callBack){
+        Call<Result> resultCall = ApiClient.getApi().delKeepStatus(uid, wid, token);
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                Result result = response.body();
+                if (response.isSuccessful()) {
+                    if (result.isSuccess()) {
+                        callBack.onDelKeepSuccess(result);
+                    } else {
+                        callBack.onDelKeepFailure(result.getMsg());
+                    }
+                } else {
+                    callBack.onDelKeepFailure("取消收藏失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                callBack.onDelKeepError(t);
+            }
+        });
+    }
+
 
     public interface GetStatusGroupCallBack {
         void onGroupSuccess(List<StatusGroup> statusGroups);
@@ -113,12 +189,28 @@ public class StatusLogic {
         void onGroupError(Throwable t);
     }
 
-    public interface GetStatusList {
-        void onStatusListSuccecc(List<Status> statuses, int totalPage);
+    public interface GetStatusListCallBack {
+        void onStatusListSuccess(List<Status> statuses, int totalPage);
 
         void onStatusListFailure(String message);
 
         void onStatusListError(Throwable t);
+    }
+
+    public interface AddKeepStatusCallBack {
+        void onAddKeepSuccess(Result result);
+
+        void onAddKeepFailure(String message);
+
+        void onAddKeepError(Throwable t);
+    }
+
+    public interface DelKeepStatusCallBack {
+        void onDelKeepSuccess(Result result);
+
+        void onDelKeepFailure(String message);
+
+        void onDelKeepError(Throwable t);
     }
 
 }

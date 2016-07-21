@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.xhy.weibo.model.Login;
-import com.xhy.weibo.entity.User;
+import com.xhy.weibo.model.User;
 
 import java.util.ArrayList;
 import java.util.List;

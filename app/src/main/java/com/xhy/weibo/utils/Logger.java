@@ -2,6 +2,7 @@ package com.xhy.weibo.utils;
 
 import android.util.Log;
 
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.constants.CommonConstants;
 
 /**
@@ -16,7 +17,7 @@ public class Logger {
      * @param msg
      */
     public static void show(String TAG, String msg) {
-        if (!CommonConstants.isShowLog) {
+        if (!AppConfig.isShowLog) {
             return;
         }
         show(TAG, msg, Log.INFO);
@@ -31,7 +32,7 @@ public class Logger {
      *            1-info; 2-debug; 3-verbose
      */
     public static void show(String TAG, String msg, int level) {
-        if (!CommonConstants.isShowLog) {
+        if (!AppConfig.isShowLog) {
             return;
         }
         switch (level) {

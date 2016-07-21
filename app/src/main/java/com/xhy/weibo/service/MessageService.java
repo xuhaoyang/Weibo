@@ -18,6 +18,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.IMessageListener;
 import com.xhy.weibo.IMessageServiceRemoteBinder;
 import com.xhy.weibo.R;
@@ -96,33 +97,34 @@ public class MessageService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        return null;
 //        return new Binder();
-        return new IMessageServiceRemoteBinder.Stub() {
-
-
-            @Override
-            public void setAccount(String account) throws RemoteException {
-                CommonConstants.account = account;
-            }
-
-            @Override
-            public void setIsNotify(boolean flag) throws RemoteException {
-                CommonConstants.isNotify = flag;
-            }
-
-            @Override
-            public void setMessageListener(IMessageListener listener) throws RemoteException {
-                mListener = listener;
-            }
-
-        };
+//        return new IMessageServiceRemoteBinder.Stub() {
+//
+//
+//            @Override
+//            public void setAccount(String account) throws RemoteException {
+//                CommonConstants.account = account;
+//            }
+//
+//            @Override
+//            public void setIsNotify(boolean flag) throws RemoteException {
+//                CommonConstants.isNotify = flag;
+//            }
+//
+//            @Override
+//            public void setMessageListener(IMessageListener listener) throws RemoteException {
+//                mListener = listener;
+//            }
+//
+//        };
     }
 
 
     public class Binder extends android.os.Binder {
-        public void setAccount(String account) {
-            CommonConstants.account = account;
-        }
+//        public void setAccount(String account) {
+//            CommonConstants.account = account;
+//        }
     }
 
     @Override
@@ -134,14 +136,14 @@ public class MessageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        CommonConstants.account = intent.getStringExtra("ACCOUNT");
-        CommonConstants.password = intent.getStringExtra("PASSWORD");
-        CommonConstants.USER_ID = Integer.parseInt(intent.getStringExtra("USERID"));
+//        CommonConstants.account = intent.getStringExtra("ACCOUNT");
+//        CommonConstants.password = intent.getStringExtra("PASSWORD");
+//        AppConfig.getUserId() = Integer.parseInt(intent.getStringExtra("USERID"));
         String token = intent.getStringExtra("TOKEN");
-        if (!TextUtils.isEmpty(CommonConstants.account) || !TextUtils.isEmpty(CommonConstants.password)) {
-            CommonConstants.ACCESS_TOKEN = AccessToken.getInstance(CommonConstants.account, CommonConstants.password, getApplicationContext());
-            CommonConstants.ACCESS_TOKEN.setToken(token);
-        }
+//        if (!TextUtils.isEmpty(CommonConstants.account) || !TextUtils.isEmpty(CommonConstants.password)) {
+        AppConfig.ACCESS_TOKEN = AccessToken.getInstance(AppConfig.getAccount(), AppConfig.getPassword(), getApplicationContext());
+        AppConfig.ACCESS_TOKEN.setToken(token);
+//        }
 
         builder = new NotificationCompat.Builder(this);
         //跳转到Activity
@@ -190,21 +192,14 @@ public class MessageService extends Service {
                     //休息
                     Thread.sleep(15000);
                     Logger.show("MessageService", "休息时间过了,运行了");
-                    if (CommonConstants.isNotify) {
-//                        try {
-//                            if (mListener != null) {
-//                                mListener.setAccessToken(accessToken.getToken(), accessToken.getTokenStartTime());
-//                            }
-//                        } catch (RemoteException e) {
-//                            e.printStackTrace();
-//                        }
+                    if (AppConfig.isNotify()) {
                         Intent data = new Intent();
                         data.setAction("com.xhy.weibo.UPDATE_TOKEN");
-                        data.putExtra(CommonConstants.KEEP_TOKEN, CommonConstants.ACCESS_TOKEN.getToken());
-                        data.putExtra(CommonConstants.KEEP_TOKEN_START_TIME, CommonConstants.ACCESS_TOKEN.getTokenStartTime());
+                        data.putExtra(AppConfig.KEEP_TOKEN, AppConfig.ACCESS_TOKEN.getToken());
+                        data.putExtra(AppConfig.KEEP_TOKEN_START_TIME, AppConfig.ACCESS_TOKEN.getTokenStartTime());
                         //传递账户id比对是否是帐号
-                        data.putExtra(CommonConstants.KEEP_TOKEN_ACCOUNT, CommonConstants.account);
-                        data.putExtra(CommonConstants.KEEP_TOKEN_USER_ID, CommonConstants.account);
+                        data.putExtra(AppConfig.KEEP_TOKEN_ACCOUNT, AppConfig.getAccount());
+                        data.putExtra(AppConfig.KEEP_TOKEN_USER_ID, AppConfig.getUserId());
                         sendBroadcast(data);
 
                         GsonRequest<NotifyReciver> request = new GsonRequest<NotifyReciver>(Request.Method.POST,
@@ -233,8 +228,8 @@ public class MessageService extends Service {
                             @Override
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> map = new HashMap<>();
-                                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
-                                map.put("uid", String.valueOf(CommonConstants.USER_ID));
+                                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
+                                map.put("uid", String.valueOf(AppConfig.getUserId()));
                                 return map;
                             }
                         };

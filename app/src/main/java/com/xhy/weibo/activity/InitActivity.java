@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.AccessToken;
@@ -60,10 +61,10 @@ public class InitActivity extends BaseActivity {
         List<Login> logins = userDB.QueryLogin(db, selection, selectionArgs);
         if (!logins.isEmpty()) {
             login = logins.get(0);
-            CommonConstants.USER_ID = login.getId();
-            CommonConstants.account = login.getAccount();
-            CommonConstants.password = login.getPassword();
-            CommonConstants.ACCESS_TOKEN = AccessToken.getInstance(CommonConstants.account, CommonConstants.password, this);
+            AppConfig.setAccount(login.getAccount());
+            AppConfig.setPassword(login.getPassword());
+            AppConfig.setUserId(login.getId());
+            AppConfig.ACCESS_TOKEN = AccessToken.getInstance(AppConfig.getAccount(), AppConfig.getPassword(), this);
             mHandler.sendEmptyMessageDelayed(GO_MAIN, TIME);
         } else {
             mHandler.sendEmptyMessageDelayed(GO_LOGIN, TIME);

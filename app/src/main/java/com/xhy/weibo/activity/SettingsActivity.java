@@ -23,6 +23,7 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.receiver.UpdateOtherProcessReceiver;
@@ -33,7 +34,14 @@ import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    private Context mContext;
+    private static Context mContext;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mContext = this;
+    }
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -216,15 +224,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
 //            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
             SwitchPreference notifications_new_message = (SwitchPreference) findPreference("notifications_new_message");
-            notifications_new_message.setChecked(CommonConstants.isNotify);
+            notifications_new_message.setChecked(AppConfig.isNotify());
             notifications_new_message.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    CommonConstants.isNotify = (boolean) newValue;
+                    AppConfig.setNotify((Boolean) newValue);
+
                     Intent data = new Intent();
                     data.setAction(UpdateOtherProcessReceiver.ACTION_NAME);
-                    data.putExtra(CommonConstants.KEEP_SETTING_ISNOTIFY,CommonConstants.isNotify);
-                    getContext().sendBroadcast(data);
+                    data.putExtra(AppConfig.KEEP_SETTING_ISNOTIFY, CommonConstants.isNotify);
+                    mContext.sendBroadcast(data);
                     return true;
                 }
             });

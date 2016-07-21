@@ -31,6 +31,7 @@ import android.view.ViewGroup.LayoutParams;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.EmotionGvAdapter;
 import com.xhy.weibo.adapter.EmotionPagerAdapter;
@@ -293,7 +294,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
         int width = bitmap.getWidth();
         String imageFilePath = ImageUtils.getImageAbsolutePath19(this, imageUri);
         final File imageFile = new File(imageFilePath);
-        final String url = NetParams.uploadUserPic(CommonConstants.ACCESS_TOKEN.getToken(), height, width);
+        final String url = NetParams.uploadUserPic(AppConfig.ACCESS_TOKEN.getToken(), height, width);
 
         //Volley对稍大文件上传支持的很不好,很容易被OC,故用HttpURLConnection重写的上传
         new Thread(new Runnable() {
@@ -354,14 +355,14 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                     //来自Status 微博的评论[获得是Status的信息]
                     case MAIN_ATY_CODE:
                     case DETAIL_ATY_CODE:
-                        url = NetParams.setComment(CommonConstants.USER_ID, status.getId(),
-                                commentStr, CommonConstants.ACCESS_TOKEN.getToken());
+                        url = NetParams.setComment(AppConfig.getUserId(), status.getId(),
+                                commentStr, AppConfig.ACCESS_TOKEN.getToken());
                         break;
                     //来自评论列表的回复[获得是Comment信息]
                     case COMMENT_ADPATER_CODE:
                         commentStr = commentStr + "//" +original;
-                        url = NetParams.setComment(CommonConstants.USER_ID, comment.getWid(),
-                                commentStr, CommonConstants.ACCESS_TOKEN.getToken());
+                        url = NetParams.setComment(AppConfig.getUserId(), comment.getWid(),
+                                commentStr, AppConfig.ACCESS_TOKEN.getToken());
                         break;
                 }
 
@@ -423,13 +424,13 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 showLog("--->" + commentStr);
                 String content = commentStr;
                 if (inStatus == null) {
-                    url = NetParams.turnWeibo(CommonConstants.USER_ID, status.getId(), 0
-                            , content, CommonConstants.ACCESS_TOKEN.getToken());
+                    url = NetParams.turnWeibo(AppConfig.getUserId(), status.getId(), 0
+                            , content, AppConfig.ACCESS_TOKEN.getToken());
 
                 } else {
                     content = content + "//@" + status.getUsername() + ":" + status.getContent();
-                    url = NetParams.turnWeibo(CommonConstants.USER_ID, status.getId(), inStatus.getId()
-                            , content, CommonConstants.ACCESS_TOKEN.getToken());
+                    url = NetParams.turnWeibo(AppConfig.getUserId(), status.getId(), inStatus.getId()
+                            , content, AppConfig.ACCESS_TOKEN.getToken());
                 }
 
                 GsonRequest<NormalInfo> normalInfoGsonRequest = new GsonRequest<NormalInfo>(Request.Method.GET, url,
@@ -467,7 +468,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                  * 现在只能发布文字
                  */
                 final String new_content = commentStr;
-//                url = NetParams.sendWeibo(CommonConstants.USER_ID, commentStr, null, null, null, CommonConstants.ACCESS_TOKEN.getToken());
+//                url = NetParams.sendWeibo(AppConfig.getUserId(), commentStr, null, null, null, AppConfig.ACCESS_TOKEN.getToken());
                 GsonRequest<NormalInfo> statusRequest = new GsonRequest<NormalInfo>(Request.Method.POST, URLs.WEIBO_SEND_WEIBO, NormalInfo.class, null,
                         new Response.Listener<NormalInfo>() {
                             @Override
@@ -490,9 +491,9 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                     @Override
                     protected Map<String, String> getParams() throws AuthFailureError {
                         Map<String, String> map = new HashMap<>();
-                        map.put("uid", "" + CommonConstants.USER_ID);
+                        map.put("uid", "" + AppConfig.getUserId());
                         map.put("content", new_content);
-                        map.put("token", "" + CommonConstants.ACCESS_TOKEN.getToken());
+                        map.put("token", "" + AppConfig.ACCESS_TOKEN.getToken());
                         if (picture != null) {
                             map.put("mini", picture.getMini());
                             map.put("medium", picture.getMedium());

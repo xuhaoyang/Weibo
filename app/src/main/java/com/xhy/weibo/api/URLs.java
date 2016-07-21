@@ -19,6 +19,15 @@ public interface URLs {
     String WEIBO_GET_LIST = API_VERSION + "weiboList.html";
 
 
+    //用户信息
+    String WEIBO_GET_USERINFO = API_VERSION + "getUserInfo.html";
+
+    //微博添加收藏
+    String WEIBO_ADD_KEEP = API_VERSION + "keepWeibo.html";
+    //微博删除收藏
+    String WEIBO_DEL_KEEP = API_VERSION + "delKeep.html";
+
+
     //图片地址
     String UPLOAD_URL = BASE_URL + "/Uploads/";
     String AVATAR_IMG_URL = UPLOAD_URL + "Face/";//头像
@@ -48,10 +57,7 @@ public interface URLs {
     //获取关注者的ID与粉丝者的ID列表
     String WEIBO_USER_FOLLOW_FANS_LIST = API_VERSION + "getUserFollowList.html";
 
-    //微博添加收藏
-    String WEIBO_KEEP = API_VERSION + "keepWeibo.html";
-    //微博删除收藏
-    String WEIBO_DEL_KEEP = API_VERSION + "delKeep.html";
+
 
 
     String WEIBO_SET_COMMENT = API_VERSION + "setComment.html";
@@ -61,8 +67,7 @@ public interface URLs {
     //发送微博
     String WEIBO_SEND_WEIBO = API_VERSION + "sendWeibo.html";
 
-    //获取用户信息
-    String WEIBO_GET_USERINFO = API_VERSION + "getUserInfo.html";
+
 
     //获取热门话题
     String WEIBO_GET_HOTS = API_VERSION + "getHots.html";

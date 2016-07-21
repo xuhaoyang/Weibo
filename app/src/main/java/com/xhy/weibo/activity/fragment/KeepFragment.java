@@ -17,6 +17,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.StatusDetailActivity;
 import com.xhy.weibo.adapter.KeepListAdpater;
@@ -176,7 +177,7 @@ public class KeepFragment extends BaseFragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
                 map.put("wid", wid + "");
-                map.put("token", CommonConstants.ACCESS_TOKEN.getToken());
+                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
                 map.put("page", page + "");
 
                 return map;
