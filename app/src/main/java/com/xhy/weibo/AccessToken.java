@@ -20,10 +20,8 @@ public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
     private static AccessToken mAccessToken;
 
     private final AtomicBoolean tokenRefreshing = new AtomicBoolean(false);
-    private String token;
     private String account;
     private String password;
-    private long tokenStartTime;
     private Context mContext;
     private long oldTIme;
 
@@ -37,7 +35,7 @@ public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
     }
 
     public long getTokenStartTime() {
-        return tokenStartTime;
+        return AppConfig.getAccessTokenStartTime();
     }
 
     public static synchronized AccessToken getInstance(String account, String password, Context context) {
@@ -48,21 +46,21 @@ public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
     }
 
     public void setToken(String token) {
-        this.token = token;
+        AppConfig.setAccessToken(token);
     }
 
     public void setTokenStartTime(long tokenStartTime) {
-        this.tokenStartTime = tokenStartTime;
+        AppConfig.setAccessTokenStartTime(tokenStartTime);
     }
 
     public String getToken() {
         long now = System.currentTimeMillis();
-        long time = now - this.tokenStartTime;
+        long time = now - AppConfig.getAccessTokenStartTime();
 
         if (time > 7100000 && this.tokenRefreshing.compareAndSet(false, true)) {
             initToken(now);
         }
-        return token;
+        return AppConfig.getAccessToken();
     }
 
     public String getAccount() {
@@ -74,29 +72,29 @@ public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
     }
 
     private void initToken(final long refreshTime) {
-        oldTIme = this.tokenStartTime;
-        this.tokenStartTime = refreshTime;
+        oldTIme = AppConfig.getAccessTokenStartTime();
+        AppConfig.setAccessTokenStartTime(refreshTime);
         UserLoginLogic.login(mContext, account, password, this);
     }
 
     @Override
     public void onLoginSuccess(Login login) {
-        token = login.getToken();
-        tokenStartTime = login.getTokenStartTime();
+        AppConfig.setAccessToken(login.getToken());
+        AppConfig.setAccessTokenStartTime(login.getTokenStartTime());
         tokenRefreshing.set(false);
 
     }
 
     @Override
     public void onLoginFailure(int errorCode, String errorMessage) {
-        tokenStartTime = oldTIme;
+        AppConfig.setAccessTokenStartTime(oldTIme);
         tokenRefreshing.set(false);
         Logger.show(TAG, errorMessage + errorCode);
     }
 
     @Override
     public void onLoginError(Throwable error) {
-        tokenStartTime = oldTIme;
+        AppConfig.setAccessTokenStartTime(oldTIme);
         tokenRefreshing.set(false);
         Logger.show(TAG, error.getMessage(), Log.ERROR);
 

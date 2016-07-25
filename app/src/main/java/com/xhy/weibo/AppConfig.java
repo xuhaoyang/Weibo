@@ -89,4 +89,39 @@ public class AppConfig extends PreferenceUtils {
         putBoolean("isNotify", false);
     }
 
+
+    /**
+     * 设置Token String
+     *
+     * @param token
+     */
+    public static void setAccessToken(String token) {
+        putString("AccessToken", token);
+    }
+
+    /**
+     * 获取Token
+     *
+     * @return
+     */
+    public static String getAccessToken() {
+        return getString("AccessToken", "");
+    }
+
+    /**
+     * 设置Token获取初始时间
+     *
+     * @param time
+     */
+    public static void setAccessTokenStartTime(long time) {
+        putLong("AccessTokenStartTime", time);
+    }
+
+    /**
+     * 获得Token获取初始时间
+     * @return
+     */
+    public static long getAccessTokenStartTime() {
+        return getLong("AccessTokenStartTime", 0);
+    }
 }
