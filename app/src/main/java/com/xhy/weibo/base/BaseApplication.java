@@ -15,6 +15,8 @@ import com.xhy.weibo.network.VolleyQueueSingleton;
 
 import java.io.InputStream;
 
+import im.fir.sdk.FIR;
+
 /**
  * Created by xuhaoyang on 16/5/12.
  */
@@ -29,6 +31,7 @@ public class BaseApplication extends MultiDexApplication {
         getApplicationContext();
         context = getApplicationContext();
         AppConfig.initialize(this);
+        FIR.init(this);
 
         Glide.get(this)
                 .register(GlideUrl.class, InputStream.class,
@@ -40,10 +43,6 @@ public class BaseApplication extends MultiDexApplication {
         mDBManager.openDatabase();
         mDBManager.closeDatabase();
     }
-
-    
-
-
 
 
 }

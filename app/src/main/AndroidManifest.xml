@@ -8,6 +8,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+    <!-- 可选 -->
+    <uses-permission android:name="android.permission.GET_TASKS"></uses-permission>
+
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -98,9 +102,16 @@
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login" />
+
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings">
+
+        </activity>
+
+        <meta-data
+            android:name="BUG_HD_SDK_GENERAL_KEY"
+            android:value="84b29f55d617c14d9f09248ead1ced2d" />
     </application>
 
 </manifest>
