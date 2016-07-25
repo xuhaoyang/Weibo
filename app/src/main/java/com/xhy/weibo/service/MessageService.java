@@ -193,14 +193,14 @@ public class MessageService extends Service {
                     Thread.sleep(15000);
                     Logger.show("MessageService", "休息时间过了,运行了");
                     if (AppConfig.isNotify()) {
-                        Intent data = new Intent();
-                        data.setAction("com.xhy.weibo.UPDATE_TOKEN");
-                        data.putExtra(AppConfig.KEEP_TOKEN, AppConfig.ACCESS_TOKEN.getToken());
-                        data.putExtra(AppConfig.KEEP_TOKEN_START_TIME, AppConfig.ACCESS_TOKEN.getTokenStartTime());
-                        //传递账户id比对是否是帐号
-                        data.putExtra(AppConfig.KEEP_TOKEN_ACCOUNT, AppConfig.getAccount());
-                        data.putExtra(AppConfig.KEEP_TOKEN_USER_ID, AppConfig.getUserId());
-                        sendBroadcast(data);
+//                        Intent data = new Intent();
+//                        data.setAction("com.xhy.weibo.UPDATE_TOKEN");
+//                        data.putExtra(AppConfig.KEEP_TOKEN, AppConfig.ACCESS_TOKEN.getToken());
+//                        data.putExtra(AppConfig.KEEP_TOKEN_START_TIME, AppConfig.ACCESS_TOKEN.getTokenStartTime());
+//                        //传递账户id比对是否是帐号
+//                        data.putExtra(AppConfig.KEEP_TOKEN_ACCOUNT, AppConfig.getAccount());
+//                        data.putExtra(AppConfig.KEEP_TOKEN_USER_ID, AppConfig.getUserId());
+//                        sendBroadcast(data);
 
                         GsonRequest<NotifyReciver> request = new GsonRequest<NotifyReciver>(Request.Method.POST,
                                 URLs.WEIBO_GET_MSG, NotifyReciver.class, null, new Response.Listener<NotifyReciver>() {
