@@ -2,6 +2,7 @@ package com.xhy.weibo.logic;
 
 import android.content.Context;
 
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
@@ -14,6 +15,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Field;
 
 /**
  * Created by xuhaoyang on 16/7/20.
@@ -107,6 +109,7 @@ public class StatusLogic {
 
     /**
      * 微博添加收藏
+     *
      * @param context
      * @param uid
      * @param wid
@@ -145,6 +148,7 @@ public class StatusLogic {
 
     /**
      * 微博取消收藏
+     *
      * @param context
      * @param uid
      * @param wid
@@ -152,7 +156,7 @@ public class StatusLogic {
      * @param callBack
      */
     public static void delKeepStatus(final Context context, final int uid, final int wid,
-                                     final String token, final DelKeepStatusCallBack callBack){
+                                     final String token, final DelKeepStatusCallBack callBack) {
         Call<Result> resultCall = ApiClient.getApi().delKeepStatus(uid, wid, token);
         resultCall.enqueue(new Callback<Result>() {
             @Override
@@ -173,6 +177,7 @@ public class StatusLogic {
                     }
                 }
             }
+
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
                 callBack.onDelKeepError(t);
@@ -180,6 +185,53 @@ public class StatusLogic {
         });
     }
 
+    /**
+     * 发送微博
+     *
+     * @param uid       用户id
+     * @param content
+     * @param token
+     * @param picMini
+     * @param picMedium
+     * @param picMax
+     */
+    public static void sendWeibo(int uid, String content, String token,
+                                 String picMini, String picMedium, String picMax, final SendWeiboCallBack callBack) {
+        Call<Result> resultCall = ApiClient.getApi().sendWeibo(uid, content, token, picMini, picMedium, picMax);
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                Result result = response.body();
+                if (response.isSuccessful()) {
+                    if (result.isSuccess()) {
+                        callBack.onSendSuccess(result);
+                    } else {
+                        callBack.onSendFailure(result.getMsg());
+                    }
+                } else {
+                    callBack.onSendFailure("发送失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public interface SendWeiboCallBack {
+        void onSendSuccess(Result result);
+
+        void onSendFailure(String message);
+
+        void onSendError(Throwable t);
+    }
 
     public interface GetStatusGroupCallBack {
         void onGroupSuccess(List<StatusGroup> statusGroups);

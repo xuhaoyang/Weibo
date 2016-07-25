@@ -27,6 +27,14 @@ public interface URLs {
     //微博删除收藏
     String WEIBO_DEL_KEEP = API_VERSION + "delKeep.html";
 
+    //转发微博
+    String WEIBO_TURN_WEIBO = API_VERSION + "turnWeibo.html";
+    //发送微博
+    String WEIBO_SEND_WEIBO = API_VERSION + "sendWeibo.html";
+    //发布评论
+    String WEIBO_SET_COMMENT = API_VERSION + "setComment.html";
+
+
 
     //图片地址
     String UPLOAD_URL = BASE_URL + "/Uploads/";
@@ -60,12 +68,8 @@ public interface URLs {
 
 
 
-    String WEIBO_SET_COMMENT = API_VERSION + "setComment.html";
 
-    //转发微博
-    String WEIBO_TURN_WEIBO = API_VERSION + "turnWeibo.html";
-    //发送微博
-    String WEIBO_SEND_WEIBO = API_VERSION + "sendWeibo.html";
+
 
 
 

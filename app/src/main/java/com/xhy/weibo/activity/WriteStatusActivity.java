@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
@@ -43,6 +45,9 @@ import com.xhy.weibo.entity.Comment;
 import com.xhy.weibo.entity.NormalInfo;
 import com.xhy.weibo.entity.Picture;
 import com.xhy.weibo.entity.PictureReciver;
+import com.xhy.weibo.logic.CommentLogic;
+import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.ImageUpload;
@@ -110,6 +115,8 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
     @BindView(R.id.gv_write_status)
     WrapHeightGridView gv_write_status;
 
+    @BindView(R.id.main_Car)
+    CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.ll_emotion_dashboard)
     LinearLayout ll_emotion_dashboard;
     @BindView(R.id.vp_emotion_dashboard)
@@ -320,25 +327,13 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         @Override
                         public void run() {
                             mDialog.dismiss();
-                            showToast("上传失败,请重试");
+                            showSnackbar("上传失败,请重试");
                         }
                     }).sendToTarget();
                 }
             }
         }).start();
-//        MultipartRequest<PictureReciver> request = new MultipartRequest<PictureReciver>(url,
-//                PictureReciver.class, "123", imageFile, null, new Response.Listener<PictureReciver>() {
-//            @Override
-//            public void onResponse(PictureReciver response) {
-//                showLog(response.toString());
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//
-//            }
-//        });
-//        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+
     }
 
     private void sendComment() {
@@ -351,65 +346,75 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
         switch (type) {
             case COMMENT_TYPE:
                 String url = null;
+                //父级微博id
+                int pWid = 0;
+                CommentLogic.SetCommentCallBack callBack = new CommentLogic.SetCommentCallBack() {
+                    @Override
+                    public void onSetCommentSuccess(Result result) {
+                        showToast(result.getMsg());
+                        Intent data;
+                        switch (aty_stype) {
+                            //来自Status 微博的评论[获得是Status的信息]
+                            case MAIN_ATY_CODE:
+                                status.setComment(status.getComment() + 1);
+                                data = new Intent(WriteStatusActivity.this, StatusDetailActivity.class);
+                                data.putExtra(STATUS_INTENT, status);
+                                startActivity(data);
+                                break;
+                            case DETAIL_ATY_CODE:
+                                status.setComment(status.getComment() + 1);
+                                data = new Intent();
+                                data.putExtra(SEND_COMMENT_SUCCESS, true);
+                                setResult(RESULT_OK, data);
+                                break;
+                            //来自评论列表的回复[获得是Comment信息]
+                            case COMMENT_ADPATER_CODE:
+                                data = new Intent();
+                                data.putExtra(SEND_COMMENT_SUCCESS, true);
+                                setResult(RESULT_OK, data);
+                                break;
+                        }
+                        WriteStatusActivity.this.finish();
+                    }
+
+                    @Override
+                    public void onSetCommentFailure(String message) {
+                        showToast(message);
+                    }
+
+                    @Override
+                    public void onSetCommentError(Throwable t) {
+                        showLog(t.getMessage());
+                    }
+                };
+
                 switch (aty_stype) {
                     //来自Status 微博的评论[获得是Status的信息]
                     case MAIN_ATY_CODE:
                     case DETAIL_ATY_CODE:
-                        url = NetParams.setComment(AppConfig.getUserId(), status.getId(),
-                                commentStr, AppConfig.ACCESS_TOKEN.getToken());
+
+
+                        if (status.getStatus() != null) {
+                            pWid = status.getStatus().getId();
+                        } else {
+                            pWid = status.getId();
+                        }
+                        CommentLogic.setComment(AppConfig.getUserId(), status.getId(), pWid,
+                                commentStr, AppConfig.ACCESS_TOKEN.getToken(), callBack);
+
                         break;
                     //来自评论列表的回复[获得是Comment信息]
                     case COMMENT_ADPATER_CODE:
-                        commentStr = commentStr + "//" +original;
-                        url = NetParams.setComment(AppConfig.getUserId(), comment.getWid(),
-                                commentStr, AppConfig.ACCESS_TOKEN.getToken());
+                        commentStr = commentStr + "//" + original;
+
+                        pWid = comment.getWid();
+                        CommentLogic.setComment(AppConfig.getUserId(), comment.getWid(), pWid,
+                                commentStr, AppConfig.ACCESS_TOKEN.getToken(), callBack);
+
                         break;
                 }
-
-                GsonRequest<NormalInfo> request = new GsonRequest<NormalInfo>(Request.Method.GET,
-                        url, NormalInfo.class, null,
-                        new Response.Listener<NormalInfo>() {
-                            @Override
-                            public void onResponse(NormalInfo response) {
-                                if (response.getCode() == 200) {
-                                    showToast(response.getInfo());
-                                    Intent data;
-                                    switch (aty_stype) {
-                                        //来自Status 微博的评论[获得是Status的信息]
-                                        case MAIN_ATY_CODE:
-                                            status.setComment(status.getComment() + 1);
-                                            data = new Intent(WriteStatusActivity.this, StatusDetailActivity.class);
-                                            data.putExtra(STATUS_INTENT, status);
-                                            startActivity(data);
-                                            break;
-                                        case DETAIL_ATY_CODE:
-                                            status.setComment(status.getComment() + 1);
-                                            data = new Intent();
-                                            data.putExtra(SEND_COMMENT_SUCCESS, true);
-                                            setResult(RESULT_OK, data);
-                                            break;
-                                        //来自评论列表的回复[获得是Comment信息]
-                                        case COMMENT_ADPATER_CODE:
-                                            data = new Intent();
-                                            data.putExtra(SEND_COMMENT_SUCCESS, true);
-                                            setResult(RESULT_OK, data);
-                                            break;
-                                    }
-                                    WriteStatusActivity.this.finish();
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });
-
-                VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
-
                 break;
             case FORWARD_TYPE:
-
 
                 /**
                  * 两种转发情况
@@ -420,8 +425,6 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                  *    需要自己拼装content
                  */
                 Status inStatus = status.getStatus();
-                showLog("--->" + status.toString());
-                showLog("--->" + commentStr);
                 String content = commentStr;
                 if (inStatus == null) {
                     url = NetParams.turnWeibo(AppConfig.getUserId(), status.getId(), 0
@@ -464,45 +467,37 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 VolleyQueueSingleton.getInstance(this).addToRequestQueue(normalInfoGsonRequest);
                 break;
             case NEW_STATUS_TYPE:
-                /**
-                 * 现在只能发布文字
-                 */
-                final String new_content = commentStr;
-//                url = NetParams.sendWeibo(AppConfig.getUserId(), commentStr, null, null, null, AppConfig.ACCESS_TOKEN.getToken());
-                GsonRequest<NormalInfo> statusRequest = new GsonRequest<NormalInfo>(Request.Method.POST, URLs.WEIBO_SEND_WEIBO, NormalInfo.class, null,
-                        new Response.Listener<NormalInfo>() {
-                            @Override
-                            public void onResponse(NormalInfo response) {
-                                Intent data = new Intent();
-                                if (response.getCode() == 200) {
-                                    data.putExtra(SEND_STATUS_SUCCESS, true);
-                                } else {
-                                    data.putExtra(SEND_FORWORD_SUCCESS, false);
-                                }
-                                setResult(RESULT_OK, data);
-                                WriteStatusActivity.this.finish();
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
 
-                    }
-                }) {
+                final String new_content = commentStr;
+                StatusLogic.SendWeiboCallBack sendWeiboCallBack = new StatusLogic.SendWeiboCallBack() {
                     @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> map = new HashMap<>();
-                        map.put("uid", "" + AppConfig.getUserId());
-                        map.put("content", new_content);
-                        map.put("token", "" + AppConfig.ACCESS_TOKEN.getToken());
-                        if (picture != null) {
-                            map.put("mini", picture.getMini());
-                            map.put("medium", picture.getMedium());
-                            map.put("max", picture.getMax());
-                        }
-                        return map;
+                    public void onSendSuccess(Result result) {
+                        Intent data = new Intent();
+                        data.putExtra(SEND_STATUS_SUCCESS, true);
+                        setResult(RESULT_OK, data);
+                        WriteStatusActivity.this.finish();
+                    }
+
+                    @Override
+                    public void onSendFailure(String message) {
+                        Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG);
+                        showLog(message);
+                    }
+
+                    @Override
+                    public void onSendError(Throwable t) {
+                        showLog(t.getMessage());
                     }
                 };
-                VolleyQueueSingleton.getInstance(this).addToRequestQueue(statusRequest);
+
+                if (picture != null) {
+                    StatusLogic.sendWeibo(AppConfig.getUserId(), new_content, AppConfig.ACCESS_TOKEN.getToken()
+                            , picture.getMini(), picture.getMedium(), picture.getMax(), sendWeiboCallBack);
+
+                } else {
+                    StatusLogic.sendWeibo(AppConfig.getUserId(), new_content, AppConfig.ACCESS_TOKEN.getToken()
+                            , null, null, null, sendWeiboCallBack);
+                }
                 break;
             default:
                 break;
@@ -515,7 +510,6 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.new_send:
-                showLog("-->" + imgUris.size());
                 if (imgUris.size() > 0) {
                     sendImage(imgUris.get(0));
                 } else {
@@ -538,7 +532,6 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                     if (inputMethodManager.isActive()) {
                         inputMethodManager.hideSoftInputFromWindow(new_edit.getWindowToken(), 0);
                     }
-
                 }
                 break;
             case R.id.new_trend:
@@ -629,5 +622,13 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
             }
         }
+    }
+
+    private void showSnackbar(String msg) {
+        showSnackbar(msg, Snackbar.LENGTH_SHORT);
+    }
+
+    private void showSnackbar(String msg, int length) {
+        Snackbar.make(mCoordinatorLayout, msg, length).show();
     }
 }

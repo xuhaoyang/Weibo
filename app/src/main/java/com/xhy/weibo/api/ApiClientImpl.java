@@ -56,4 +56,22 @@ public interface ApiClientImpl {
                                @Field("wid") int wid,
                                @Field("token") String token);
 
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SET_COMMENT)
+    Call<Result> setComment(@Field("uid") int uid,
+                            @Field("wid") int wid,
+                            @Field("pwid") int pid,
+                            @Field("content") String content,
+                            @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SEND_WEIBO)
+    Call<Result> sendWeibo(@Field("uid") int uid,
+                           @Field("content") String content,
+                           @Field("token") String token,
+                           @Field("mini") String picMini,
+                           @Field("medium") String picMedium,
+                           @Field("max") String picMax);
+
 }
