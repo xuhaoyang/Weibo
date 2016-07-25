@@ -220,10 +220,53 @@ public class StatusLogic {
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-
+                callBack.onSendError(t);
             }
         });
     }
+
+    /**
+     * 转发微博
+     *
+     * @param uid
+     * @param wid
+     * @param tid
+     * @param content
+     * @param token
+     * @param callBack
+     */
+    public static void turnWeibo(final int uid, final int wid, final int tid,
+                                 final String content, final String token, final TurnWeiboCallBack callBack) {
+        Call<Result> resultCall = ApiClient.getApi().turnWeibo(uid, wid, tid, content, token);
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                Result result = response.body();
+                if (response.isSuccessful()) {
+                    if (result.isSuccess()) {
+                        callBack.onTurnSuccess(result);
+                    } else {
+                        callBack.onTurnFailure(result.getMsg());
+                    }
+                } else {
+                    callBack.onTurnFailure("请求失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                callBack.onTurnError(t);
+            }
+        });
+
+    }
+
+
 
     public interface SendWeiboCallBack {
         void onSendSuccess(Result result);
@@ -231,6 +274,14 @@ public class StatusLogic {
         void onSendFailure(String message);
 
         void onSendError(Throwable t);
+    }
+
+    public interface TurnWeiboCallBack {
+        void onTurnSuccess(Result result);
+
+        void onTurnFailure(String message);
+
+        void onTurnError(Throwable t);
     }
 
     public interface GetStatusGroupCallBack {

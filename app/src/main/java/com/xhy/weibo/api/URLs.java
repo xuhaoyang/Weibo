@@ -34,7 +34,10 @@ public interface URLs {
     //发布评论
     String WEIBO_SET_COMMENT = API_VERSION + "setComment.html";
 
-
+    //取消关注
+    String WEIBO_DEL_FOLLOW = API_VERSION + "delFollow.html";
+    //添加关注
+    String WEIBO_ADD_FOLLOW = API_VERSION + "addFollow.html";
 
     //图片地址
     String UPLOAD_URL = BASE_URL + "/Uploads/";
@@ -79,9 +82,7 @@ public interface URLs {
     //每条微博的转发列信息
     String WEIBO_TURN_LIST = API_VERSION + "getWeiboTurnList.html";
 
-    //取消关注
-    String WEIBO_DEL_FOLLOW = API_VERSION + "delFollow.html";
-    String WEIBO_ADD_FOLLOW = API_VERSION + "addFollow.html";
+
 
     //消息推送
     String WEIBO_GET_MSG = API_VERSION + "getMsg.html";

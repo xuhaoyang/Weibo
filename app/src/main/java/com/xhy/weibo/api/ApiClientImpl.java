@@ -29,6 +29,7 @@ public interface ApiClientImpl {
     @POST(URLs.WEIBO_GET_USERINFO)
     Call<Result<User>> getUserinfo(@Field("uid") int uid,
                                    @Field("username") String username,
+                                   @Field("userid") int userId,
                                    @Field("token") String token);
 
     @FormUrlEncoded
@@ -73,5 +74,27 @@ public interface ApiClientImpl {
                            @Field("mini") String picMini,
                            @Field("medium") String picMedium,
                            @Field("max") String picMax);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_TURN_WEIBO)
+    Call<Result> turnWeibo(@Field("uid") int uid,
+                           @Field("wid") int wid,
+                           @Field("tid") int tid,
+                           @Field("content") String content,
+                           @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_ADD_FOLLOW)
+    Call<Result> addFollow(@Field("uid") int uid,
+                           @Field("follow") int follow,
+                           @Field("gid") int gid,
+                           @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_DEL_FOLLOW)
+    Call<Result> delFollow(@Field("current_uid") int current_uid,
+                           @Field("be_uid") int be_uid,
+                           @Field("type") int type,
+                           @Field("token") String token);
 
 }

@@ -27,6 +27,8 @@ import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.entity.NormalInfo;
 import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.logic.UserLoginLogic;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.model.User;
 import com.xhy.weibo.entity.UserReciver;
@@ -114,64 +116,50 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
 
     private void LoadUserData() {
 
-
-        GsonRequest<UserReciver> request = new GsonRequest<UserReciver>(Request.Method.POST,
-                URLs.WEIBO_GET_USERINFO, UserReciver.class, null, new Response.Listener<UserReciver>() {
-            @Override
-            public void onResponse(UserReciver response) {
-                showLog(response.toString());
-                if (response.getCode() == 200) {
-                    user = response.getInfo();
-                    tv_title.setText(user.getUsername());
-                    tv_fans_count.setText(user.getFans() + "");
-                    tv_follow_count.setText(user.getFollow() + "");
-                    tv_weibo_count.setText(user.getWeibo() + "");
-                    setImage(profile_image, URLs.AVATAR_IMG_URL + user.getFace());
-                    uid = user.getUid();
-                    if (user.getUid() == AppConfig.getUserId()) {
-                        btnGZ.setVisibility(View.GONE);
-                    } else {
-                        btnGZ.setVisibility(View.VISIBLE);
-                    }
-                    switch (user.getFollowed()) {
-                        case 0:
-                            btnGZ.setText("关注");
-                            break;
-                        case 1:
-                            btnGZ.setText("取消关注");
-                            break;
-                    }
-                    mSwipeRefreshLayout.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSwipeRefreshLayout.setRefreshing(true);
-                            LoadData();
+        UserLoginLogic.getUserinfo(this, uid, username, AppConfig.getUserId(),
+                AppConfig.ACCESS_TOKEN.getToken(), new UserLoginLogic.GetUserinfoCallBack() {
+                    @Override
+                    public void onUserInfoSuccess(User user) {
+                        UserInfoActivity.this.user = user;
+                        tv_title.setText(user.getUsername());
+                        tv_fans_count.setText(user.getFans() + "");
+                        tv_follow_count.setText(user.getFollow() + "");
+                        tv_weibo_count.setText(user.getWeibo() + "");
+                        setImage(profile_image, URLs.AVATAR_IMG_URL + user.getFace());
+                        uid = user.getUid();
+                        if (user.getUid() == AppConfig.getUserId()) {
+                            btnGZ.setVisibility(View.GONE);
+                        } else {
+                            btnGZ.setVisibility(View.VISIBLE);
                         }
-                    });
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                        switch (user.getFollowed()) {
+                            case 0:
+                                btnGZ.setText("关注");
+                                break;
+                            case 1:
+                                btnGZ.setText("取消关注");
+                                break;
+                        }
+                        mSwipeRefreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                LoadData();
+                            }
+                        });
+                    }
 
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                if (uid != 0) {
-                    map.put("uid", uid + "");
-                }
-                if (!TextUtils.isEmpty(username)) {
-                    map.put("username", username);
-                }
-                map.put("userid", "" + AppConfig.getUserId());
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                return map;
-            }
-        };
+                    @Override
+                    public void onUserInfoFailure(int errorCode, String errorMessage) {
+                        showSnackbar(errorMessage);
+                        showLog(errorMessage);
+                    }
 
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+                    @Override
+                    public void onUserInfoError(Throwable error) {
+                        showLog(error.getMessage());
+                    }
+                });
 
     }
 
@@ -201,79 +189,54 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
         btnGZ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GsonRequest<NormalInfo> request = null;
                 switch (user.getFollowed()) {
                     case 0:
                         //不涉及分组
-                        request = new GsonRequest<NormalInfo>(Request.Method.POST,
-                                URLs.WEIBO_ADD_FOLLOW, NormalInfo.class, null,
-                                new Response.Listener<NormalInfo>() {
+                        UserLoginLogic.addFollow(AppConfig.getUserId(), uid, 0,
+                                AppConfig.ACCESS_TOKEN.getToken(), new UserLoginLogic.AddFollowCallBack() {
                                     @Override
-                                    public void onResponse(NormalInfo response) {
-                                        if (response.getCode() == 200) {
-                                            Snackbar.make(mCoordinatorLayout, response.getInfo(), Snackbar.LENGTH_LONG)
-                                                    .show();
-                                            btnGZ.setText("取消关注");
-                                            user.setFollowed(1);
-                                        } else {
-                                            Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-                                                    .show();
-                                        }
+                                    public void onAddFollowSuccess(Result result) {
+                                        showSnackbar(result.getMsg());
+                                        btnGZ.setText("取消关注");
+                                        user.setFollowed(1);
                                     }
-                                },
-                                new Response.ErrorListener() {
+
                                     @Override
-                                    public void onErrorResponse(VolleyError error) {
+                                    public void onAddFollowFailure(String message) {
+                                        showSnackbar(message);
+                                        showLog(message);
                                     }
-                                }) {
-                            @Override
-                            protected Map<String, String> getParams() throws AuthFailureError {
-                                Map<String, String> map = new HashMap<String, String>();
-                                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                                map.put("uid", AppConfig.getUserId() + "");
-                                map.put("follow", uid + "");
-                                return map;
-                            }
-                        };
+
+                                    @Override
+                                    public void onAddFollowError(Throwable t) {
+                                        showLog(t.getMessage());
+                                    }
+                                });
                         break;
                     case 1:
                         //取消关注
-                        request = new GsonRequest<NormalInfo>(Request.Method.POST,
-                                URLs.WEIBO_DEL_FOLLOW, NormalInfo.class, null,
-                                new Response.Listener<NormalInfo>() {
+                        UserLoginLogic.delFollow(AppConfig.getUserId(), uid, 1,
+                                AppConfig.ACCESS_TOKEN.getToken(), new UserLoginLogic.DelFollowCallBack() {
                                     @Override
-                                    public void onResponse(NormalInfo response) {
-                                        if (response.getCode() == 200) {
-                                            Snackbar.make(mCoordinatorLayout, response.getInfo(), Snackbar.LENGTH_LONG)
-                                                    .show();
-                                            btnGZ.setText("关注");
-                                            user.setFollowed(0);
-                                        } else {
-                                            Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-                                                    .show();
-                                        }
-
+                                    public void onDelFollowSuccess(Result result) {
+                                        showSnackbar(result.getMsg());
+                                        btnGZ.setText("关注");
+                                        user.setFollowed(0);
                                     }
-                                },
-                                new Response.ErrorListener() {
+
                                     @Override
-                                    public void onErrorResponse(VolleyError error) {
-
+                                    public void onDelFollowFailure(String message) {
+                                        showSnackbar(message);
+                                        showLog(message);
                                     }
-                                }) {
-                            @Override
-                            protected Map<String, String> getParams() throws AuthFailureError {
-                                Map<String, String> map = new HashMap<String, String>();
-                                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                                map.put("current_uid", AppConfig.getUserId() + "");
-                                map.put("be_uid", uid + "");
-                                map.put("type", "1");
-                                return map;
-                            }
-                        };
+
+                                    @Override
+                                    public void onDelFollowError(Throwable t) {
+                                        showLog(t.getMessage());
+                                    }
+                                });
                         break;
                 }
-                VolleyQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
             }
         });
 

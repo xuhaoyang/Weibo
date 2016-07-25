@@ -425,46 +425,35 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                  *    需要自己拼装content
                  */
                 Status inStatus = status.getStatus();
+                int inStatusId = 0;
                 String content = commentStr;
-                if (inStatus == null) {
-                    url = NetParams.turnWeibo(AppConfig.getUserId(), status.getId(), 0
-                            , content, AppConfig.ACCESS_TOKEN.getToken());
-
-                } else {
+                if (inStatus != null) {
                     content = content + "//@" + status.getUsername() + ":" + status.getContent();
-                    url = NetParams.turnWeibo(AppConfig.getUserId(), status.getId(), inStatus.getId()
-                            , content, AppConfig.ACCESS_TOKEN.getToken());
+                    inStatusId = inStatus.getId();
                 }
 
-                GsonRequest<NormalInfo> normalInfoGsonRequest = new GsonRequest<NormalInfo>(Request.Method.GET, url,
-                        NormalInfo.class, null, new Response.Listener<NormalInfo>() {
-                    @Override
-                    public void onResponse(NormalInfo response) {
-                        if (response.getCode() == 200) {
-                            showToast(response.getInfo());
-                            Intent data = new Intent();
-                            data.putExtra(SEND_FORWORD_SUCCESS, true);
-                            setResult(RESULT_OK, data);
-//                            switch (aty_stype) {
-//                                case MAIN_ATY_CODE:
-//                                    data.putExtra(SEND_FORWORD_SUCCESS, true);
-//                                    setResult(RESULT_OK, data);
-//                                    break;
-//                                case DETAIL_ATY_CODE:
-//                                    data.putExtra(SEND_FORWORD_SUCCESS, true);
-//                                    setResult(RESULT_OK, data);
-//                                    break;
-//                            }
-                            WriteStatusActivity.this.finish();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                StatusLogic.turnWeibo(AppConfig.getUserId(), status.getId(), inStatusId,
+                        content, AppConfig.ACCESS_TOKEN.getToken(), new StatusLogic.TurnWeiboCallBack() {
+                            @Override
+                            public void onTurnSuccess(Result result) {
+                                showSnackbar(result.getMsg());
+                                Intent data = new Intent();
+                                data.putExtra(SEND_FORWORD_SUCCESS, true);
+                                setResult(RESULT_OK, data);
+                                WriteStatusActivity.this.finish();
+                            }
 
-                    }
-                });
-                VolleyQueueSingleton.getInstance(this).addToRequestQueue(normalInfoGsonRequest);
+                            @Override
+                            public void onTurnFailure(String message) {
+                                showSnackbar(message);
+                                showLog(message);
+                            }
+
+                            @Override
+                            public void onTurnError(Throwable t) {
+                                showLog(t.getMessage());
+                            }
+                        });
                 break;
             case NEW_STATUS_TYPE:
 
@@ -480,7 +469,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
                     @Override
                     public void onSendFailure(String message) {
-                        Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG);
+                        showSnackbar(message);
                         showLog(message);
                     }
 
