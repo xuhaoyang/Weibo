@@ -286,64 +286,8 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
 
     private void LoadData() {
 
-
         StatusLogic.getStatusList(this, AppConfig.getUserId(), currPage,
                 AppConfig.ACCESS_TOKEN.getToken(), null, 1, this);
-
-//        GsonRequest<StatusReciver> request = new GsonRequest<StatusReciver>(Request.Method.POST,
-//                URLs.WEIBO_LIST,
-//                StatusReciver.class, null, new Response.Listener<StatusReciver>() {
-//            @Override
-//            public void onResponse(StatusReciver response) {
-//                if (response.getCode() == 200) {
-//                    totalPage = response.getTotalPage();
-//                    if (statuses != null) {
-//                        if (currPage == 1) {
-//                            statuses.clear();
-//                            statuses.addAll(response.getInfo());
-//                        } else {
-//                            //要判断是否有重复的
-//                            for (Status s : response.getInfo()) {
-//                                if (!statuses.contains(s)) {
-//                                    statuses.add(s);
-//                                }
-//                            }
-//                        }
-//                    } else {
-//                        //第一次获取到数据
-//                        statuses = response.getInfo();
-////                        updateRecyclerView();
-//                    }
-//                    statusAdpater.notifyDataSetChanged();
-//                } else {
-//                    //错误信息处理
-//                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
-//                }
-//                mSwipeRefreshLayout.setRefreshing(false);
-//                if (statusAdpater != null) {
-//                    statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
-//                }
-//                isLoading = false;
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                isLoading = false;
-//            }
-//        }) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String> map = new HashMap<String, String>();
-//                map.put("uid", uid + "");
-//                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-//                map.put("page", currPage + "");
-//                map.put("type", "1");
-//                return map;
-//            }
-//        };
-//
-//        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
 
     }
 
