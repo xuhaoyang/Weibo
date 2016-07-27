@@ -26,6 +26,8 @@ import com.xhy.weibo.activity.fragment.NotifyStatusFragment;
 import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.entity.NormalInfo;
+import com.xhy.weibo.logic.PushMessageLogic;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.network.VolleyQueueSingleton;
@@ -81,32 +83,27 @@ public class NotifyActivity extends BaseActivity {
     }
 
     private void clearMsg() {
-        GsonRequest<NormalInfo> request = new GsonRequest<NormalInfo>(Request.Method.POST,
-                URLs.WEIBO_SET_MSG, NormalInfo.class, null, new Response.Listener<NormalInfo>() {
-            @Override
-            public void onResponse(NormalInfo response) {
-                if (response.getCode() == 200) {
 
-                } else {
 
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+        PushMessageLogic.setMsg(AppConfig.getUserId(), 1, AppConfig.ACCESS_TOKEN.getToken(),
+                new PushMessageLogic.SetMsgCallBack() {
+                    @Override
+                    public void onSetMsgSuccess(Result result) {
+                        showLog(result.getMsg());
+                    }
 
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                map.put("uid", AppConfig.getUserId() + "");
-                map.put("flush", "1");
-                return map;
-            }
-        };
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+                    @Override
+                    public void onSetMsgFailure(String message) {
+                        showLog(message);
+                    }
+
+                    @Override
+                    public void onSetMsgError(Throwable t) {
+                        showLog(t.getMessage());
+                    }
+                });
+
+
     }
 
 

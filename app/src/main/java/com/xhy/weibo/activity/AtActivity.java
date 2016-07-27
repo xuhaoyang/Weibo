@@ -23,6 +23,7 @@ import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.UserAdpater;
 import com.xhy.weibo.base.BaseActivity;
 import com.xhy.weibo.constants.CommonConstants;
+import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.User;
 import com.xhy.weibo.entity.UsersReciver;
 import com.xhy.weibo.network.GsonRequest;
@@ -38,7 +39,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AtActivity extends BaseActivity {
+public class AtActivity extends BaseActivity implements UserLoginLogic.GetUserFollowListCallBack {
 
 
     @BindView(R.id.main_Car)
@@ -136,65 +137,52 @@ public class AtActivity extends BaseActivity {
     }
 
     private void LoadData() {
-        GsonRequest<UsersReciver> request = new GsonRequest<UsersReciver>(Request.Method.POST,
-                URLs.WEIBO_USER_FOLLOW_FANS_LIST,
-                UsersReciver.class, null, new Response.Listener<UsersReciver>() {
-            @Override
-            public void onResponse(UsersReciver response) {
 
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (users != null) {
-                        if (currPage == 1) {
-                            users.clear();
-                            users.addAll(response.getInfo());
-                        } else {
-                            //要判断是否有重复的
-                            for (User u : response.getInfo()) {
-                                if (!users.contains(u)) {
-                                    users.add(u);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        users = response.getInfo();
-                    }
-                    userAdpater.notifyDataSetChanged();
-                } else {
-                    //错误信息处理
-                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-                            .show();
-                }
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (userAdpater != null) {
-                    userAdpater.notifyItemRemoved(userAdpater.getItemCount());
-                }
-                isLoading = false;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                map.put("page", currPage + "");
-                if (!TextUtils.isEmpty(keyword)) {
-                    map.put("keyword", keyword);
-                }
-                map.put("uid", AppConfig.getUserId() + "");
-                map.put("type", "1");
+        UserLoginLogic.getUserFollowList(AppConfig.getUserId(), currPage, keyword, 1, AppConfig.ACCESS_TOKEN.getToken(), this);
+    }
 
-                return map;
-            }
-        };
 
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+    @Override
+    public void onFollowListSuccess(List<User> users, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.users.clear();
+            this.users.addAll(users);
+        } else {
+            //要判断是否有重复的
+            for (User u : users) {
+                if (!this.users.contains(u)) {
+                    this.users.add(u);
+                }
+            }
+        }
+        mSwipeRefreshLayout.setRefreshing(false);
+        if (userAdpater != null) {
+            userAdpater.notifyItemRemoved(userAdpater.getItemCount());
+        }
+        isLoading = false;
+        userAdpater.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onFollowListFailure(String message) {
+        showSnackbar(message);
+        showLog(message);
+        mSwipeRefreshLayout.setRefreshing(false);
+        if (userAdpater != null) {
+            userAdpater.notifyItemRemoved(userAdpater.getItemCount());
+        }
+        isLoading = false;
+    }
+
+    @Override
+    public void onFollowListError(Throwable error) {
+        showSnackbar(error.getMessage());
+        mSwipeRefreshLayout.setRefreshing(false);
+        if (userAdpater != null) {
+            userAdpater.notifyItemRemoved(userAdpater.getItemCount());
+        }
+        isLoading = false;
     }
 
     @Override
@@ -217,10 +205,6 @@ public class AtActivity extends BaseActivity {
         actionView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                if (TextUtils.isEmpty(query)) {
-//                    return false;
-//                }
-                //做点动作
                 keyword = query;
                 currPage = 1;
                 LoadData();
@@ -243,4 +227,14 @@ public class AtActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    private void showSnackbar(String msg) {
+        showSnackbar(msg, Snackbar.LENGTH_SHORT);
+    }
+
+    private void showSnackbar(String msg, int length) {
+        Snackbar.make(mCoordinatorLayout, msg, length).show();
+    }
+
 }

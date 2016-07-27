@@ -97,4 +97,18 @@ public interface ApiClientImpl {
                            @Field("type") int type,
                            @Field("token") String token);
 
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SET_MSG)
+    Call<Result> setMsg(@Field("uid") int uid,
+                        @Field("flush") int flush,
+                        @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_USER_FOLLOW_FANS_LIST)
+    Call<Result<List<User>>> getUserFollowList(@Field("uid") int uid,
+                                               @Field("page") int page,
+                                               @Field("keyword") String keyword,
+                                               @Field("type") int type,
+                                               @Field("token") String token);
 }

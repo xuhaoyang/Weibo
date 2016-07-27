@@ -3,12 +3,13 @@ package com.xhy.weibo.logic;
 import android.content.Context;
 
 import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.model.User;
 import com.xhy.weibo.model.Login;
 import com.xhy.weibo.model.Result;
+import com.xhy.weibo.model.User;
 import com.xhy.weibo.utils.Logger;
 
 import java.io.IOException;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -123,6 +124,15 @@ public class UserLoginLogic {
         });
     }
 
+    /**
+     * 取消关注
+     *
+     * @param currentUid 当前uid
+     * @param beUid      被关注uid
+     * @param type
+     * @param token
+     * @param callBack
+     */
     public static void delFollow(final int currentUid, final int beUid, final int type,
                                  final String token, final DelFollowCallBack callBack) {
         Call<Result> resultCall = ApiClient.getApi().delFollow(currentUid, beUid, type, token);
@@ -150,6 +160,42 @@ public class UserLoginLogic {
             public void onFailure(Call<Result> call, Throwable t) {
                 callBack.onDelFollowError(t);
 
+            }
+        });
+    }
+
+    /**
+     * 获取关注者的ID或粉丝者的ID列表
+     *
+     * @param uid      查询来自用户id
+     * @param page     查询多少页[默认10条一页]
+     * @param keyword  关键字查询
+     * @param type     1:关注 0:粉丝
+     * @param token
+     * @param callBack
+     */
+    public static void getUserFollowList(final int uid, final int page, final String keyword,
+                                         final int type, final String token,
+                                         final GetUserFollowListCallBack callBack) {
+        Call<Result<List<User>>> resultCall = ApiClient.getApi().getUserFollowList(uid, page, keyword, type, token);
+        resultCall.enqueue(new Callback<Result<List<User>>>() {
+            @Override
+            public void onResponse(Call<Result<List<User>>> call, Response<Result<List<User>>> response) {
+                if (response.isSuccessful()) {
+                    Result<List<User>> result = response.body();
+                    if (result.isSuccess()) {
+                        callBack.onFollowListSuccess(result.getInfo(), result.getTotalPage());
+                    } else {
+                        callBack.onFollowListFailure(result.getMsg());
+                    }
+                } else {
+                    callBack.onFollowListFailure("搜索失败");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<List<User>>> call, Throwable t) {
+                callBack.onFollowListError(t);
             }
         });
 
@@ -186,6 +232,14 @@ public class UserLoginLogic {
         void onUserInfoFailure(int errorCode, String errorMessage);
 
         void onUserInfoError(Throwable error);
+    }
+
+    public interface GetUserFollowListCallBack {
+        void onFollowListSuccess(List<User> users, int totalPage);
+
+        void onFollowListFailure(String message);
+
+        void onFollowListError(Throwable error);
     }
 
 

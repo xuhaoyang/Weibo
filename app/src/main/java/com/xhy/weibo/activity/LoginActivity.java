@@ -214,58 +214,6 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
             focusView.requestFocus();
         } else {
             showProgress(true);
-           /* GsonRequest<LoginReciver> request = new GsonRequest<LoginReciver>(Request.Method.POST,
-                    URLs.WEIBO_USER_LOGIN, LoginReciver.class, null,
-                    new Response.Listener<LoginReciver>() {
-                        @Override
-                        public void onResponse(LoginReciver response) {
-                            if (response.getCode() == 200) {
-                                Login login = response.getInfo();
-                                //设置密码 请求返回中不会返回密码 返回不安全
-                                login.setTokenStartTime(System.currentTimeMillis());
-                                login.setPassword(password);
-
-                                //数据库操作
-                                DBManager dbManager = new DBManager(LoginActivity.this);
-                                dbManager.openDatabase();
-                                SQLiteDatabase db = dbManager.getDatabase();
-                                if (userDB.insertLogin(db, login)) {
-                                    AppConfig.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
-                                    AppConfig.ACCESS_TOKEN.setToken(login.getToken());
-                                    AppConfig.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
-                                    intent2Activity(InitActivity.class);
-                                    finish();
-                                } else {
-                                    showProgress(false);
-                                    mPasswordView.setError("数据库错误");
-                                    focusView = mPasswordView;
-                                    focusView.requestFocus();
-                                }
-                                dbManager.closeDatabase();
-
-                            } else {
-                                showProgress(false);
-                                mPasswordView.setError(response.getError());
-                                focusView = mPasswordView;
-                                focusView.requestFocus();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    showProgress(false);
-                    mPasswordView.setError("错误,请稍后重试");
-                }
-            }) {
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> map = new HashMap<String, String>();
-                    map.put("account", account);
-                    map.put("password", password);
-                    return map;
-                }
-            };
-            /*VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);*/
             UserLoginLogic.login(this, account, password, this);
 //            mAuthTask = new UserLoginTask(account, password);
 //            mAuthTask.execute((Void) null);

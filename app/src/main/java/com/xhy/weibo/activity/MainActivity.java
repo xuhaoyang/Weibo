@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivity
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
     }
 
-    private void initUserinfo(){
+    private void initUserinfo() {
         initDB();
         List<User> users = userDB.QueryUsers(db, "id=?", new String[]{AppConfig.getUserId() + ""});
         dbManager.closeDatabase();
@@ -181,9 +181,10 @@ public class MainActivity extends BaseActivity
             UpdataUserinfo();
         }
     }
+
     private void UpdataUserinfo() {
 
-        UserLoginLogic.getUserinfo(this, AppConfig.getUserId(), null, AppConfig.ACCESS_TOKEN.getToken(), this);
+        UserLoginLogic.getUserinfo(this, AppConfig.getUserId(), null, 0, AppConfig.ACCESS_TOKEN.getToken(), this);
 
     }
 

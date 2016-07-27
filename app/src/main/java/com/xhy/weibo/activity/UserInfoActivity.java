@@ -9,37 +9,25 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.constants.CommonConstants;
-import com.xhy.weibo.entity.NormalInfo;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.model.User;
-import com.xhy.weibo.entity.UserReciver;
-import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

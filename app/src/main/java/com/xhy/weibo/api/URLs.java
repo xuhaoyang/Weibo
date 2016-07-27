@@ -65,7 +65,7 @@ public interface URLs {
     //获取该用户所有提及的评论
     String WEIBO_GET_COMMENT_LIST = API_VERSION + "getCommentList.html";
 
-    //获取关注者的ID与粉丝者的ID列表
+    //获取关注者的ID或粉丝者的ID列表
     String WEIBO_USER_FOLLOW_FANS_LIST = API_VERSION + "getUserFollowList.html";
 
 
