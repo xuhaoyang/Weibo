@@ -1,39 +1,30 @@
 package com.xhy.weibo.activity;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.constants.CommonConstants;
+import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.entity.StatusReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class KeepStatusActivity extends BaseActivity {
+
+public class KeepStatusActivity extends BaseActivity implements StatusLogic.GetKeepStatusByUidCallBack {
 
 
     public static final int REFRESH_DATA = 1;
@@ -59,7 +50,7 @@ public class KeepStatusActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case REFRESH_DATA:
-                    Snackbar.make(mCoordinatorLayout,"取消收藏成功",Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(mCoordinatorLayout, "取消收藏成功", Snackbar.LENGTH_SHORT).show();
                     currPage = 1;
                     LoadData();
 
@@ -144,62 +135,7 @@ public class KeepStatusActivity extends BaseActivity {
 
     private void LoadData() {
 
-//        NetParams.getWeiboList(AppConfig.getUserId(),
-        //CommonConstants.TOKEN, begin, CommonConstants.STATUS_COUNT_PAGE)
-        GsonRequest<StatusReciver> request = new GsonRequest<StatusReciver>(Request.Method.POST,
-                URLs.WEIBO_GET_KEEP_LIST,
-                StatusReciver.class, null, new Response.Listener<StatusReciver>() {
-            @Override
-            public void onResponse(StatusReciver response) {
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (statuses != null) {
-                        if (currPage == 1) {
-                            statuses.clear();
-                            statuses.addAll(response.getInfo());
-                        } else {
-                            //要判断是否有重复的
-                            for (Status s : response.getInfo()) {
-                                if (!statuses.contains(s)) {
-                                    statuses.add(s);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        statuses = response.getInfo();
-//                        updateRecyclerView();
-                    }
-                    statusAdpater.notifyDataSetChanged();
-                    showLog("-->statuses size:" + statuses.size());
-                    showLog("-->statusAdpater size:" + statusAdpater.getItemCount());
-                } else {
-                    //错误信息处理
-                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (statusAdpater != null) {
-                    statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
-                }
-                isLoading = false;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("uid", AppConfig.getUserId() + "");
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                map.put("page", currPage + "");
-                return map;
-            }
-        };
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+        StatusLogic.getKeepStatusListByUid(this, AppConfig.getUserId(), currPage, AppConfig.ACCESS_TOKEN.getToken(), this);
     }
 
 
@@ -213,6 +149,52 @@ public class KeepStatusActivity extends BaseActivity {
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+
+    private void stopRefresh() {
+        mSwipeRefreshLayout.setRefreshing(false);
+        isLoading = false;
+        if (statusAdpater != null) {
+            statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
+        }
+    }
+
+    private void showSnackbar(String msg) {
+        showSnackbar(msg, Snackbar.LENGTH_SHORT);
+    }
+
+    private void showSnackbar(String msg, int length) {
+        Snackbar.make(mCoordinatorLayout, msg, length).show();
+    }
+
+    @Override
+    public void onKeepStatusSuccess(List<Status> statuses, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.statuses.clear();
+            this.statuses.addAll(statuses);
+        } else {
+            for (Status s : statuses) {
+                if (!this.statuses.contains(s)) {
+                    this.statuses.add(s);
+                }
+            }
+        }
+        statusAdpater.notifyDataSetChanged();
+        stopRefresh();
+    }
+
+    @Override
+    public void onKeepStatusFailure(String message) {
+        showSnackbar(message);
+        stopRefresh();
+    }
+
+    @Override
+    public void onKeepStatusError(Throwable t) {
+        showLog(t.getMessage());
+        stopRefresh();
     }
 }
 

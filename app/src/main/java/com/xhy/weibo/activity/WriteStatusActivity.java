@@ -34,7 +34,7 @@ import com.xhy.weibo.adapter.EmotionPagerAdapter;
 import com.xhy.weibo.adapter.UserAdpater;
 import com.xhy.weibo.adapter.WriteStatusGridImgsAdapter;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.entity.Comment;
+import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.entity.Picture;
 import com.xhy.weibo.entity.PictureReciver;
 import com.xhy.weibo.logic.CommentLogic;

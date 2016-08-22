@@ -1,8 +1,8 @@
 package com.xhy.weibo.logic;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
@@ -15,7 +15,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Field;
 
 /**
  * Created by xuhaoyang on 16/7/20.
@@ -63,6 +62,7 @@ public class StatusLogic {
         });
     }
 
+
     /**
      * 获得微博列表数据
      *
@@ -77,7 +77,6 @@ public class StatusLogic {
     public static void getStatusList(final Context context, final int uid, final int page,
                                      final String token, final String gid, final int type, final GetStatusListCallBack callBack) {
         Call<Result<List<Status>>> resultCall = ApiClient.getApi().getStatusList(uid, page, token, gid, type);
-        Logger.show(TAG, "uid:" + uid + ",page" + page + ",gid" + gid + "type" + type);
         resultCall.enqueue(new Callback<Result<List<Status>>>() {
             @Override
             public void onResponse(Call<Result<List<Status>>> call, Response<Result<List<Status>>> response) {
@@ -105,6 +104,87 @@ public class StatusLogic {
                 callBack.onStatusListError(t);
             }
         });
+    }
+
+    /**
+     * 获得该用户收藏的微博列表 根据uid
+     *
+     * @param context
+     * @param uid
+     * @param page
+     * @param token
+     * @param callBack
+     */
+    public static void getKeepStatusListByUid(final Context context, final int uid, final int page,
+                                              final String token, final GetKeepStatusByUidCallBack callBack) {
+        Call<Result<List<Status>>> resultCall = ApiClient.getApi().getKeepStatusListByUid(uid, page, token);
+        resultCall.enqueue(new Callback<Result<List<Status>>>() {
+            @Override
+            public void onResponse(Call<Result<List<Status>>> call, Response<Result<List<Status>>> response) {
+                if (response.isSuccessful()) {
+                    Result<List<Status>> listResult = response.body();
+                    if (listResult.isSuccess()) {
+                        callBack.onKeepStatusSuccess(listResult.getInfo(), listResult.getTotalPage());
+                    } else {
+                        callBack.onKeepStatusFailure(listResult.getMsg());
+                    }
+                } else {
+                    callBack.onKeepStatusFailure("获取失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<List<Status>>> call, Throwable t) {
+                callBack.onKeepStatusError(t);
+            }
+        });
+    }
+
+
+    /**
+     * 获得转发微博列表
+     *
+     * @param context
+     * @param wid
+     * @param page
+     * @param token
+     * @param callBack
+     */
+    public static void getTurnStatusList(final Context context, final int wid, final int page,
+                                         final String token, final GetTurnStatusCallBack callBack) {
+
+        Call<Result<List<Status>>> resultCall = ApiClient.getApi().getTurnStatusList(wid, token, page);
+        resultCall.enqueue(new Callback<Result<List<Status>>>() {
+            @Override
+            public void onResponse(Call<Result<List<Status>>> call, Response<Result<List<Status>>> response) {
+                if (response.isSuccessful()) {
+                    Result<List<Status>> result = response.body();
+                    if (result.isSuccess()) {
+                        callBack.onTurnStatusListSuccess(result.getInfo(), result.getTotalPage());
+                    } else {
+                        callBack.onTurnStatusListFailure(result.getMsg());
+                    }
+                } else {
+                    callBack.onTurnStatusListFailure("获取失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<List<Status>>> call, Throwable t) {
+                callBack.onTurnStatusListError(t);
+            }
+        });
+
     }
 
     /**
@@ -225,6 +305,38 @@ public class StatusLogic {
         });
     }
 
+    public static void getAtStatusList(final Context context, final int uid, final int page, final String token,
+                                       final GetAtStatusListCallBack callBack) {
+
+        Call<Result<List<Status>>> resultCall = ApiClient.getApi().getAtStatusList(token, uid, page);
+        resultCall.enqueue(new Callback<Result<List<Status>>>() {
+            @Override
+            public void onResponse(Call<Result<List<Status>>> call, Response<Result<List<Status>>> response) {
+                if (response.isSuccessful()) {
+                    Result<List<Status>> result = response.body();
+                    if (result.isSuccess()) {
+                        callBack.onGetAtStatusSuccess(result.getInfo(), result.getTotalPage());
+                    } else {
+                        callBack.onGetAtStatusFailure(result.getMsg());
+                    }
+                } else {
+                    callBack.onGetAtStatusFailure("获取失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        Logger.show(TAG, e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<List<Status>>> call, Throwable t) {
+                callBack.onGetAtStatusError(t);
+            }
+        });
+
+    }
+
     /**
      * 转发微博
      *
@@ -241,8 +353,8 @@ public class StatusLogic {
         resultCall.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
-                Result result = response.body();
                 if (response.isSuccessful()) {
+                    Result result = response.body();
                     if (result.isSuccess()) {
                         callBack.onTurnSuccess(result);
                     } else {
@@ -263,10 +375,37 @@ public class StatusLogic {
                 callBack.onTurnError(t);
             }
         });
-
     }
 
+    public static void getSearchStatusList(final Context context, final String keyword, final int page,
+                                           final String token, final GetSearchStatusListCallBack callBack) {
+        Call<Result<List<Status>>> resultCall = ApiClient.getApi().getSearchStatusList(token, keyword, page);
+        resultCall.enqueue(new Callback<Result<List<Status>>>() {
+            @Override
+            public void onResponse(Call<Result<List<Status>>> call, Response<Result<List<Status>>> response) {
+                if (response.isSuccessful()) {
+                    Result<List<Status>> result = response.body();
+                    if (result.isSuccess()) {
+                        callBack.onGetSearchStatusSuccess(result.getInfo(), result.getTotalPage());
+                    } else {
+                        callBack.onGetSearchStatusFailure(result.getMsg());
+                    }
+                } else {
+                    callBack.onGetSearchStatusFailure("请求失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Result<List<Status>>> call, Throwable t) {
+                callBack.onGetSearchStatusError(t);
+            }
+        });
+    }
 
     public interface SendWeiboCallBack {
         void onSendSuccess(Result result);
@@ -292,6 +431,22 @@ public class StatusLogic {
         void onGroupError(Throwable t);
     }
 
+    public interface GetKeepStatusByUidCallBack {
+        void onKeepStatusSuccess(List<Status> statuses, int totalPage);
+
+        void onKeepStatusFailure(String message);
+
+        void onKeepStatusError(Throwable t);
+    }
+
+    public interface GetTurnStatusCallBack {
+        void onTurnStatusListSuccess(List<Status> statuses, int totalPage);
+
+        void onTurnStatusListFailure(String message);
+
+        void onTurnStatusListError(Throwable t);
+    }
+
     public interface GetStatusListCallBack {
         void onStatusListSuccess(List<Status> statuses, int totalPage);
 
@@ -314,6 +469,22 @@ public class StatusLogic {
         void onDelKeepFailure(String message);
 
         void onDelKeepError(Throwable t);
+    }
+
+    public interface GetAtStatusListCallBack {
+        void onGetAtStatusSuccess(List<Status> statuses, int totalPage);
+
+        void onGetAtStatusFailure(String message);
+
+        void onGetAtStatusError(Throwable t);
+    }
+
+    public interface GetSearchStatusListCallBack {
+        void onGetSearchStatusSuccess(List<Status> statuses, int totalPage);
+
+        void onGetSearchStatusFailure(String message);
+
+        void onGetSearchStatusError(Throwable t);
     }
 
 }

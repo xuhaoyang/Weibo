@@ -17,7 +17,8 @@ public interface URLs {
     String WEIBO_GET_GROUP = API_VERSION + "getGroup.html";
     //获取微博列表
     String WEIBO_GET_LIST = API_VERSION + "weiboList.html";
-
+    //获取收藏列表
+    String WEIBO_GET_KEEP_LIST = API_VERSION + "getKeepList.html";
 
     //用户信息
     String WEIBO_GET_USERINFO = API_VERSION + "getUserInfo.html";
@@ -39,31 +40,44 @@ public interface URLs {
     //添加关注
     String WEIBO_ADD_FOLLOW = API_VERSION + "addFollow.html";
 
-    //图片地址
-    String UPLOAD_URL = BASE_URL + "/Uploads/";
-    String AVATAR_IMG_URL = UPLOAD_URL + "Face/";//头像
-    String PIC_URL = UPLOAD_URL + "Pic/";
 
+    //获取热门话题
+    String WEIBO_GET_HOTS = API_VERSION + "getHots.html";
 
-    //上传图片API
-    String WEIBO_UPLOAD_PIC = API_VERSION + "uploadUserPic.html";
+    //获取单条微博的评论
+    String WEIBO_GET_STATUS_ONLY_COMMENT_LIST = API_VERSION + "getStatusOnlyComment.html";
+
+    //获取该用户所有提及的评论
+    String WEIBO_GET_COMMENT_LIST = API_VERSION + "getCommentList.html";
+
+    //每条微博的转发列信息
+    String WEIBO_GET_TURN_LIST = API_VERSION + "getWeiboTurnList.html";
+
+    //获得提及我的微博信息 列表
+    String WEIBO_ATM_LIST = API_VERSION + "getAtmList.html";
+
 
 
     //搜索微博
     String WEIBO_SEARCH_LIST = API_VERSION + "getSearchWeibo.html";
     //搜索微博
     String WEIBO_USER_SEARCH_LIST = API_VERSION + "getSearchUser.html";
-    //获取收藏列表
-    String WEIBO_GET_KEEP_LIST = API_VERSION + "getKeepList.html";
-    //获得提及我的微博列表
-    String WEIBO_ATM_LIST = API_VERSION + "getAtmList.html";
+
+    //图片地址
+    String UPLOAD_URL = BASE_URL + "/Uploads/";
+    String AVATAR_IMG_URL = UPLOAD_URL + "Face/";//头像
+    String PIC_URL = UPLOAD_URL + "Pic/";
+
+    //上传图片API
+    String WEIBO_UPLOAD_PIC = API_VERSION + "uploadUserPic.html";
 
 
-    //获取单条微博的评论
-    String WEIBO_ONE_COMMENT_LIST = API_VERSION + "getComment.html";
 
-    //获取该用户所有提及的评论
-    String WEIBO_GET_COMMENT_LIST = API_VERSION + "getCommentList.html";
+
+
+
+
+
 
     //获取关注者的ID或粉丝者的ID列表
     String WEIBO_USER_FOLLOW_FANS_LIST = API_VERSION + "getUserFollowList.html";
@@ -76,11 +90,9 @@ public interface URLs {
 
 
 
-    //获取热门话题
-    String WEIBO_GET_HOTS = API_VERSION + "getHots.html";
 
-    //每条微博的转发列信息
-    String WEIBO_TURN_LIST = API_VERSION + "getWeiboTurnList.html";
+
+
 
 
 

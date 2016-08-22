@@ -9,32 +9,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.UserAdpater;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.User;
-import com.xhy.weibo.entity.UsersReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

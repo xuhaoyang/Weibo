@@ -11,31 +11,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.StatusDetailActivity;
 import com.xhy.weibo.adapter.KeepListAdpater;
 import com.xhy.weibo.base.BaseFragment;
-import com.xhy.weibo.constants.CommonConstants;
+import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.entity.StatusReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
-import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.RecycleViewDivider;
-import com.xhy.weibo.utils.ToastUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +30,7 @@ import butterknife.ButterKnife;
 /**
  * Created by xuhaoyang on 16/5/16.
  */
-public class KeepFragment extends BaseFragment {
+public class KeepFragment extends BaseFragment implements StatusLogic.GetTurnStatusCallBack {
 
     private View root;
     @BindView(R.id.swipeRefreshLayout_comment)
@@ -82,7 +69,7 @@ public class KeepFragment extends BaseFragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                LoadData(currPage = 1, wid);
+                LoadData();
             }
         });
 
@@ -102,7 +89,7 @@ public class KeepFragment extends BaseFragment {
                         if (!mSwipeRefreshLayout.isRefreshing()) {
                             mSwipeRefreshLayout.setRefreshing(true);
                         }
-                        LoadData(currPage, wid);
+                        LoadData();
                     }
                 }
             }
@@ -113,7 +100,16 @@ public class KeepFragment extends BaseFragment {
                 lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
             }
         });
-        LoadData(1, wid);
+
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                isLoading = true;
+                LoadData();
+            }
+        });
         return root;
     }
 
@@ -132,59 +128,9 @@ public class KeepFragment extends BaseFragment {
         mRecyclerView.setAdapter(keepListAdpater);
     }
 
-    private void LoadData(final int page, final int wid) {
-        Logger.show("当前页", "当前页:" + page);
-        GsonRequest<StatusReciver> request = new GsonRequest<StatusReciver>(Request.Method.POST,
-                URLs.WEIBO_TURN_LIST, StatusReciver.class, null, new Response.Listener<StatusReciver>() {
-            @Override
-            public void onResponse(StatusReciver response) {
-                Logger.show(getClass().getName(), response.toString());
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (statuses != null) {
-                        if (page == 1) {
-                            statuses.clear();
-                            statuses.addAll(response.getInfo());
-                        } else {
-                            //要判断是否有重复的
-                            for (Status s : response.getInfo()) {
-                                if (!statuses.contains(s)) {
-                                    statuses.add(s);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        statuses = response.getInfo();
-                    }
-                    keepListAdpater.notifyDataSetChanged();
-                } else {
-                    if (statuses.size() != 0) {
-                        ToastUtils.showToast(getContext(), response.getError(), Toast.LENGTH_SHORT);
-                    }
-                }
-                mSwipeRefreshLayout.setRefreshing(false);
-//                Logger.show(getClass().getName(),keepListAdpater.getItemCount()+"个");
-                isLoading = false;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                map.put("wid", wid + "");
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                map.put("page", page + "");
+    private void LoadData() {
 
-                return map;
-            }
-        };
-
-        VolleyQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+        StatusLogic.getTurnStatusList(getContext(), wid, currPage, AppConfig.ACCESS_TOKEN.getToken(), this);
     }
 
     public Handler mHandler = new Handler() {
@@ -192,7 +138,8 @@ public class KeepFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case REFRESH_DATA:
-                    LoadData(1, wid);
+                    currPage = 1;
+                    LoadData();
                     break;
             }
         }
@@ -201,5 +148,40 @@ public class KeepFragment extends BaseFragment {
 
     public static KeepFragment newInstance() {
         return new KeepFragment();
+    }
+
+    @Override
+    public void onTurnStatusListSuccess(List<Status> statuses, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.statuses.clear();
+            this.statuses.addAll(statuses);
+        } else {
+            for (Status s : statuses) {
+                if (!this.statuses.contains(s)) {
+                    this.statuses.add(s);
+                }
+            }
+        }
+        keepListAdpater.notifyDataSetChanged();
+        stopRefresh();
+    }
+
+
+    @Override
+    public void onTurnStatusListFailure(String message) {
+        showLog(message);
+        stopRefresh();
+    }
+
+    @Override
+    public void onTurnStatusListError(Throwable t) {
+        showLog(t.getMessage());
+        stopRefresh();
+    }
+
+    private void stopRefresh() {
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }

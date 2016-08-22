@@ -1,6 +1,5 @@
 package com.xhy.weibo.activity.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,32 +10,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
-import com.xhy.weibo.activity.StatusDetailActivity;
 import com.xhy.weibo.adapter.CommentAdpater;
 import com.xhy.weibo.base.BaseFragment;
-import com.xhy.weibo.constants.CommonConstants;
-import com.xhy.weibo.entity.Comment;
-import com.xhy.weibo.entity.CommentReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.NetParams;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
-import com.xhy.weibo.utils.Logger;
+import com.xhy.weibo.logic.CommentLogic;
+import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.utils.RecycleViewDivider;
-import com.xhy.weibo.utils.ToastUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +28,7 @@ import butterknife.ButterKnife;
 /**
  * Created by xuhaoyang on 16/5/16.
  */
-public class NotifyCommentFragment extends BaseFragment {
+public class NotifyCommentFragment extends BaseFragment implements CommentLogic.GetUserCommentListCallBack {
 
     private View root;
     @BindView(R.id.swipeRefreshLayout_comment)
@@ -132,58 +116,8 @@ public class NotifyCommentFragment extends BaseFragment {
     }
 
     private void LoadData() {
-//        NetParams.getComment(wid, page, AppConfig.ACCESS_TOKEN.getToken())
-        GsonRequest<CommentReciver> request = new GsonRequest<CommentReciver>(Request.Method.POST,
-                URLs.WEIBO_GET_COMMENT_LIST, CommentReciver.class, null, new Response.Listener<CommentReciver>() {
-            @Override
-            public void onResponse(CommentReciver response) {
-                Logger.show(getClass().getName(), response.toString());
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (comments != null) {
-                        if (currPage == 1) {
-                            comments.clear();
-                            comments.addAll(response.getInfo());
-                            commentAdpater.setLastAnimatedPosition(-1);
-                        } else {
-                            //要判断是否有重复的
-                            for (Comment c : response.getInfo()) {
-                                if (!comments.contains(c)) {
-                                    comments.add(c);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        comments = response.getInfo();
-                    }
-                    commentAdpater.notifyDataSetChanged();
-                } else {
-                    if (comments.size() != 0) {
-                        ToastUtils.showToast(getContext(), response.getError(), Toast.LENGTH_SHORT);
-                    }
-                }
-                mSwipeRefreshLayout.setRefreshing(false);
-                isLoading = false;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String, String> map = new HashMap<>();
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                map.put("uid", AppConfig.getUserId() + "");
-                map.put("page", currPage + "");
-                return map;
-            }
-        };
-
-        VolleyQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+        CommentLogic.getUserCommentList(getContext(), AppConfig.getUserId(), currPage,
+                AppConfig.ACCESS_TOKEN.getToken(), this);
     }
 
     public Handler mHandler = new Handler() {
@@ -201,5 +135,42 @@ public class NotifyCommentFragment extends BaseFragment {
 
     public static NotifyCommentFragment newInstance() {
         return new NotifyCommentFragment();
+    }
+
+    @Override
+    public void onGetUserCommentSuccess(List<Comment> comments, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.comments.clear();
+            this.comments.addAll(comments);
+            commentAdpater.setLastAnimatedPosition(-1);
+        } else {
+            //要判断是否有重复的
+            for (Comment c : comments) {
+                if (!this.comments.contains(c)) {
+                    this.comments.add(c);
+                }
+            }
+        }
+        commentAdpater.notifyDataSetChanged();
+        stopRrefresh();
+    }
+
+    @Override
+    public void onGetUserCommentFailure(String message) {
+        showLog(message);
+        stopRrefresh();
+    }
+
+    @Override
+    public void onGetUserCommentError(Throwable t) {
+        showToast("无法获取");
+        showLog(t.getMessage());
+        stopRrefresh();
+    }
+
+    private void stopRrefresh() {
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }

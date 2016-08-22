@@ -8,28 +8,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseFragment;
-import com.xhy.weibo.constants.CommonConstants;
+import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.entity.StatusReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
-import com.xhy.weibo.utils.ToastUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +25,7 @@ import butterknife.ButterKnife;
 /**
  * Created by xuhaoyang on 16/5/22.
  */
-public class NotifyStatusFragment extends BaseFragment {
+public class NotifyStatusFragment extends BaseFragment implements StatusLogic.GetAtStatusListCallBack {
 
 
     @BindView(R.id.swipeRefreshLayout_searchStatus)
@@ -127,61 +115,43 @@ public class NotifyStatusFragment extends BaseFragment {
     }
 
     private void LoadData() {
-        GsonRequest<StatusReciver> request = new GsonRequest<StatusReciver>(Request.Method.POST,
-                URLs.WEIBO_ATM_LIST,
-                StatusReciver.class, null, new Response.Listener<StatusReciver>() {
-            @Override
-            public void onResponse(StatusReciver response) {
 
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (statuses != null) {
-                        if (currPage == 1) {
-                            statuses.clear();
-                            statuses.addAll(response.getInfo());
-                        } else {
-                            //要判断是否有重复的
-                            for (Status s : response.getInfo()) {
-                                if (!statuses.contains(s)) {
-                                    statuses.add(s);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        statuses = response.getInfo();
-                    }
-                    statusAdpater.notifyDataSetChanged();
-                } else {
-                    //错误信息处理
-//                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
-                    ToastUtils.showToast(getContext(), response.getError(), Toast.LENGTH_SHORT);
+        StatusLogic.getAtStatusList(getContext(), AppConfig.getUserId(), currPage,
+                AppConfig.ACCESS_TOKEN.getToken(), this);
 
+    }
+
+    @Override
+    public void onGetAtStatusSuccess(List<Status> statuses, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.statuses.clear();
+            this.statuses.addAll(statuses);
+        } else {
+            for (Status s : statuses) {
+                if (!this.statuses.contains(s)) {
+                    this.statuses.add(s);
                 }
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (statusAdpater != null) {
-                    statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
-                }
-                isLoading = false;
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                map.put("page", currPage + "");
-                map.put("uid", AppConfig.getUserId() + "");
+        }
+        statusAdpater.notifyDataSetChanged();
+        stopRefresh();
+    }
 
-                return map;
-            }
-        };
+    @Override
+    public void onGetAtStatusFailure(String message) {
+        showLog(message);
+        stopRefresh();
+    }
 
-        VolleyQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    @Override
+    public void onGetAtStatusError(Throwable t) {
+        showLog(t.getMessage());
+        stopRefresh();
+    }
+
+    private void stopRefresh() {
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }

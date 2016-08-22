@@ -11,24 +11,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.StatusDetailActivity;
 import com.xhy.weibo.adapter.CommentAdpater;
 import com.xhy.weibo.base.BaseFragment;
-import com.xhy.weibo.entity.Comment;
-import com.xhy.weibo.entity.CommentReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.NetParams;
-import com.xhy.weibo.network.VolleyQueueSingleton;
-import com.xhy.weibo.utils.Logger;
+import com.xhy.weibo.logic.CommentLogic;
+import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.utils.RecycleViewDivider;
-import com.xhy.weibo.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,17 +30,18 @@ import butterknife.ButterKnife;
 /**
  * Created by xuhaoyang on 16/5/16.
  */
-public class CommentFragment extends BaseFragment {
+public class CommentFragment extends BaseFragment implements CommentLogic.GetCommentCallBack {
 
-    private View root;
+    public final static String WID = "wid";
+    public final static int REFRESH_DATA = 100;
+
+    View root;
     @BindView(R.id.swipeRefreshLayout_comment)
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recycler_view_comment)
     RecyclerView mRecyclerView;
     LinearLayoutManager linearLayoutManager;
 
-    public final static String WID = "wid";
-    public final static int REFRESH_DATA = 100;
 
     private int wid;
     private int currPage = 1;
@@ -78,7 +70,7 @@ public class CommentFragment extends BaseFragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                LoadData(currPage = 1, wid);
+                LoadData();
             }
         });
 
@@ -98,7 +90,7 @@ public class CommentFragment extends BaseFragment {
                         if (!mSwipeRefreshLayout.isRefreshing()) {
                             mSwipeRefreshLayout.setRefreshing(true);
                         }
-                        LoadData(currPage, wid);
+                        LoadData();
                     }
                 }
             }
@@ -109,7 +101,15 @@ public class CommentFragment extends BaseFragment {
                 lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
             }
         });
-        LoadData(1, wid);
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                isLoading = true;
+                LoadData();
+            }
+        });
         return root;
     }
 
@@ -128,50 +128,8 @@ public class CommentFragment extends BaseFragment {
         mRecyclerView.setAdapter(commentAdpater);
     }
 
-    private void LoadData(final int page, int wid) {
-        Logger.show("当前页", "当前页:" + page);
-        GsonRequest<CommentReciver> request = new GsonRequest<CommentReciver>(Request.Method.GET,
-                NetParams.getComment(wid, page, AppConfig.ACCESS_TOKEN.getToken()), CommentReciver.class, null, new Response.Listener<CommentReciver>() {
-            @Override
-            public void onResponse(CommentReciver response) {
-                Logger.show(getClass().getName(), response.toString());
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (comments != null) {
-                        if (page == 1) {
-                            comments.clear();
-                            comments.addAll(response.getInfo());
-                            commentAdpater.setLastAnimatedPosition(-1);
-                        } else {
-                            //要判断是否有重复的
-                            for (Comment c : response.getInfo()) {
-                                if (!comments.contains(c)) {
-                                    comments.add(c);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        comments = response.getInfo();
-                    }
-                    commentAdpater.notifyDataSetChanged();
-                } else {
-                    if (comments.size() != 0) {
-                        ToastUtils.showToast(getContext(), response.getError(), Toast.LENGTH_SHORT);
-                    }
-                }
-                mSwipeRefreshLayout.setRefreshing(false);
-//                Logger.show(getClass().getName(),commentAdpater.getItemCount()+"个");
-                isLoading = false;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-            }
-        });
-
-        VolleyQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    private void LoadData() {
+        CommentLogic.getStatusOnlyCommentList(getContext(), wid, AppConfig.ACCESS_TOKEN.getToken(), this);
     }
 
     public Handler mHandler = new Handler() {
@@ -179,7 +137,8 @@ public class CommentFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case REFRESH_DATA:
-                    LoadData(1, wid);
+                    currPage = 1;
+                    LoadData();
                     break;
             }
         }
@@ -188,5 +147,41 @@ public class CommentFragment extends BaseFragment {
 
     public static CommentFragment newInstance() {
         return new CommentFragment();
+    }
+
+    @Override
+    public void onGetCommentSuccess(List<Comment> comments, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.comments.clear();
+            this.comments.addAll(comments);
+            commentAdpater.setLastAnimatedPosition(-1);
+        } else {
+            //要判断是否有重复的
+            for (Comment c : comments) {
+                if (!this.comments.contains(c)) {
+                    this.comments.add(c);
+                }
+            }
+        }
+        commentAdpater.notifyDataSetChanged();
+        stopRrefresh();
+    }
+
+    @Override
+    public void onGetCommentFailure(String message) {
+        showLog(message);
+        stopRrefresh();
+    }
+
+    @Override
+    public void onGetCommentError(Throwable t) {
+        showLog(t.getMessage());
+        stopRrefresh();
+    }
+
+    private void stopRrefresh() {
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }

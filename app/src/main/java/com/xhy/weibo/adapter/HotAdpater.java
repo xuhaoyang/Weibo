@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.xhy.weibo.R;
 import com.xhy.weibo.activity.SearchActivity;
-import com.xhy.weibo.entity.Hot;
+import com.xhy.weibo.model.Hot;
 
 import java.util.List;
 

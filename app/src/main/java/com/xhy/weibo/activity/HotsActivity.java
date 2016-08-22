@@ -1,36 +1,23 @@
 package com.xhy.weibo.activity;
 
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.HotAdpater;
-import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.constants.CommonConstants;
-import com.xhy.weibo.entity.Hot;
-import com.xhy.weibo.entity.HotReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
+import com.xhy.weibo.logic.HotLogic;
+import com.xhy.weibo.model.Hot;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,35 +66,33 @@ public class HotsActivity extends BaseActivity {
     }
 
     private void LoadData() {
-        GsonRequest<HotReciver> request = new GsonRequest<HotReciver>(Request.Method.POST,
-                URLs.WEIBO_GET_HOTS, HotReciver.class, null, new Response.Listener<HotReciver>() {
-            @Override
-            public void onResponse(HotReciver response) {
-                if (response.getCode() == 200) {
-                    hots.clear();
-                    hots.addAll(response.getInfo());
-                    hotAdpater.notifyDataSetChanged();
-                    showLog("-->" + hots.toString());
-                } else {
-                    Snackbar.make(mCoordinatorLayout, "没有啦", Snackbar.LENGTH_LONG)
-                            .show();
-                }
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
 
-            }
-        }) {
+        HotLogic.getHotList(this, AppConfig.ACCESS_TOKEN.getToken(), new HotLogic.GetHotListCallBack() {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                return map;
+            public void onGetSuccess(List<Hot> hots) {
+                HotsActivity.this.hots.clear();
+                HotsActivity.this.hots.addAll(hots);
+                hotAdpater.notifyDataSetChanged();
+                stopSwipeRefresh();
             }
-        };
-        VolleyQueueSingleton.getInstance(this).addToRequestQueue(request);
+
+            @Override
+            public void onGetFailure(String message) {
+                showSnackbar(message);
+                stopSwipeRefresh();
+            }
+
+            @Override
+            public void onGetError(Throwable t) {
+                showLog(t.getMessage());
+                stopSwipeRefresh();
+            }
+        });
+
+    }
+
+    private void stopSwipeRefresh(){
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -120,5 +105,13 @@ public class HotsActivity extends BaseActivity {
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private void showSnackbar(String msg) {
+        showSnackbar(msg, Snackbar.LENGTH_SHORT);
+    }
+
+    private void showSnackbar(String msg, int length) {
+        Snackbar.make(mCoordinatorLayout, msg, length).show();
     }
 }

@@ -1,39 +1,22 @@
 package com.xhy.weibo.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
-import com.xhy.weibo.activity.fragment.MaterialUpConceptFakePage;
 import com.xhy.weibo.activity.fragment.NotifyCommentFragment;
 import com.xhy.weibo.activity.fragment.NotifyStatusFragment;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.constants.CommonConstants;
-import com.xhy.weibo.entity.NormalInfo;
 import com.xhy.weibo.logic.PushMessageLogic;
 import com.xhy.weibo.model.Result;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

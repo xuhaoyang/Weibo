@@ -19,6 +19,7 @@ import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.base.BaseFragment;
 import com.xhy.weibo.constants.CommonConstants;
+import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.entity.StatusReciver;
 import com.xhy.weibo.network.GsonRequest;
@@ -37,7 +38,7 @@ import butterknife.ButterKnife;
 /**
  * Created by xuhaoyang on 16/5/22.
  */
-public class SearchStatusFragment extends BaseFragment {
+public class SearchStatusFragment extends BaseFragment implements StatusLogic.GetSearchStatusListCallBack {
 
 
     public static final String SEARCH_CONTENT = "CONTENT";
@@ -89,7 +90,6 @@ public class SearchStatusFragment extends BaseFragment {
         });
 
 
-
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -137,61 +137,42 @@ public class SearchStatusFragment extends BaseFragment {
     }
 
     private void LoadData() {
-        GsonRequest<StatusReciver> request = new GsonRequest<StatusReciver>(Request.Method.POST,
-                URLs.WEIBO_SEARCH_LIST,
-                StatusReciver.class, null, new Response.Listener<StatusReciver>() {
-            @Override
-            public void onResponse(StatusReciver response) {
 
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (statuses != null) {
-                        if (currPage == 1) {
-                            statuses.clear();
-                            statuses.addAll(response.getInfo());
-                        } else {
-                            //要判断是否有重复的
-                            for (Status s : response.getInfo()) {
-                                if (!statuses.contains(s)) {
-                                    statuses.add(s);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        statuses = response.getInfo();
-                    }
-                    statusAdpater.notifyDataSetChanged();
-                } else {
-                    //错误信息处理
-//                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
-                    ToastUtils.showToast(getContext(), response.getError(), Toast.LENGTH_SHORT);
+        StatusLogic.getSearchStatusList(getContext(), keyword, currPage, AppConfig.ACCESS_TOKEN.getToken(), this);
 
+    }
+
+    @Override
+    public void onGetSearchStatusSuccess(List<Status> statuses, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.statuses.clear();
+            this.statuses.addAll(statuses);
+        } else {
+            for (Status s : statuses) {
+                if (!this.statuses.contains(s)) {
+                    this.statuses.add(s);
                 }
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (statusAdpater != null) {
-                    statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
-                }
-                isLoading = false;
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                map.put("page", currPage + "");
-                map.put("keyword", keyword);
+        }
+        statusAdpater.notifyDataSetChanged();
+        stopRefresh();
+    }
 
-                return map;
-            }
-        };
+    @Override
+    public void onGetSearchStatusFailure(String message) {
+        showLog(message);
+        stopRefresh();
+    }
 
-        VolleyQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    @Override
+    public void onGetSearchStatusError(Throwable t) {
+        showLog(t.getMessage());
+        stopRefresh();
+    }
+
+    private void stopRefresh() {
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }
