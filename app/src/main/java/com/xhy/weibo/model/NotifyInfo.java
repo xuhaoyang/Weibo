@@ -1,4 +1,4 @@
-package com.xhy.weibo.entity;
+package com.xhy.weibo.model;
 
 import java.io.Serializable;
 

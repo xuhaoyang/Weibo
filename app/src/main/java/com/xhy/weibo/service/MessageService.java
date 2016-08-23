@@ -9,10 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.text.TextUtils;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -20,11 +18,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.IMessageListener;
-import com.xhy.weibo.IMessageServiceRemoteBinder;
 import com.xhy.weibo.R;
 import com.xhy.weibo.AccessToken;
-import com.xhy.weibo.constants.CommonConstants;
-import com.xhy.weibo.entity.NotifyInfo;
+import com.xhy.weibo.logic.PushMessageLogic;
+import com.xhy.weibo.model.NotifyInfo;
 import com.xhy.weibo.entity.NotifyReciver;
 import com.xhy.weibo.network.GsonRequest;
 import com.xhy.weibo.network.URLs;
@@ -202,38 +199,27 @@ public class MessageService extends Service {
 //                        data.putExtra(AppConfig.KEEP_TOKEN_USER_ID, AppConfig.getUserId());
 //                        sendBroadcast(data);
 
-                        GsonRequest<NotifyReciver> request = new GsonRequest<NotifyReciver>(Request.Method.POST,
-                                URLs.WEIBO_GET_MSG, NotifyReciver.class, null, new Response.Listener<NotifyReciver>() {
+                        PushMessageLogic.getMsg(getBaseContext(), AppConfig.getUserId(), AppConfig.ACCESS_TOKEN.getToken(), new PushMessageLogic.GetMsgCallBack() {
                             @Override
-                            public void onResponse(NotifyReciver response) {
-                                if (response.getCode() == 200) {
-                                    NotifyInfo info = response.getInfo();
-
-                                    Message message = new Message();
-                                    message.what = 0;
-                                    Bundle bundle = new Bundle();
-                                    bundle.putSerializable("NOTIFYINFO", info);
-                                    message.setData(bundle);
-                                    mHandler.sendMessage(message);
-                                } else {
-
-                                }
+                            public void onGetMsgSuccess(NotifyInfo info) {
+                                Message message = new Message();
+                                message.what = 0;
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable("NOTIFYINFO", info);
+                                message.setData(bundle);
+                                mHandler.sendMessage(message);
                             }
-                        }, new Response.ErrorListener() {
+
                             @Override
-                            public void onErrorResponse(VolleyError error) {
+                            public void onGetMsgFailure(String message) {
+                                Logger.show(TAG,message);
+                            }
 
-                            }
-                        }) {
                             @Override
-                            protected Map<String, String> getParams() throws AuthFailureError {
-                                Map<String, String> map = new HashMap<>();
-                                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                                map.put("uid", String.valueOf(AppConfig.getUserId()));
-                                return map;
+                            public void onGetMsgError(Throwable t) {
+                                Logger.show(TAG, t.getMessage());
                             }
-                        };
-                        VolleyQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+                        });
                     }
 
                 } catch (InterruptedException e) {

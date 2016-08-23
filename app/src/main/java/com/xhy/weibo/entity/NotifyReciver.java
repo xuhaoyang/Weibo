@@ -1,5 +1,7 @@
 package com.xhy.weibo.entity;
 
+import com.xhy.weibo.model.NotifyInfo;
+
 /**
  * Created by xuhaoyang on 16/6/5.
  */

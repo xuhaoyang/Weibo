@@ -68,7 +68,7 @@ public class NotifyActivity extends BaseActivity {
     private void clearMsg() {
 
 
-        PushMessageLogic.setMsg(AppConfig.getUserId(), 1, AppConfig.ACCESS_TOKEN.getToken(),
+        PushMessageLogic.setMsg(this, AppConfig.getUserId(), 1, AppConfig.ACCESS_TOKEN.getToken(),
                 new PushMessageLogic.SetMsgCallBack() {
                     @Override
                     public void onSetMsgSuccess(Result result) {

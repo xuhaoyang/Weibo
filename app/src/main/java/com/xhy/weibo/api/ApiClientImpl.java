@@ -3,6 +3,7 @@ package com.xhy.weibo.api;
 import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Hot;
 import com.xhy.weibo.model.Login;
+import com.xhy.weibo.model.NotifyInfo;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.model.StatusGroup;
@@ -159,5 +160,11 @@ public interface ApiClientImpl {
                                                @Query("keyword") String keyword,
                                                @Query("uid") int uid,
                                                @Query("page") int page);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_GET_MSG)
+    Call<Result<NotifyInfo>> getPushMsg(@Field("token") String token,
+                                        @Query("uid") int uid);
+
 
 }
