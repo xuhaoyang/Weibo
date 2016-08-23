@@ -1,6 +1,6 @@
 package com.xhy.weibo;
 
-import com.xhy.weibo.utils.PreferenceUtils;
+import hk.xhy.android.commom.utils.PreferenceUtils;
 
 /**
  * Created by xuhaoyang on 16/7/21.

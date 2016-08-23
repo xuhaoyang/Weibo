@@ -67,4 +67,7 @@ dependencies {
 
     //common
     compile 'com.bobomee.android:common:1.3.3'
+
+    compile project(':android-common')
+    compile project(':blackapp')
 }

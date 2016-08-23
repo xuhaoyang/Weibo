@@ -1,4 +1,4 @@
-package com.xhy.weibo.utils;
+package hk.xhy.android.commom.utils;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -102,4 +102,6 @@ public class PreferenceUtils {
     public static Context getContext() {
         return sContext;
     }
+
+
 }
