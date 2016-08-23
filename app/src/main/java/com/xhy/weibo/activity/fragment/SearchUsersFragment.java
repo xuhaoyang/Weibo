@@ -8,29 +8,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.UserAdpater;
 import com.xhy.weibo.base.BaseFragment;
-import com.xhy.weibo.constants.CommonConstants;
+import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.User;
-import com.xhy.weibo.entity.UsersReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
 import com.xhy.weibo.utils.RecycleViewDivider;
-import com.xhy.weibo.utils.ToastUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,7 +26,7 @@ import butterknife.ButterKnife;
 /**
  * Created by xuhaoyang on 16/5/22.
  */
-public class SearchUsersFragment extends BaseFragment {
+public class SearchUsersFragment extends BaseFragment implements UserLoginLogic.GetSearchUserCallBack {
 
 
     public static final String SEARCH_CONTENT = "CONTENT";
@@ -137,62 +125,43 @@ public class SearchUsersFragment extends BaseFragment {
     }
 
     private void LoadData() {
-        GsonRequest<UsersReciver> request = new GsonRequest<UsersReciver>(Request.Method.POST,
-                URLs.WEIBO_USER_SEARCH_LIST,
-                UsersReciver.class, null, new Response.Listener<UsersReciver>() {
-            @Override
-            public void onResponse(UsersReciver response) {
 
-                if (response.getCode() == 200) {
-                    totalPage = response.getTotalPage();
-                    if (users != null) {
-                        if (currPage == 1) {
-                            users.clear();
-                            users.addAll(response.getInfo());
-                        } else {
-                            //要判断是否有重复的
-                            for (User u : response.getInfo()) {
-                                if (!users.contains(u)) {
-                                    users.add(u);
-                                }
-                            }
-                        }
-                    } else {
-                        //第一次获取到数据
-                        users = response.getInfo();
-                    }
-                    userAdpater.notifyDataSetChanged();
-                } else {
-                    //错误信息处理
-//                    Snackbar.make(mCoordinatorLayout, response.getError(), Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
-                    ToastUtils.showToast(getContext(), response.getError(), Toast.LENGTH_SHORT);
+        UserLoginLogic.getSearchUserList(getContext(), AppConfig.getUserId(), keyword, currPage, AppConfig.ACCESS_TOKEN.getToken(), this);
 
+    }
+
+    @Override
+    public void onSearchUserSuccess(List<User> users, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.users.clear();
+            this.users.addAll(users);
+        } else {
+            for (User u : users) {
+                if (!this.users.contains(u)) {
+                    this.users.add(u);
                 }
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (userAdpater != null) {
-                    userAdpater.notifyItemRemoved(userAdpater.getItemCount());
-                }
-                isLoading = false;
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                isLoading = false;
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("token", AppConfig.ACCESS_TOKEN.getToken());
-                map.put("page", currPage + "");
-                map.put("keyword", keyword);
-                map.put("uid", AppConfig.getUserId() + "");
+        }
+        userAdpater.notifyDataSetChanged();
+        stopRefresh();
 
-                return map;
-            }
-        };
+    }
 
-        VolleyQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    @Override
+    public void onSearchUserFailure(String message) {
+        showLog(message);
+        stopRefresh();
+    }
+
+    @Override
+    public void onSearchUserError(Throwable error) {
+        showLog(error.getMessage());
+        stopRefresh();
+    }
+
+    private void stopRefresh() {
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }

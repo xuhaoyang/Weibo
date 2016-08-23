@@ -1,7 +1,9 @@
 package com.xhy.weibo.logic;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.model.Login;
 import com.xhy.weibo.model.Result;
@@ -174,7 +176,7 @@ public class UserLoginLogic {
      * @param token
      * @param callBack
      */
-    public static void getUserFollowList(final int uid, final int page, final String keyword,
+    public static void getUserFollowList(final Context context, final int uid, final int page, final String keyword,
                                          final int type, final String token,
                                          final GetUserFollowListCallBack callBack) {
         Call<Result<List<User>>> resultCall = ApiClient.getApi().getUserFollowList(uid, page, keyword, type, token);
@@ -189,13 +191,53 @@ public class UserLoginLogic {
                         callBack.onFollowListFailure(result.getMsg());
                     }
                 } else {
-                    callBack.onFollowListFailure("搜索失败");
+                    callBack.onFollowListFailure(context.getResources().getString(R.string.search_fail));
                 }
             }
 
             @Override
             public void onFailure(Call<Result<List<User>>> call, Throwable t) {
                 callBack.onFollowListError(t);
+            }
+        });
+    }
+
+    /**
+     * 关键字搜索用户 排除已关注的通过uid
+     *
+     * @param context
+     * @param uid
+     * @param keyword
+     * @param page
+     * @param token
+     * @param callBack
+     */
+    public static void getSearchUserList(final Context context, final int uid, final String keyword,
+                                         final int page, final String token, final GetSearchUserCallBack callBack) {
+        Call<Result<List<User>>> resultCall = ApiClient.getApi().getSearchUserList(token, keyword, uid, page);
+        resultCall.enqueue(new Callback<Result<List<User>>>() {
+            @Override
+            public void onResponse(Call<Result<List<User>>> call, Response<Result<List<User>>> response) {
+                if (response.isSuccessful()) {
+                    Result<List<User>> listResult = response.body();
+                    if (listResult.isSuccess()) {
+                        callBack.onSearchUserSuccess(listResult.getInfo(), listResult.getTotalPage());
+                    } else {
+                        callBack.onSearchUserFailure(listResult.getMsg());
+                    }
+                } else {
+                    callBack.onSearchUserFailure(context.getResources().getString(R.string.search_fail));
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<List<User>>> call, Throwable t) {
+                callBack.onSearchUserError(t);
             }
         });
 
@@ -240,6 +282,14 @@ public class UserLoginLogic {
         void onFollowListFailure(String message);
 
         void onFollowListError(Throwable error);
+    }
+
+    public interface GetSearchUserCallBack {
+        void onSearchUserSuccess(List<User> users, int totalPage);
+
+        void onSearchUserFailure(String message);
+
+        void onSearchUserError(Throwable error);
     }
 
 
