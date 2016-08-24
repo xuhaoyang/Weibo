@@ -1,1 +1,1 @@
-include ':app', ':android-common', ':blackapp'
+include ':app', ':android-common'

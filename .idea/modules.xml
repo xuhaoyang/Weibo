@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/Weibo.iml" filepath="$PROJECT_DIR$/Weibo.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-common/android-common.iml" filepath="$PROJECT_DIR$/android-common/android-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/blackapp/blackapp.iml" filepath="$PROJECT_DIR$/blackapp/blackapp.iml" />
     </modules>
   </component>
 </project>
