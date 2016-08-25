@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BlackApp/BlackApp.iml" filepath="$PROJECT_DIR$/BlackApp/BlackApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/Weibo.iml" filepath="$PROJECT_DIR$/Weibo.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-common/android-common.iml" filepath="$PROJECT_DIR$/android-common/android-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />

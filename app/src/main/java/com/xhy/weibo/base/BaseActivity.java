@@ -6,12 +6,11 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.xhy.weibo.utils.Logger;
-import com.xhy.weibo.utils.ToastUtils;
+import hk.xhy.android.commom.utils.ToastUtils;
 
 /**
  * Created by xuhaoyang on 16/5/12.

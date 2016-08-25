@@ -59,7 +59,7 @@ public class HotAdpater extends RecyclerView.Adapter {
         return hots.size();
     }
 
-    class ItemViewHolder extends RecyclerView.ViewHolder {
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.tv_nav)
         public TextView tv_nav;

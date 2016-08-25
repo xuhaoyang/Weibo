@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import hk.xhy.android.commom.utils.ToastUtils;
+
 /**
  * Created by xuhaoyang on 16/5/30.
  */

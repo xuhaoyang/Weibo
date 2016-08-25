@@ -28,7 +28,6 @@ import com.xhy.weibo.activity.StatusDetailActivity;
 import com.xhy.weibo.activity.UserInfoActivity;
 import com.xhy.weibo.activity.ViewPicActivity;
 import com.xhy.weibo.activity.WriteStatusActivity;
-import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
@@ -37,7 +36,7 @@ import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.StringUtils;
-import com.xhy.weibo.utils.ToastUtils;
+import hk.xhy.android.commom.utils.ToastUtils;
 
 import java.util.List;
 

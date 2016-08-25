@@ -1,9 +1,8 @@
-package com.xhy.weibo.utils;
+package hk.xhy.android.commom.utils;
 
 import android.content.Context;
 import android.widget.Toast;
 
-import com.xhy.weibo.base.BaseActivity;
 
 /**
  * Created by xuhaoyang on 16/5/12.

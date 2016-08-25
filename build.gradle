@@ -19,6 +19,8 @@ allprojects {
         maven {
             url "http://maven.bughd.com/public"
         }
+        maven { url "https://raw.githubusercontent.com/lijy91/mvn-repo/master/"}
+
     }
 }
 

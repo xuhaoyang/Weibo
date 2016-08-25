@@ -3,21 +3,19 @@ package com.xhy.weibo.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,18 +27,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.xhy.weibo.AccessToken;
 import com.xhy.weibo.AppConfig;
+import com.xhy.weibo.StartActivty;
 import com.xhy.weibo.R;
 import com.xhy.weibo.base.BaseActivity;
-import com.xhy.weibo.AccessToken;
-import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
-import com.xhy.weibo.model.Login;
 import com.xhy.weibo.logic.UserLoginLogic;
+import com.xhy.weibo.model.Login;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -233,7 +231,7 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
             AppConfig.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
             AppConfig.ACCESS_TOKEN.setToken(login.getToken());
             AppConfig.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
-            intent2Activity(InitActivity.class);
+            intent2Activity(StartActivty.class);
             finish();
         } else {
             showProgress(false);
