@@ -16,6 +16,7 @@
 
 package org.blankapp.app;
 
+import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -44,4 +45,8 @@ public class BaseActivity extends AppCompatActivity {
         ToastUtils.showToast(this, msg, Toast.LENGTH_SHORT);
     }
 
+
+    protected Context getThisActivityContext() {
+        return this;
+    }
 }

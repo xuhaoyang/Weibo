@@ -1,11 +1,63 @@
 package com.xhy.weibo.model;
 
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.xhy.weibo.AppConfig;
+
 import java.io.Serializable;
 
 /**
  * Created by xuhaoyang on 16/5/19.
  */
-public class Login implements Serializable {
+public class Login extends Model implements Serializable {
+    private static final String CURRENT_USER = "current_login_user";
+
+    /**
+     * 转换json为Model
+     *
+     * @param json
+     * @return
+     */
+    public static Login parseObject(final String json) {
+        return Model.parseObject(json, Login.class);
+    }
+
+    /**
+     * 保存用户登录信息
+     *
+     * @param login
+     */
+    public static void setCurrentLoginUser(Login login) {
+        String jsonLoginUser = "";
+        if (login != null) {
+            jsonLoginUser = login.toJSONString();
+        }
+        AppConfig.putString(CURRENT_USER, jsonLoginUser);
+    }
+
+    public static int getCurrentId() {
+        Login login = Login.getCurrentLoginUser();
+        if (login != null) {
+            return login.getId();
+        }
+        return 0;
+    }
+
+    /**
+     * 获取当前登录用户
+     * @return
+     */
+    public static Login getCurrentLoginUser() {
+        String jsonLoginUser = AppConfig.getString(CURRENT_USER, "");
+        if (TextUtils.isEmpty(jsonLoginUser)) {
+            return null;
+        }
+
+        Login login = parseObject(jsonLoginUser);
+        return login;
+    }
+
 
     private int id;
     private String account;

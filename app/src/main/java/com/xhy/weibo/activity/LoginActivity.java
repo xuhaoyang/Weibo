@@ -231,6 +231,7 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
             AppConfig.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), password, LoginActivity.this);
             AppConfig.ACCESS_TOKEN.setToken(login.getToken());
             AppConfig.ACCESS_TOKEN.setTokenStartTime(login.getTokenStartTime());
+            Login.setCurrentLoginUser(login);
             intent2Activity(StartActivty.class);
             finish();
         } else {

@@ -79,8 +79,10 @@ public class AccessToken implements Serializable, UserLoginLogic.LoginCallback {
 
     @Override
     public void onLoginSuccess(Login login) {
+        Login.setCurrentLoginUser(login);
         AppConfig.setAccessToken(login.getToken());
         AppConfig.setAccessTokenStartTime(login.getTokenStartTime());
+        AppConfig.setUserId(login.getId());
         tokenRefreshing.set(false);
 
     }

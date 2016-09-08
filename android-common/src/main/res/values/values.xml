@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="google_colors">
+        <item>@color/red</item>
+        <item>@color/blue</item>
+        <item>@color/yellow</item>
+        <item>@color/green</item>
+    </integer-array>
+    <color name="blue">#FF375BF1</color>
+    <color name="green">#FF34A350</color>
+    <color name="red">#FFC93437</color>
+    <color name="yellow">#FFF7D23E</color>
+    <item name="empty" type="id"/>
+    <item name="error" type="id"/>
+    <item name="grid" type="id"/>
+    <item name="list" type="id"/>
+    <item name="loading" type="id"/>
+    <item name="pull_to_refresh" type="id"/>
+    <item name="webview" type="id"/>
+</resources>

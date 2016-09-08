@@ -1,5 +1,8 @@
 package com.xhy.weibo;
 
+import com.xhy.weibo.model.Login;
+
+import hk.xhy.android.commom.utils.Logger;
 import hk.xhy.android.commom.utils.PreferenceUtils;
 
 /**
@@ -24,6 +27,8 @@ public class AppConfig extends PreferenceUtils {
      */
     public static String getAccount() {
         return getString("account", "");
+//        Login login = Login.getCurrentLoginUser();
+//        return login != null ? login.getAccount() : null;
     }
 
     /**
@@ -41,7 +46,8 @@ public class AppConfig extends PreferenceUtils {
      * @return
      */
     public static int getUserId() {
-        return getInt("USER_ID", 0);
+//        return getInt("USER_ID", 0);
+        return Login.getCurrentId();
     }
 
     /**
@@ -119,6 +125,7 @@ public class AppConfig extends PreferenceUtils {
 
     /**
      * 获得Token获取初始时间
+     *
      * @return
      */
     public static long getAccessTokenStartTime() {
