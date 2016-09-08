@@ -16,6 +16,29 @@ import static android.widget.Toast.LENGTH_SHORT;
  */
 public class Toaster {
 
+
+    private static Toast mToast;
+
+    private static void showToast(Context context, String text, int duration) {
+        if (mToast == null) {
+            mToast = Toast.makeText(context, text, duration);
+        } else {
+            mToast.setText(text);
+            mToast.setDuration(duration);
+        }
+        mToast.show();
+    }
+
+    private static void showToast(Context context, final int resId, int duration) {
+        if (mToast == null) {
+            mToast = Toast.makeText(context, resId, duration);
+        } else {
+            mToast.setText(resId);
+            mToast.setDuration(duration);
+        }
+        mToast.show();
+    }
+
     private static void show(final Activity activity, final int resId,
                              final int duration) {
         if (activity == null)
@@ -25,7 +48,7 @@ public class Toaster {
         activity.runOnUiThread(new Runnable() {
 
             public void run() {
-                Toast.makeText(context, resId, duration).show();
+                showToast(context, resId, duration);
             }
         });
     }
@@ -41,9 +64,28 @@ public class Toaster {
         activity.runOnUiThread(new Runnable() {
 
             public void run() {
-                Toast.makeText(context, message, duration).show();
+                showToast(context, message, duration);
             }
         });
+    }
+
+    private static void show(final Context context, final String message, final int duration) {
+
+        if (TextUtils.isEmpty(message))
+            return;
+        if (context == null)
+            return;
+
+        showToast(context, message, duration);
+    }
+
+    private static void show(final Context context, final int resId, final int duration) {
+
+
+        if (context == null)
+            return;
+
+        showToast(context, resId, duration);
     }
 
     /**
@@ -57,6 +99,27 @@ public class Toaster {
     }
 
     /**
+     * Show message in {@link Toast} with {@link Toast#LENGTH_LONG} duration
+     *
+     * @param context
+     * @param resid
+     */
+    public static void showLong(final Context context, int resid) {
+        show(context, resid, LENGTH_LONG);
+    }
+
+    /**
+     * Show message in {@link Toast} with {@link Toast#LENGTH_LONG} duration
+     *
+     * @param context
+     * @param message
+     */
+    public static void showLong(final Context context, final String message) {
+        show(context, message, LENGTH_LONG);
+    }
+
+
+    /**
      * Show message in {@link Toast} with {@link Toast#LENGTH_SHORT} duration
      *
      * @param activity
@@ -64,6 +127,26 @@ public class Toaster {
      */
     public static void showShort(final Activity activity, final int resId) {
         show(activity, resId, LENGTH_SHORT);
+    }
+
+    /**
+     * Show message in {@link Toast} with {@link Toast#LENGTH_SHORT} duration
+     *
+     * @param context
+     * @param message
+     */
+    public static void showShort(final Context context, final String message) {
+        show(context, message, LENGTH_SHORT);
+    }
+
+    /**
+     * Show message in {@link Toast} with {@link Toast#LENGTH_SHORT} duration
+     *
+     * @param context
+     * @param resId
+     */
+    public static void showShort(final Context context, final int resId) {
+        show(context, resId, LENGTH_SHORT);
     }
 
     /**
@@ -127,6 +210,7 @@ public class Toaster {
         String message = activity.getString(resId);
         showLong(activity, message, args);
     }
+
 
     /**
      * Show message in {@link Toast} with {@link Toast#LENGTH_SHORT} duration
