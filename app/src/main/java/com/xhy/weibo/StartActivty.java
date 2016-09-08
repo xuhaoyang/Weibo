@@ -8,14 +8,13 @@ import android.view.animation.Animation;
 
 import com.xhy.weibo.activity.LoginActivity;
 import com.xhy.weibo.activity.MainActivity;
-import com.xhy.weibo.base.BaseActivity;
+import com.xhy.weibo.base.StartUpActivity;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
 import com.xhy.weibo.model.Login;
 
 import java.util.List;
 
-import hk.xhy.android.commom.ui.StartUpActivity;
 import hk.xhy.android.commom.utils.ActivityUtils;
 
 public class StartActivty extends StartUpActivity {
