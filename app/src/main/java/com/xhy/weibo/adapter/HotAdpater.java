@@ -10,8 +10,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.xhy.weibo.R;
-import com.xhy.weibo.activity.SearchActivity;
+import com.xhy.weibo.ui.activity.SearchActivity;
 import com.xhy.weibo.model.Hot;
+import com.xhy.weibo.utils.Constants;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class HotAdpater extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 Intent data = new Intent(context, SearchActivity.class);
-                data.putExtra(SearchActivity.SEARCH_CONTENT, hot.getKeyword());
+                data.putExtra(Constants.SEARCH_CONTENT, hot.getKeyword());
                 context.startActivity(data);
             }
         });

@@ -2,7 +2,7 @@ package com.xhy.weibo.utils;
 
 import android.content.Intent;
 
-import com.xhy.weibo.activity.MainActivity;
+import com.xhy.weibo.ui.activity.MainActivity;
 
 import hk.xhy.android.commom.utils.ActivityUtils;
 

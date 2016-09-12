@@ -31,8 +31,8 @@ public class UpdateToeknReceiver extends BroadcastReceiver {
         Logger.show(UpdateToeknReceiver.class.getName(), "-->获得Token:" + token);
 
         if (AppConfig.ACCESS_TOKEN != null) {
-            AppConfig.ACCESS_TOKEN.setToken(token);
-            AppConfig.ACCESS_TOKEN.setTokenStartTime(tokenStartTime);
+            AppConfig.getAccessToken().setToken(token);
+            AppConfig.getAccessToken().setTokenStartTime(tokenStartTime);
         } else {
             initDB(context);
             String selection = "used=?";
@@ -43,9 +43,13 @@ public class UpdateToeknReceiver extends BroadcastReceiver {
                 String account = intent.getStringExtra(AppConfig.KEEP_TOKEN_ACCOUNT);
                 int user_id = intent.getIntExtra(AppConfig.KEEP_TOKEN_USER_ID, 0);
                 if (user_id == login.getId() && account.equals(login.getAccount())) {
-                    AppConfig.ACCESS_TOKEN = AccessToken.getInstance(login.getAccount(), login.getPassword(), context);
-                    AppConfig.ACCESS_TOKEN.setToken(token);
-                    AppConfig.ACCESS_TOKEN.setTokenStartTime(tokenStartTime);
+                    //更新当前用户 密码
+                    AppConfig.setAccount(login.getAccount());
+                    AppConfig.setPassword(login.getPassword());
+                    //刷新Accesstoken
+                    AppConfig.getAccessToken();
+                    AppConfig.getAccessToken().setToken(token);
+                    AppConfig.getAccessToken().setTokenStartTime(tokenStartTime);
                 }
             }
         }

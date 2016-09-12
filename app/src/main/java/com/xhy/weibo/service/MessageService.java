@@ -138,8 +138,9 @@ public class MessageService extends Service {
 //        AppConfig.getUserId() = Integer.parseInt(intent.getStringExtra("USERID"));
         String token = intent.getStringExtra("TOKEN");
 //        if (!TextUtils.isEmpty(CommonConstants.account) || !TextUtils.isEmpty(CommonConstants.password)) {
-        AppConfig.ACCESS_TOKEN = AccessToken.getInstance(AppConfig.getAccount(), AppConfig.getPassword(), getApplicationContext());
-        AppConfig.ACCESS_TOKEN.setToken(token);
+        //刷新AccessToken
+        AppConfig.getAccessToken();
+        AppConfig.getAccessToken().setToken(token);
 //        }
 
         builder = new NotificationCompat.Builder(this);
@@ -199,7 +200,7 @@ public class MessageService extends Service {
 //                        data.putExtra(AppConfig.KEEP_TOKEN_USER_ID, AppConfig.getUserId());
 //                        sendBroadcast(data);
 
-                        PushMessageLogic.getMsg(getBaseContext(), AppConfig.getUserId(), AppConfig.ACCESS_TOKEN.getToken(), new PushMessageLogic.GetMsgCallBack() {
+                        PushMessageLogic.getMsg(getBaseContext(), AppConfig.getUserId(), AppConfig.getAccessToken().getToken(), new PushMessageLogic.GetMsgCallBack() {
                             @Override
                             public void onGetMsgSuccess(NotifyInfo info) {
                                 Message message = new Message();

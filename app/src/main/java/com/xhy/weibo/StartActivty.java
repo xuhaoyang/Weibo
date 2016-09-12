@@ -4,18 +4,23 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.animation.Animation;
 
-import com.xhy.weibo.activity.LoginActivity;
-import com.xhy.weibo.activity.MainActivity;
-import com.xhy.weibo.base.StartUpActivity;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
+import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.Login;
+import com.xhy.weibo.ui.activity.LoginActivity;
+import com.xhy.weibo.ui.activity.MainActivity;
+import com.xhy.weibo.ui.base.StartUpActivity;
 
 import java.util.List;
 
 import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.commom.utils.Logger;
+import hk.xhy.android.commom.widget.Toaster;
 
 public class StartActivty extends StartUpActivity {
 
@@ -66,7 +71,7 @@ public class StartActivty extends StartUpActivity {
             AppConfig.setAccount(login.getAccount());
             AppConfig.setPassword(login.getPassword());
             AppConfig.setUserId(login.getId());
-            AppConfig.ACCESS_TOKEN = AccessToken.getInstance(AppConfig.getAccount(), AppConfig.getPassword(), this);
+            AppConfig.getAccessToken();
             mHandler.sendEmptyMessageDelayed(GO_MAIN, TIME);
         } else {
             mHandler.sendEmptyMessageDelayed(GO_LOGIN, TIME);
@@ -86,10 +91,45 @@ public class StartActivty extends StartUpActivity {
 
     @Override
     public void onAnimationStart(Animation animation) {
-        String account = AppConfig.getAccount();
-        String password = AppConfig.getPassword();
-        //获得TOKEN 同时更新该用户UID
-        AppConfig.ACCESS_TOKEN = AccessToken.getInstance(account, password, this);
+        final String account = AppConfig.getAccount();
+        final String password = AppConfig.getPassword();
+
+        if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(password)) {
+
+            UserLoginLogic.login(this, account, password, new UserLoginLogic.LoginCallback() {
+                @Override
+                public void onLoginSuccess(Login login) {
+                    login.setPassword(password);
+                    Login.setCurrentLoginUser(login);
+
+                    //获得TOKEN 同时更新该用户UID
+                    AppConfig.getAccessToken();
+                }
+
+                @Override
+                public void onLoginFailure(int errorCode, String errorMessage) {
+                    Toaster.showShort(StartActivty.this,errorMessage);
+                    Logger.show(TAG, String.format("Code:%d", errorCode) + ":" + errorMessage, Log.WARN);
+                    ActivityUtils.startActivity(StartActivty.this, LoginActivity.class);
+
+                }
+
+                @Override
+                public void onLoginError(Throwable error) {
+                    Toaster.showShort(StartActivty.this, "网络故障");
+                    Logger.show(TAG, error.getLocalizedMessage(), Log.ERROR);
+                    ActivityUtils.appExit(StartActivty.this);
+                }
+            });
+
+
+
+        } else {
+            //当前用户信息设置为空
+            Login.setCurrentLoginUser(null);
+
+        }
+
 
     }
 

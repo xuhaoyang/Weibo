@@ -100,4 +100,11 @@
     <string name="push_msg_clear_fail">清空消息失败</string>
     <string name="push_msg_get_fail">获得消息失败</string>
 
+
+
+    <!--Public -->
+    <string name="list_error">加载数据失败，点击重试</string>
+    <string name="list_data_not_found">没有找到数据</string>
+    <string name="list_loading">加载数据中</string>
+
 </resources>

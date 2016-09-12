@@ -22,4 +22,8 @@
     <color name="nav_gray">#eeeeee</color>
     <color name="nav_fenge">#bfbfbf</color>
     <color name="status_detail_forward">#5b6fea</color>
+
+    <color name="primaryGrayPre">#aa777777</color>
+    <color name="primaryGrayLine">#dfdfdf</color>
+
 </resources>

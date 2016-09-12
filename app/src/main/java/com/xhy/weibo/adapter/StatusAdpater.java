@@ -22,12 +22,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
-import com.xhy.weibo.activity.KeepStatusActivity;
-import com.xhy.weibo.activity.MainActivity;
-import com.xhy.weibo.activity.StatusDetailActivity;
-import com.xhy.weibo.activity.UserInfoActivity;
-import com.xhy.weibo.activity.ViewPicActivity;
-import com.xhy.weibo.activity.WriteStatusActivity;
+import com.xhy.weibo.ui.activity.KeepStatusActivity;
+import com.xhy.weibo.ui.activity.MainActivity;
+import com.xhy.weibo.ui.activity.StatusDetailActivity;
+import com.xhy.weibo.ui.activity.UserInfoActivity;
+import com.xhy.weibo.ui.activity.ViewPicActivity;
+import com.xhy.weibo.ui.activity.WriteStatusActivity;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
@@ -307,7 +307,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
 
                     if (status.isKeep()) {
                         StatusLogic.delKeepStatus(context, AppConfig.getUserId(), status.getId(),
-                                AppConfig.ACCESS_TOKEN.getToken(), new StatusLogic.DelKeepStatusCallBack() {
+                                AppConfig.getAccessToken().getToken(), new StatusLogic.DelKeepStatusCallBack() {
                                     @Override
                                     public void onDelKeepSuccess(Result result) {
                                         status.setKeep(false);
@@ -335,7 +335,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                                 });
                     } else {
                         StatusLogic.addKeepStatus(context, AppConfig.getUserId(), status.getId(),
-                                AppConfig.ACCESS_TOKEN.getToken(), new StatusLogic.AddKeepStatusCallBack() {
+                                AppConfig.getAccessToken().getToken(), new StatusLogic.AddKeepStatusCallBack() {
                                     @Override
                                     public void onAddKeepSuccess(Result result) {
                                         status.setKeep(true);

@@ -5,12 +5,12 @@
 
 
     <header
-        android:fragment="com.xhy.weibo.activity.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.xhy.weibo.ui.activity.SettingsActivity$NotificationPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="通知" />
 
     <!--<header-->
-        <!--android:fragment="com.xhy.weibo.activity.SettingsActivity$DataSyncPreferenceFragment"-->
+        <!--android:fragment="com.xhy.weibo.ui.activity.SettingsActivity$DataSyncPreferenceFragment"-->
         <!--android:icon="@drawable/ic_sync_black_24dp"-->
         <!--android:title="@string/pref_header_data_sync" />-->
 

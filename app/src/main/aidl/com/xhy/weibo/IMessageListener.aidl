@@ -5,5 +5,5 @@ package com.xhy.weibo;
 
 interface IMessageListener {
 
-    void setAccessToken(String token,long time);
+    void setAccessToken(String tokenModel,long time);
 }

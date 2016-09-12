@@ -5,11 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import hk.xhy.android.commom.R;
-import hk.xhy.android.commom.widget.PullToRefreshLayout;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import hk.xhy.android.commom.R;
+import hk.xhy.android.commom.widget.PullToRefreshLayout;
 
 /**
  * Created by xuhaoyang on 5/26/16.

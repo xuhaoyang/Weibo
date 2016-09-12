@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.xhy.weibo.activity.MainActivity;
-import com.xhy.weibo.activity.NotifyActivity;
+import com.xhy.weibo.ui.activity.MainActivity;
+import com.xhy.weibo.ui.activity.NotifyActivity;
 
 import hk.xhy.android.commom.utils.AppUtils;
 

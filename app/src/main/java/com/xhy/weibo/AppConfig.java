@@ -2,13 +2,14 @@ package com.xhy.weibo;
 
 import com.xhy.weibo.model.Login;
 
-import hk.xhy.android.commom.utils.Logger;
 import hk.xhy.android.commom.utils.PreferenceUtils;
 
 /**
  * Created by xuhaoyang on 16/7/21.
  */
 public class AppConfig extends PreferenceUtils {
+
+    private static final String TAG = AppConfig.class.getSimpleName();
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
     public static final boolean isShowLog = DEBUG;
@@ -97,38 +98,16 @@ public class AppConfig extends PreferenceUtils {
 
 
     /**
-     * 设置Token String
-     *
-     * @param token
-     */
-    public static void setAccessToken(String token) {
-        putString("AccessToken", token);
-    }
-
-    /**
-     * 获取Token
+     * 获取AccessToken
      *
      * @return
      */
-    public static String getAccessToken() {
-        return getString("AccessToken", "");
+    public static AccessToken getAccessToken() {
+        if (ACCESS_TOKEN == null) {
+            ACCESS_TOKEN = new AccessToken(getAccount(), getPassword(), getContext());
+        }
+        return ACCESS_TOKEN;
     }
 
-    /**
-     * 设置Token获取初始时间
-     *
-     * @param time
-     */
-    public static void setAccessTokenStartTime(long time) {
-        putLong("AccessTokenStartTime", time);
-    }
 
-    /**
-     * 获得Token获取初始时间
-     *
-     * @return
-     */
-    public static long getAccessTokenStartTime() {
-        return getLong("AccessTokenStartTime", 0);
-    }
 }

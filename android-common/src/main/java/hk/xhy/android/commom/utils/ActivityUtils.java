@@ -106,7 +106,37 @@ public class ActivityUtils {
         }
     }
 
+    public static <T> void startActivityByContext(Context context, Class<T> clazz) {
+        startActivityByContext(context, clazz, new HashMap<String, Object>());
+    }
 
+    public static <T> void startActivityByContext(Context context, Class<T> clazz, HashMap<String, Object> params) {
+        Bundle bundle = new Bundle();
+        for (String name : params.keySet()) {
+            Object val = params.get(name);
+            if (val instanceof String) {
+                bundle.putString(name, (String) val);
+            } else if (val instanceof Integer) {
+                bundle.putInt(name, (Integer) val);
+            } else if (val instanceof Long) {
+                bundle.putLong(name, (Long) val);
+            } else if (val instanceof Short) {
+                bundle.putShort(name, (Short) val);
+            } else if (val instanceof Float) {
+                bundle.putFloat(name, (Float) val);
+            } else if (val instanceof Double) {
+                bundle.putDouble(name, (Double) val);
+            }
+        }
+        startActivityByContext(context, clazz, bundle);
+    }
+
+    public static <T> void startActivityByContext(Context context, Class<T> clazz, Bundle params) {
+
+        Intent intent = new Intent(context, clazz);
+        intent.putExtras(params);
+        context.startActivity(intent);
+    }
 
 
     public static <T> void startActivity(Activity activity, Class<T> clazz, boolean killOlder, Bundle params, int requestCode, int flags) {

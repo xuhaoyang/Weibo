@@ -1,7 +1,6 @@
 package com.xhy.weibo.model;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.xhy.weibo.AppConfig;
 

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    tools:context=".activity.ViewPicActivity">
+    tools:context=".ui.activity.ViewPicActivity">
 
     <ImageView
         android:id="@+id/iv_view_pic"

@@ -55,6 +55,7 @@ public class DBManager {
 //                fos.close();
 //                is.close();
         DatabaseHelper userDatabaseHelper = new DatabaseHelper(context, DB_NAME, null, DatabaseHelper.version);
+
         return userDatabaseHelper.getWritableDatabase();
 //        }
 //        return SQLiteDatabase.openOrCreateDatabase(dbfile, null);
