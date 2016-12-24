@@ -32,6 +32,7 @@ import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.StringUtils;
@@ -104,7 +105,20 @@ public class StatusDetailActivity extends BaseActivity {
 
         //获得传入的信息
         fromIntent = getIntent();
-        status = (Status) fromIntent.getSerializableExtra(WriteStatusActivity.STATUS_INTENT);
+
+
+        /**
+         * 因为这里传输方式 会变成json形式 保留原有的获取数据的方式
+         */
+        Object val = fromIntent.getSerializableExtra(Constants.STATUS_INTENT);
+
+        if (val instanceof String) {//前者如果不是序列化来的数据,会未空
+            status = Status.parseObject(fromIntent.getStringExtra(Constants.STATUS_INTENT));
+        } else if (val instanceof Status) {
+            status = (Status) val;
+        } else {
+            finish();
+        }
 
 
         if (status != null) {
@@ -265,7 +279,7 @@ public class StatusDetailActivity extends BaseActivity {
             case R.id.action_comment:
                 Intent intent = new Intent(this, WriteStatusActivity.class);
                 intent.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.COMMENT_TYPE);
-                intent.putExtra(WriteStatusActivity.STATUS_INTENT, status);
+                intent.putExtra(Constants.STATUS_INTENT, status);
                 intent.putExtra(WriteStatusActivity.TAG, WriteStatusActivity.DETAIL_ATY_CODE);
                 startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
                 break;
@@ -273,7 +287,7 @@ public class StatusDetailActivity extends BaseActivity {
             case R.id.action_forward:
                 Intent forwardIntent = new Intent(this, WriteStatusActivity.class);
                 forwardIntent.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.FORWARD_TYPE);
-                forwardIntent.putExtra(WriteStatusActivity.STATUS_INTENT, status);
+                forwardIntent.putExtra(Constants.STATUS_INTENT, status);
                 startActivityForResult(forwardIntent, REQUEST_CODE_WRITE_FORWARD);
 
                 break;

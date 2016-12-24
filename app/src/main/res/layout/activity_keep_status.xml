@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/keep_Car"
+    android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout_keep"
+    <hk.xhy.android.commom.widget.PullToRefreshLayout
+        android:id="@+id/pull_to_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view_keep"
+            android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+
+    </hk.xhy.android.commom.widget.PullToRefreshLayout>
+    <include layout="@layout/simple_layout_list_empty" />
+
+    <include layout="@layout/simple_layout_list_loading" />
+
+    <include layout="@layout/simple_layout_list_error" />
 </android.support.design.widget.CoordinatorLayout>

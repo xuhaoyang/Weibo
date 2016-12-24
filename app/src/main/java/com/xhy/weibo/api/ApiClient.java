@@ -42,6 +42,7 @@ public class ApiClient {
                 String cacheControl = request.cacheControl().toString();
                 return response.newBuilder()
                         .header("Cache-Control", cacheControl)
+                        .addHeader("Accept", "application/json")
                         .removeHeader("Pragma")//移除干扰信息
                         .build();
             } else {

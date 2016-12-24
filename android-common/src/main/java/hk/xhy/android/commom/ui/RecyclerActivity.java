@@ -76,7 +76,7 @@ public abstract class RecyclerActivity<VH extends RecyclerView.ViewHolder, Item,
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int lastVisibleItemPosition = ((LinearLayoutManager)mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                int lastVisibleItemPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
                 if (lastVisibleItemPosition + 1 == getAdapter().getItemCount() && mCurrentScrollState != RecyclerView.SCROLL_STATE_IDLE) {
                     //To call OnRefresh when the RecyclerView scroll to the end
                     if (onLoadMoreListener != null) {

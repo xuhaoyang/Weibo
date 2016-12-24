@@ -1,64 +1,68 @@
 package com.xhy.weibo.ui.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
-import com.xhy.weibo.adapter.StatusAdpater;
-import com.xhy.weibo.ui.base.BaseActivity;
+import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
+import com.xhy.weibo.ui.base.ListActivity;
+import com.xhy.weibo.ui.vh.KeepStatusViewHolder;
+import com.xhy.weibo.utils.Constants;
+import com.xhy.weibo.utils.Logger;
+import com.xhy.weibo.utils.RecycleViewDivider;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.commom.bind.ViewById;
+import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
+import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.commom.utils.GsonUtil;
+import hk.xhy.android.commom.widget.PullToRefreshMode;
+import retrofit2.Call;
 
 
-public class KeepStatusActivity extends BaseActivity implements StatusLogic.GetKeepStatusByUidCallBack {
+public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Status, Result<List<Status>>>
+        implements OnListItemClickListener {
 
+    private final String TAG = this.getClass().getSimpleName();
 
     public static final int REFRESH_DATA = 1;
 
-    @BindView(R.id.recycler_view_keep)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.keep_Car)
+
+    @ViewById(R.id.coordinator)
     CoordinatorLayout mCoordinatorLayout;
-    @BindView(R.id.swipeRefreshLayout_keep)
-    SwipeRefreshLayout mSwipeRefreshLayout;
 
-    LinearLayoutManager linearLayoutManager;
 
-    List<Status> statuses = new ArrayList<Status>();
-    private boolean isLoading;
-    private int currPage = 1;
-    private int totalPage = 1;
-    private int begin = 0;
-    private int lastVisibleItemPosition;
+    private int currentPage = 1;
 
-    public Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case REFRESH_DATA:
-                    Snackbar.make(mCoordinatorLayout, "取消收藏成功", Snackbar.LENGTH_SHORT).show();
-                    currPage = 1;
-                    LoadData();
-
-                    break;
-            }
-        }
-    };
-    private StatusAdpater statusAdpater = new StatusAdpater(statuses, this, mHandler);
+//    public Handler mHandler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            switch (msg.what) {
+//                case REFRESH_DATA:
+//                    Snackbar.make(mCoordinatorLayout, "取消收藏成功", Snackbar.LENGTH_SHORT).show();
+//                    currentPage = 1;
+//
+//                    onRefresh();
+//                    break;
+//            }
+//        }
+//    };
 
 
     @Override
@@ -66,78 +70,154 @@ public class KeepStatusActivity extends BaseActivity implements StatusLogic.GetK
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_keep_status);
         ButterKnife.bind(this);
-
-
-        init();
-        initListener();
-        initRecyclerView();
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
-                LoadData();
-            }
-        });
-
-    }
-
-    private void init() {
-
         getSupportActionBar().setTitle("收藏");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+
+        //设置item间间隔样式
+        getRecyclerView().addItemDecoration(new RecycleViewDivider(this,
+                LinearLayoutManager.VERTICAL));
+        //设置下拉刷新颜色
+        getPullToRefreshLayout().setColorSchemeResources(R.color.colorPrimary);
+        /* 解决刷新动画出不来的问题 */
+        getPullToRefreshLayout().setProgressViewOffset(false, 0, (int) TypedValue
+                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources()
+                        .getDisplayMetrics()));
+        setMode(PullToRefreshMode.BOTH);
+        initLoader();
+
+//        init();
+//        initListener();
+//        initRecyclerView();
+//        mSwipeRefreshLayout.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                mSwipeRefreshLayout.setRefreshing(true);
+//                LoadData();
+//            }
+//        });
 
     }
 
-    private void initListener() {
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                currPage = 1;
-                LoadData();
-            }
-        });
+    @Override
+    public KeepStatusViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_status, parent, false);
+        return new KeepStatusViewHolder(currentView);
+    }
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                int pastVisiblesItems = linearLayoutManager.findFirstVisibleItemPosition();
-                if (newState == RecyclerView.SCROLL_STATE_IDLE
-                        && lastVisibleItemPosition + 1 == statusAdpater.getItemCount()
-                        && pastVisiblesItems != 0) {
-                    if (!isLoading) {
-                        isLoading = true;
-                        if (currPage <= totalPage && statuses.size() > 0) {
-                            currPage += 1;
-                        }
-                        if (!mSwipeRefreshLayout.isRefreshing()) {
-                            mSwipeRefreshLayout.setRefreshing(true);
-                        }
-                        LoadData();
-                    }
+    @Override
+    public void onBindViewHolder(KeepStatusViewHolder holder, int position) {
+        holder.bind(this, getItemsSource().get(position), this);
+    }
+
+    @Override
+    public Result<List<Status>> onLoadInBackground() throws Exception {
+        int page = 0;
+
+        if (isLoadMore()) {
+            page = currentPage + 1;
+        } else {
+            page = 1;
+        }
+
+        Call<Result<List<Status>>> resultCall = ApiClient.getApi().
+                getKeepStatusListByUid(AppConfig.getUserId(), page, AppConfig.getAccessToken().getToken());
+
+        Result<List<Status>> result = null;
+        try {
+            result = resultCall.execute().body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    @Override
+    public void onLoadComplete(Result<List<Status>> data) {
+        Log.e(TAG, ">>>onLoadComplete");
+        Log.e(TAG, ">>>" + GsonUtil.toJson(data));
+        if (data != null) {
+            if (data.isSuccess()) {
+                if (!isLoadMore()) {
+                    getItemsSource().clear();
+                    currentPage = 1;
+
+                } else if (data.getInfo().size() > 0) {
+                    currentPage += 1;
+
                 }
-            }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
+                getItemsSource().addAll(data.getInfo());
+
+            }
+            getAdapter().notifyDataSetChanged();
+            onRefreshComplete();
+
+        }
+    }
+
+    @Override
+    public void onLoadError(Exception e) {
+        super.onLoadError(e);
+    }
+
+
+    @Override
+    public void OnListItemClick(int postion) {
+        final Status status = getItemsSource().get(postion);
+
+
+        //item点击跳转
+        ActivityUtils.startActivity(this, StatusDetailActivity.class, new HashMap<String, Object>() {
+            {
+                put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
             }
         });
     }
 
-    public void initRecyclerView() {
-        linearLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.setAdapter(statusAdpater);
+    @Override
+    public void OnItemOtherClick(final int postion, int type) {
+        final Status status = getItemsSource().get(postion);
+        switch (type) {
+            case Constants.ITEM_LIKE_TPYE:
+                if (status.isKeep()) {
+
+                    StatusLogic.delKeepStatus(this, AppConfig.getUserId(),
+                            status.getId(), AppConfig.getAccessToken().getToken(),
+                            new StatusLogic.DelKeepStatusCallBack() {
+                                @Override
+                                public void onDelKeepSuccess(Result result) {
+                                    if (result.isSuccess()) {
+                                        getItemsSource().remove(status);
+                                        getAdapter().notifyDataSetChanged();
+                                        showSnackbar(result.getMsg());
+                                    }
+                                }
+
+                                @Override
+                                public void onDelKeepFailure(String message) {
+                                    showSnackbar(message);
+                                }
+
+                                @Override
+                                public void onDelKeepError(Throwable t) {
+                                    Logger.show(TAG, t.getMessage(), Log.ERROR);
+
+                                }
+                            });
+
+
+                }
+                break;
+
+        }
     }
 
-    private void LoadData() {
 
-        StatusLogic.getKeepStatusListByUid(this, AppConfig.getUserId(), currPage,
-                AppConfig.getAccessToken().getToken(), this);
-    }
+//    private void LoadData() {
+//
+//        StatusLogic.getKeepStatusListByUid(this, AppConfig.getUserId(), currPage,
+//                AppConfig.getAccessToken().getToken(), this);
+//    }
 
 
     @Override
@@ -153,14 +233,6 @@ public class KeepStatusActivity extends BaseActivity implements StatusLogic.GetK
     }
 
 
-    private void stopRefresh() {
-        mSwipeRefreshLayout.setRefreshing(false);
-        isLoading = false;
-        if (statusAdpater != null) {
-            statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
-        }
-    }
-
     private void showSnackbar(String msg) {
         showSnackbar(msg, Snackbar.LENGTH_SHORT);
     }
@@ -169,33 +241,6 @@ public class KeepStatusActivity extends BaseActivity implements StatusLogic.GetK
         Snackbar.make(mCoordinatorLayout, msg, length).show();
     }
 
-    @Override
-    public void onKeepStatusSuccess(List<Status> statuses, int totalPage) {
-        this.totalPage = totalPage;
-        if (currPage == 1) {
-            this.statuses.clear();
-            this.statuses.addAll(statuses);
-        } else {
-            for (Status s : statuses) {
-                if (!this.statuses.contains(s)) {
-                    this.statuses.add(s);
-                }
-            }
-        }
-        statusAdpater.notifyDataSetChanged();
-        stopRefresh();
-    }
 
-    @Override
-    public void onKeepStatusFailure(String message) {
-        showSnackbar(message);
-        stopRefresh();
-    }
-
-    @Override
-    public void onKeepStatusError(Throwable t) {
-        showLog(t.getMessage());
-        stopRefresh();
-    }
 }
 

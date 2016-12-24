@@ -19,6 +19,7 @@ import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.activity.WriteStatusActivity;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.StringUtils;
 
@@ -144,7 +145,7 @@ public class KeepListAdpater extends RecyclerView.Adapter {
                         //评论方式
                         data.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.FORWARD_TYPE);
                         data.putExtra(WriteStatusActivity.TAG, WriteStatusActivity.COMMENT_ADPATER_CODE);
-                        data.putExtra(WriteStatusActivity.STATUS_INTENT, status);
+                        data.putExtra(Constants.STATUS_INTENT, status);
                         mContext.startActivity(data);
                         break;
 //                    case R.id.action_commet_forward:

@@ -32,6 +32,7 @@ import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.Logger;
@@ -203,6 +204,8 @@ public class StatusAdpater extends RecyclerView.Adapter {
                 Glide.with(viewHolder.iv_avatar.getContext()).load(url).
                         fitCenter().into(viewHolder.iv_avatar);
             }
+
+            //头像跳转
             viewHolder.iv_avatar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -373,7 +376,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                         Intent intent = new Intent(context, WriteStatusActivity.class);
                         intent.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.COMMENT_TYPE);
                         intent.putExtra(WriteStatusActivity.TAG, WriteStatusActivity.MAIN_ATY_CODE);
-                        intent.putExtra(WriteStatusActivity.STATUS_INTENT, status);
+                        intent.putExtra(Constants.STATUS_INTENT, status);
                         context.startActivity(intent);
                     }
                 }
@@ -386,7 +389,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
 //                    ToastUtils.showToast(context, "这是转发", Toast.LENGTH_SHORT);
                     Intent intent = new Intent(context, WriteStatusActivity.class);
                     intent.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.FORWARD_TYPE);
-                    intent.putExtra(WriteStatusActivity.STATUS_INTENT, status);
+                    intent.putExtra(Constants.STATUS_INTENT, status);
                     ((MainActivity) context).startActivityForResult(intent, MainActivity.REQUEST_CODE_WRITE_FORWARD);
                 }
             });

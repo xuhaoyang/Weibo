@@ -2,7 +2,6 @@ package hk.xhy.android.commom.utils;
 
 /**
  * <pre>
-
  *     time  : 2016/8/11
  *     desc  : 常量相关工具类
  * </pre>
@@ -31,6 +30,13 @@ public class ConstUtils {
      */
     public static final int GB = 1073741824;
 
+    public enum MemoryUnit {
+        BYTE,
+        KB,
+        MB,
+        GB
+    }
+
     /******************** 时间相关常量 ********************/
     /**
      * 毫秒与毫秒的倍数
@@ -53,6 +59,14 @@ public class ConstUtils {
      */
     public static final int DAY = 86400000;
 
+    public enum TimeUnit {
+        MSEC,
+        SEC,
+        MIN,
+        HOUR,
+        DAY
+    }
+
     /******************** 正则相关常量 ********************/
     /**
      * 正则：手机号（简单）
@@ -66,7 +80,7 @@ public class ConstUtils {
      * <p>全球星：1349</p>
      * <p>虚拟运营商：170</p>
      */
-    public static final String REGEX_MOBILE_EXACT = "^((13[0-9])|(14[5,7])|(15[0-3,5-8])|(17[0,3,5-8])|(18[0-9])|(147))\\d{8}$";
+    public static final String REGEX_MOBILE_EXACT = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|(147))\\d{8}$";
     /**
      * 正则：电话号码
      */

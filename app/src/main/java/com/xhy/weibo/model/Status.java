@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by xuhaoyang on 16/5/12.
  */
-public class Status implements Serializable {
+public class Status extends Model implements Serializable {
 
 
     private int id;
@@ -25,6 +25,17 @@ public class Status implements Serializable {
     private boolean isKeep;//是否被收藏
     private int kid;
     private int ktime;
+
+
+    /**
+     * 转换json为Model
+     *
+     * @param json
+     * @return
+     */
+    public static Status parseObject(final String json) {
+        return Model.parseObject(json, Status.class);
+    }
 
     @Override
     public String toString() {

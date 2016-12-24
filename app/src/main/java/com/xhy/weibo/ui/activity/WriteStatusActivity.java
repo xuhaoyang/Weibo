@@ -43,6 +43,7 @@ import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.ImageUpload;
 import com.xhy.weibo.network.NetParams;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.EmotionUtils;
 import com.xhy.weibo.utils.ImageUtils;
@@ -60,7 +61,6 @@ import butterknife.ButterKnife;
 
 public class WriteStatusActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    public static final String STATUS_INTENT = "status";
     public static final String COMMENT_INTENT = "comment";
     public static final String SEND_COMMENT_SUCCESS = "SEND_COMMENT_OK";
     public static final String SEND_FORWORD_SUCCESS = "SEND_FORWORD_OK";
@@ -157,7 +157,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                     //来自Status 微博的评论[获得是Status的信息]
                     case MAIN_ATY_CODE:
                     case DETAIL_ATY_CODE:
-                        status = (Status) getIntent().getSerializableExtra(STATUS_INTENT);
+                        status = (Status) getIntent().getSerializableExtra(Constants.STATUS_INTENT);
                         getSupportActionBar().setTitle("发表评论");
                         new_take_photo.setVisibility(View.GONE);
                         break;
@@ -173,7 +173,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 break;
             case FORWARD_TYPE:
                 new_take_photo.setVisibility(View.GONE);
-                status = (Status) getIntent().getSerializableExtra(STATUS_INTENT);
+                status = (Status) getIntent().getSerializableExtra(Constants.STATUS_INTENT);
                 getSupportActionBar().setTitle("转发微博");
                 break;
             case NEW_STATUS_TYPE:
@@ -345,7 +345,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                             case MAIN_ATY_CODE:
                                 status.setComment(status.getComment() + 1);
                                 data = new Intent(WriteStatusActivity.this, StatusDetailActivity.class);
-                                data.putExtra(STATUS_INTENT, status);
+                                data.putExtra(Constants.STATUS_INTENT, status);
                                 startActivity(data);
                                 break;
                             case DETAIL_ATY_CODE:

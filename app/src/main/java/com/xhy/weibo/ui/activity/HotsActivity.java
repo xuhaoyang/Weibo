@@ -119,19 +119,20 @@ public class HotsActivity extends ListActivity<HotViewHolder, Hot, Result<List<H
     @Override
     public void onBindViewHolder(HotViewHolder holder, int position) {
         holder.bind(getItemsSource().get(position), this);
+
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                onBackPressed();
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//
+//        }
+//    }
 
     private void showSnackbar(String msg) {
         showSnackbar(msg, Snackbar.LENGTH_SHORT);
@@ -149,5 +150,10 @@ public class HotsActivity extends ListActivity<HotViewHolder, Hot, Result<List<H
                 put(Constants.SEARCH_CONTENT, hotModel.getKeyword());
             }
         });
+    }
+
+    @Override
+    public void OnItemOtherClick(int postion, int type) {
+
     }
 }
