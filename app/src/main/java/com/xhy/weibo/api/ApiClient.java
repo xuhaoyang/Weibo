@@ -60,7 +60,8 @@ public class ApiClient {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
-                .addInterceptor(cacheInterceptor)
+//                现在尚未在服务端配合,会出现 504 Unsatisfiable Request (only-if-cached)错误
+//                .addInterceptor(cacheInterceptor)
                 .addInterceptor(httpLoggingInterceptor)
                 .retryOnConnectionFailure(true)//错误重连
                 .connectTimeout(10, TimeUnit.SECONDS)//设置超时时间
