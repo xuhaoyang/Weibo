@@ -57,9 +57,6 @@ import hk.xhy.android.commom.utils.ActivityUtils;
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, ServiceConnection, StatusLogic.GetStatusGroupCallBack, StatusLogic.GetStatusListCallBack, UserLoginLogic.GetUserinfoCallBack {
 
-    public static final int REQUEST_CODE_WRITE_FORWARD = 2;
-    public static final int REQUEST_CODE_WRITE_STATUS = 3;
-
     public static final int GROUP = 0;
     public static final int ALL_ITEMID = 0;
 
@@ -306,8 +303,8 @@ public class MainActivity extends BaseActivity
             @Override
             public void onClick(View view) {
                 Intent data = new Intent(MainActivity.this, WriteStatusActivity.class);
-                data.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.NEW_STATUS_TYPE);
-                startActivityForResult(data, REQUEST_CODE_WRITE_STATUS);
+                data.putExtra(Constants.TYPE, Constants.NEW_STATUS_TYPE);
+                startActivityForResult(data, Constants.REQUEST_CODE_WRITE_STATUS);
             }
         });
 
@@ -371,7 +368,7 @@ public class MainActivity extends BaseActivity
             @Override
             public void onClick(View v) {
                 Intent data = new Intent(MainActivity.this, UserInfoActivity.class);
-                data.putExtra(UserInfoActivity.USER_ID, AppConfig.getUserId());
+                data.putExtra(Constants.USER_ID, AppConfig.getUserId());
                 startActivity(data);
             }
         });
@@ -403,7 +400,7 @@ public class MainActivity extends BaseActivity
             return;
         }
         switch (requestCode) {
-            case REQUEST_CODE_WRITE_FORWARD:
+            case Constants.REQUEST_CODE_WRITE_FORWARD:
                 mSwipeRefreshLayout.post(new Runnable() {
                     @Override
                     public void run() {
@@ -414,8 +411,8 @@ public class MainActivity extends BaseActivity
                     }
                 });
                 break;
-            case REQUEST_CODE_WRITE_STATUS:
-                boolean sendSuccess = data.getBooleanExtra(WriteStatusActivity.SEND_STATUS_SUCCESS, false);
+            case Constants.REQUEST_CODE_WRITE_STATUS:
+                boolean sendSuccess = data.getBooleanExtra(Constants.SEND_STATUS_SUCCESS, false);
                 if (sendSuccess) {
                     Snackbar.make(mCoordinatorLayout, "发送成功", Snackbar.LENGTH_LONG)
                             .show();

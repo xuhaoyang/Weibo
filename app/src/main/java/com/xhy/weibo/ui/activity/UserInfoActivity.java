@@ -25,6 +25,7 @@ import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.model.User;
 import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +40,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOffsetChangedListener, StatusLogic.GetStatusListCallBack {
 
-
-    public static final String USER_ID = "UID";
-    public static final String USER_NAME = "NAME";
 
     @BindView(R.id.main_Car)
     CoordinatorLayout mCoordinatorLayout;
@@ -91,8 +89,8 @@ public class UserInfoActivity extends BaseActivity implements AppBarLayout.OnOff
 
 
         userdata = getIntent();
-        uid = userdata.getIntExtra(USER_ID, 0);
-        username = userdata.getStringExtra(USER_NAME);
+        uid = userdata.getIntExtra(Constants.USER_ID, 0);
+        username = userdata.getStringExtra(Constants.USER_NAME);
         //请求user信息
         LoadUserData();
 

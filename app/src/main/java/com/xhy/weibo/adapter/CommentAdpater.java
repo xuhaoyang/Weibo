@@ -21,6 +21,7 @@ import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.activity.WriteStatusActivity;
 import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.StringUtils;
@@ -112,7 +113,7 @@ public class CommentAdpater extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     Intent data = new Intent(mContext, UserInfoActivity.class);
-                    data.putExtra(UserInfoActivity.USER_ID, comment.getUid());
+                    data.putExtra(Constants.USER_ID, comment.getUid());
                     mContext.startActivity(data);
                 }
             });
@@ -171,8 +172,8 @@ public class CommentAdpater extends RecyclerView.Adapter {
                     case R.id.action_commet_comment:
                         Intent data = new Intent(mContext, WriteStatusActivity.class);
                         //评论方式
-                        data.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.COMMENT_TYPE);
-                        data.putExtra(WriteStatusActivity.TAG, WriteStatusActivity.COMMENT_ADPATER_CODE);
+                        data.putExtra(Constants.TYPE, Constants.COMMENT_TYPE);
+                        data.putExtra(Constants.TAG, Constants.COMMENT_ADPATER_CODE);
                         data.putExtra(WriteStatusActivity.COMMENT_INTENT, comment);
                         mContext.startActivity(data);
                         break;

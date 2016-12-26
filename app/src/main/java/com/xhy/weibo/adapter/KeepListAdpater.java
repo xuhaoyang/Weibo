@@ -104,7 +104,7 @@ public class KeepListAdpater extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     Intent data = new Intent(mContext, UserInfoActivity.class);
-                    data.putExtra(UserInfoActivity.USER_ID, status.getUid());
+                    data.putExtra(Constants.USER_ID, status.getUid());
                     mContext.startActivity(data);
                 }
             });
@@ -143,8 +143,8 @@ public class KeepListAdpater extends RecyclerView.Adapter {
                     case R.id.action_commet_forward:
                         Intent data = new Intent(mContext, WriteStatusActivity.class);
                         //评论方式
-                        data.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.FORWARD_TYPE);
-                        data.putExtra(WriteStatusActivity.TAG, WriteStatusActivity.COMMENT_ADPATER_CODE);
+                        data.putExtra(Constants.TYPE, Constants.FORWARD_TYPE);
+                        data.putExtra(Constants.TAG, Constants.COMMENT_ADPATER_CODE);
                         data.putExtra(Constants.STATUS_INTENT, status);
                         mContext.startActivity(data);
                         break;

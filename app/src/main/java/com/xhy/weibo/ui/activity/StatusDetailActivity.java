@@ -47,7 +47,6 @@ public class StatusDetailActivity extends BaseActivity {
     private static final int REQUEST_CODE_WRITE_COMMENT = 1;
     private static final int REQUEST_CODE_WRITE_FORWARD = 2;
 
-    public static final String STATUS_INTENT = "status";
 
 
     @BindView(R.id.toolbar)
@@ -278,15 +277,15 @@ public class StatusDetailActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.action_comment:
                 Intent intent = new Intent(this, WriteStatusActivity.class);
-                intent.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.COMMENT_TYPE);
+                intent.putExtra(Constants.TYPE, Constants.COMMENT_TYPE);
                 intent.putExtra(Constants.STATUS_INTENT, status);
-                intent.putExtra(WriteStatusActivity.TAG, WriteStatusActivity.DETAIL_ATY_CODE);
+                intent.putExtra(Constants.TAG, Constants.DETAIL_ATY_CODE);
                 startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
                 break;
 
             case R.id.action_forward:
                 Intent forwardIntent = new Intent(this, WriteStatusActivity.class);
-                forwardIntent.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.FORWARD_TYPE);
+                forwardIntent.putExtra(Constants.TYPE, Constants.FORWARD_TYPE);
                 forwardIntent.putExtra(Constants.STATUS_INTENT, status);
                 startActivityForResult(forwardIntent, REQUEST_CODE_WRITE_FORWARD);
 
@@ -368,7 +367,7 @@ public class StatusDetailActivity extends BaseActivity {
                 }
                 break;
             case REQUEST_CODE_WRITE_FORWARD:
-                boolean sendForwardSuccess = data.getBooleanExtra(WriteStatusActivity.SEND_FORWORD_SUCCESS, false);
+                boolean sendForwardSuccess = data.getBooleanExtra(Constants.SEND_FORWORD_SUCCESS, false);
                 if (sendForwardSuccess) {
                     Snackbar.make(mCoordinatorLayout, "转发成功", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();

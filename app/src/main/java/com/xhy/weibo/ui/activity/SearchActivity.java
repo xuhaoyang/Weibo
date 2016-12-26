@@ -83,12 +83,12 @@ public class SearchActivity extends AppCompatActivity {
             switch (position) {
                 case 0:
                     i = new Bundle();
-                    i.putString(SearchStatusFragment.SEARCH_CONTENT, keyword);
+                    i.putString(Constants.SEARCH_CONTENT, keyword);
                     searchStatusFragment.setArguments(i);
                     return searchStatusFragment;
                 case 1:
                     i = new Bundle();
-                    i.putString(SearchUsersFragment.SEARCH_CONTENT, keyword);
+                    i.putString(Constants.SEARCH_CONTENT, keyword);
                     searchUsersFragment.setArguments(i);
                     return searchUsersFragment;
             }

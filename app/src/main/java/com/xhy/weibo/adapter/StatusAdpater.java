@@ -210,7 +210,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     Intent data = new Intent(context, UserInfoActivity.class);
-                    data.putExtra(UserInfoActivity.USER_ID, status.getUid());
+                    data.putExtra(Constants.USER_ID, status.getUid());
                     context.startActivity(data);
                 }
             });
@@ -290,7 +290,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, StatusDetailActivity.class);
-                    intent.putExtra(StatusDetailActivity.STATUS_INTENT, status);
+                    intent.putExtra(Constants.STATUS_INTENT, status);
                     context.startActivity(intent);
                 }
             });
@@ -299,7 +299,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, StatusDetailActivity.class);
-                    intent.putExtra(StatusDetailActivity.STATUS_INTENT, status.getStatus());
+                    intent.putExtra(Constants.STATUS_INTENT, status.getStatus());
                     context.startActivity(intent);
                 }
             });
@@ -365,17 +365,17 @@ public class StatusAdpater extends RecyclerView.Adapter {
             viewHolder.ll_comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ToastUtils.showToast(context, "这是评论", Toast.LENGTH_SHORT);
+//                    ToastUtils.showToast(context, "这是评论", Toast.LENGTH_SHORT);
 
                     if (status.getComment() > 0) {
                         Intent intent = new Intent(context, StatusDetailActivity.class);
-                        intent.putExtra(StatusDetailActivity.STATUS_INTENT, status);
+                        intent.putExtra(Constants.STATUS_INTENT, status);
                         context.startActivity(intent);
                     } else {
                         //发评论
                         Intent intent = new Intent(context, WriteStatusActivity.class);
-                        intent.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.COMMENT_TYPE);
-                        intent.putExtra(WriteStatusActivity.TAG, WriteStatusActivity.MAIN_ATY_CODE);
+                        intent.putExtra(Constants.TYPE, Constants.COMMENT_TYPE);
+                        intent.putExtra(Constants.TAG, Constants.MAIN_ATY_CODE);
                         intent.putExtra(Constants.STATUS_INTENT, status);
                         context.startActivity(intent);
                     }
@@ -388,9 +388,9 @@ public class StatusAdpater extends RecyclerView.Adapter {
 
 //                    ToastUtils.showToast(context, "这是转发", Toast.LENGTH_SHORT);
                     Intent intent = new Intent(context, WriteStatusActivity.class);
-                    intent.putExtra(WriteStatusActivity.TYPE, WriteStatusActivity.FORWARD_TYPE);
+                    intent.putExtra(Constants.TYPE, Constants.FORWARD_TYPE);
                     intent.putExtra(Constants.STATUS_INTENT, status);
-                    ((MainActivity) context).startActivityForResult(intent, MainActivity.REQUEST_CODE_WRITE_FORWARD);
+                    ((MainActivity) context).startActivityForResult(intent, Constants.REQUEST_CODE_WRITE_FORWARD);
                 }
             });
 

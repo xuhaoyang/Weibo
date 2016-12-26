@@ -18,11 +18,8 @@ import com.xhy.weibo.R;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.activity.SearchActivity;
 
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import hk.xhy.android.commom.utils.ActivityUtils;
 
 /**
  * Created by xuhaoyang on 16/5/14.
@@ -58,7 +55,7 @@ public class StringUtils {
                     @Override
                     public void onClick(View widget) {
                         Intent intent = new Intent(context, UserInfoActivity.class);
-                        intent.putExtra(UserInfoActivity.USER_NAME, atiStr.substring(1));
+                        intent.putExtra(Constants.USER_NAME, atiStr.substring(1));
                         context.startActivity(intent);
                     }
                 };

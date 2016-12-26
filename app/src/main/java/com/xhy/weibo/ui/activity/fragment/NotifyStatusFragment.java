@@ -28,9 +28,9 @@ import butterknife.ButterKnife;
 public class NotifyStatusFragment extends BaseFragment implements StatusLogic.GetAtStatusListCallBack {
 
 
-    @BindView(R.id.swipeRefreshLayout_searchStatus)
+    @BindView(R.id.pull_to_refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.recycler_view_searchStatus)
+    @BindView(R.id.list)
     RecyclerView mRecyclerView;
 
     LinearLayoutManager linearLayoutManager;

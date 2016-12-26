@@ -19,6 +19,7 @@ import com.xhy.weibo.adapter.UserAdpater;
 import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.User;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.util.ArrayList;
@@ -118,7 +119,7 @@ public class AtActivity extends BaseActivity implements UserLoginLogic.GetUserFo
 
     public void initRecyclerView() {
         mRecyclerView.addItemDecoration(new RecycleViewDivider(this, LinearLayoutManager.VERTICAL));
-        userAdpater = new UserAdpater(this, users, UserAdpater.TYPE_WRITE_FRIEND_LISTENER);
+        userAdpater = new UserAdpater(this, users, Constants.TYPE_WRITE_FRIEND_LISTENER);
         linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(userAdpater);

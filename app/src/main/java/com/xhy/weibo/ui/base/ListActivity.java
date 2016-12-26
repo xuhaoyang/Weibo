@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.xhy.weibo.R;
+import com.xhy.weibo.api.ApiClient;
+import com.xhy.weibo.api.ApiClientImpl;
 
 import hk.xhy.android.commom.bind.Bind;
 import hk.xhy.android.commom.ui.RecyclerActivity;
@@ -23,9 +25,13 @@ import hk.xhy.android.commom.widget.PullToRefreshMode;
 /**
  * Created by xuhaoyang on 16/9/8.
  */
-public class ListActivity<VH extends ViewHolder, Item, Result> extends hk.xhy.android.commom.ui.ListActivity<VH, Item, Result> implements RecyclerActivity.OnLoadMoreListener, SwipeRefreshLayout.OnRefreshListener {
+public abstract class ListActivity<VH extends ViewHolder, Item, Result>
+        extends hk.xhy.android.commom.ui.ListActivity<VH, Item, Result>
+        implements RecyclerActivity.OnLoadMoreListener, SwipeRefreshLayout.OnRefreshListener {
 
     private final String TAG = this.getClass().getSimpleName();
+
+    protected final ApiClientImpl API = ApiClient.getApi();
 
     protected ProgressDialog mProgressDialog;
 
@@ -188,7 +194,7 @@ public class ListActivity<VH extends ViewHolder, Item, Result> extends hk.xhy.an
 
     @Override
     public void onLoadMore() {
-        isLoadMore= true;
+        isLoadMore = true;
         forceLoad();
     }
 

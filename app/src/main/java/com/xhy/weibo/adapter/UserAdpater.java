@@ -18,6 +18,7 @@ import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.model.User;
 import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.utils.Constants;
 
 import java.util.List;
 
@@ -29,8 +30,7 @@ import butterknife.ButterKnife;
  */
 public class UserAdpater extends RecyclerView.Adapter {
 
-    public static final int TYPE_WRITE_FRIEND_LISTENER = 101;
-    public static final String RESULT_DATA_USERNAME_AT = "USERNAME_AT";
+
 
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FOOTER = 1;
@@ -104,12 +104,12 @@ public class UserAdpater extends RecyclerView.Adapter {
             }
 
             switch (type) {
-                case TYPE_WRITE_FRIEND_LISTENER:
+                case Constants.TYPE_WRITE_FRIEND_LISTENER:
                     listener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent data = new Intent();
-                            data.putExtra(RESULT_DATA_USERNAME_AT, "@" + user.getUsername()+" ");
+                            data.putExtra(Constants.RESULT_DATA_USERNAME_AT, "@" + user.getUsername()+" ");
                             ((BaseActivity) mContext).setResult(Activity.RESULT_OK, data);
                             ((BaseActivity) mContext).finish();
                         }
@@ -120,7 +120,7 @@ public class UserAdpater extends RecyclerView.Adapter {
                         @Override
                         public void onClick(View v) {
                             Intent data = new Intent(mContext, UserInfoActivity.class);
-                            data.putExtra(UserInfoActivity.USER_ID, user.getUid());
+                            data.putExtra(Constants.USER_ID, user.getUid());
                             mContext.startActivity(data);
                         }
                     };

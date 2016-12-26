@@ -205,9 +205,45 @@ public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Statu
                                 }
                             });
 
-
                 }
                 break;
+            case Constants.ITEM_COMMENT_TPYE:
+
+                if (status.getComment() > 0) {
+                    //跳转到评论页
+                    ActivityUtils.startActivity(this, StatusDetailActivity.class, new HashMap<String, Object>() {
+                        {
+                            put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
+                        }
+                    });
+                } else {
+                    //发评论
+                    ActivityUtils.startActivity(this, WriteStatusActivity.class, new HashMap<String, Object>() {
+                        {
+                            put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
+                            put(Constants.TYPE, Constants.COMMENT_TYPE);
+                            put(Constants.TAG, Constants.MAIN_ATY_CODE);
+                        }
+                    });
+                }
+                break;
+
+            case Constants.ITEM_FORWARD_TPYE:
+                /**
+                 * ...尚未写完
+                 */
+
+                ActivityUtils.startActivity(this, WriteStatusActivity.class, new HashMap<String, Object>() {
+                    {
+                        put(Constants.TYPE, Constants.FORWARD_TYPE);
+                        put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
+
+                    }
+                }, Constants.REQUEST_CODE_WRITE_FORWARD);
+
+
+                break;
+
 
         }
     }

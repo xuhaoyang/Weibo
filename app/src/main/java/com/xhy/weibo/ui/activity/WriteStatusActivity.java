@@ -31,7 +31,6 @@ import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.EmotionGvAdapter;
 import com.xhy.weibo.adapter.EmotionPagerAdapter;
-import com.xhy.weibo.adapter.UserAdpater;
 import com.xhy.weibo.adapter.WriteStatusGridImgsAdapter;
 import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.model.Comment;
@@ -63,19 +62,6 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
     public static final String COMMENT_INTENT = "comment";
     public static final String SEND_COMMENT_SUCCESS = "SEND_COMMENT_OK";
-    public static final String SEND_FORWORD_SUCCESS = "SEND_FORWORD_OK";
-    public static final String SEND_STATUS_SUCCESS = "SEND_STATUS_OK";
-    //打上TAG标签 判断来自哪个Activity
-    public static final String TAG = "TAG";
-    public static final int MAIN_ATY_CODE = 1;
-    public static final int DETAIL_ATY_CODE = 2;
-    public static final int COMMENT_ADPATER_CODE = 3;
-
-    //
-    public static final String TYPE = "WRITECOMMENTACTIVITY_TYPE";
-    public static final int COMMENT_TYPE = 101;
-    public static final int FORWARD_TYPE = 102;
-    public static final int NEW_STATUS_TYPE = 103;
 
 
     public static final int REQUEST_CODE_AT_USERNAME = 201;
@@ -148,21 +134,32 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
         });
 
         //默认转发评论都无法发图片
-        type = getIntent().getIntExtra(TYPE, 101);
-        aty_stype = getIntent().getIntExtra(TAG, 1);
+        type = getIntent().getIntExtra(Constants.TYPE, 101);
+        aty_stype = getIntent().getIntExtra(Constants.TAG, 1);
         switch (type) {
-            case COMMENT_TYPE:
+            case Constants.COMMENT_TYPE:
                 //获取待评论微博数据
                 switch (aty_stype) {
                     //来自Status 微博的评论[获得是Status的信息]
-                    case MAIN_ATY_CODE:
-                    case DETAIL_ATY_CODE:
-                        status = (Status) getIntent().getSerializableExtra(Constants.STATUS_INTENT);
+                    case Constants.MAIN_ATY_CODE:
+                    case Constants.DETAIL_ATY_CODE:
+                        /**
+                         * 因为这里传输方式 会变成json形式 保留原有的获取数据的方式
+                         */
+                        Object val = getIntent().getSerializableExtra(Constants.STATUS_INTENT);
+
+                        if (val instanceof String) {//前者如果不是序列化来的数据,会未空
+                            status = Status.parseObject(getIntent().getStringExtra(Constants.STATUS_INTENT));
+                        } else if (val instanceof Status) {
+                            status = (Status) val;
+                        } else {
+                            finish();
+                        }
                         getSupportActionBar().setTitle("发表评论");
                         new_take_photo.setVisibility(View.GONE);
                         break;
                     //来自评论列表的回复[获得是Comment信息]
-                    case COMMENT_ADPATER_CODE:
+                    case Constants.COMMENT_ADPATER_CODE:
                         comment = (Comment) getIntent().getSerializableExtra(COMMENT_INTENT);
                         getSupportActionBar().setTitle("回复评论");
                         original = "@" + comment.getUsername() + ": " + comment.getContent();
@@ -171,12 +168,22 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         break;
                 }
                 break;
-            case FORWARD_TYPE:
+            case Constants.FORWARD_TYPE:
                 new_take_photo.setVisibility(View.GONE);
-                status = (Status) getIntent().getSerializableExtra(Constants.STATUS_INTENT);
+                Object val = getIntent().getSerializableExtra(Constants.STATUS_INTENT);
+
+                if (val instanceof String) {//前者如果不是序列化来的数据,会未空
+                    status = Status.parseObject(getIntent().getStringExtra(Constants.STATUS_INTENT));
+                } else if (val instanceof Status) {
+                    status = (Status) val;
+                } else {
+                    finish();
+                }
+
+//                status = (Status) getIntent().getSerializableExtra(Constants.STATUS_INTENT);
                 getSupportActionBar().setTitle("转发微博");
                 break;
-            case NEW_STATUS_TYPE:
+            case Constants.NEW_STATUS_TYPE:
                 getSupportActionBar().setTitle("发微博");
             default:
                 break;
@@ -331,7 +338,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
         }
         //转发?评论
         switch (type) {
-            case COMMENT_TYPE:
+            case Constants.COMMENT_TYPE:
                 String url = null;
                 //父级微博id
                 int pWid = 0;
@@ -342,20 +349,20 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         Intent data;
                         switch (aty_stype) {
                             //来自Status 微博的评论[获得是Status的信息]
-                            case MAIN_ATY_CODE:
+                            case Constants.MAIN_ATY_CODE:
                                 status.setComment(status.getComment() + 1);
                                 data = new Intent(WriteStatusActivity.this, StatusDetailActivity.class);
                                 data.putExtra(Constants.STATUS_INTENT, status);
                                 startActivity(data);
                                 break;
-                            case DETAIL_ATY_CODE:
+                            case Constants.DETAIL_ATY_CODE:
                                 status.setComment(status.getComment() + 1);
                                 data = new Intent();
                                 data.putExtra(SEND_COMMENT_SUCCESS, true);
                                 setResult(RESULT_OK, data);
                                 break;
                             //来自评论列表的回复[获得是Comment信息]
-                            case COMMENT_ADPATER_CODE:
+                            case Constants.COMMENT_ADPATER_CODE:
                                 data = new Intent();
                                 data.putExtra(SEND_COMMENT_SUCCESS, true);
                                 setResult(RESULT_OK, data);
@@ -377,8 +384,8 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
                 switch (aty_stype) {
                     //来自Status 微博的评论[获得是Status的信息]
-                    case MAIN_ATY_CODE:
-                    case DETAIL_ATY_CODE:
+                    case Constants.MAIN_ATY_CODE:
+                    case Constants.DETAIL_ATY_CODE:
 
 
                         if (status.getStatus() != null) {
@@ -391,7 +398,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
                         break;
                     //来自评论列表的回复[获得是Comment信息]
-                    case COMMENT_ADPATER_CODE:
+                    case Constants.COMMENT_ADPATER_CODE:
                         commentStr = commentStr + "//" + original;
 
                         pWid = comment.getWid();
@@ -401,7 +408,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         break;
                 }
                 break;
-            case FORWARD_TYPE:
+            case Constants.FORWARD_TYPE:
 
                 /**
                  * 两种转发情况
@@ -425,7 +432,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                             public void onTurnSuccess(Result result) {
                                 showSnackbar(result.getMsg());
                                 Intent data = new Intent();
-                                data.putExtra(SEND_FORWORD_SUCCESS, true);
+                                data.putExtra(Constants.SEND_FORWORD_SUCCESS, true);
                                 setResult(RESULT_OK, data);
                                 WriteStatusActivity.this.finish();
                             }
@@ -442,14 +449,14 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                             }
                         });
                 break;
-            case NEW_STATUS_TYPE:
+            case Constants.NEW_STATUS_TYPE:
 
                 final String new_content = commentStr;
                 StatusLogic.SendWeiboCallBack sendWeiboCallBack = new StatusLogic.SendWeiboCallBack() {
                     @Override
                     public void onSendSuccess(Result result) {
                         Intent data = new Intent();
-                        data.putExtra(SEND_STATUS_SUCCESS, true);
+                        data.putExtra(Constants.SEND_STATUS_SUCCESS, true);
                         setResult(RESULT_OK, data);
                         WriteStatusActivity.this.finish();
                     }
@@ -564,7 +571,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 if (resultCode == RESULT_CANCELED) {
                     return;
                 }
-                String username = data.getStringExtra(UserAdpater.RESULT_DATA_USERNAME_AT);
+                String username = data.getStringExtra(Constants.RESULT_DATA_USERNAME_AT);
                 int cusPostion = new_edit.getSelectionStart();
                 StringBuilder sb = new StringBuilder(new_edit.getText().toString());
                 sb.insert(cusPostion, username);

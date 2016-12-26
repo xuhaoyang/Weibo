@@ -34,7 +34,7 @@ import static android.R.attr.data;
  */
 public class KeepStatusViewHolder extends ViewHolder {
 
-    private static final String TAG = KeepStatusViewHolder.class.getSimpleName() ;
+    private static final String TAG = KeepStatusViewHolder.class.getSimpleName();
     @ViewById(R.id.ll_content)
     public LinearLayout ll_content;
 
@@ -200,6 +200,27 @@ public class KeepStatusViewHolder extends ViewHolder {
                 public void onClick(View v) {
                     if (listener != null) {
                         listener.OnItemOtherClick(getAdapterPosition(), Constants.ITEM_LIKE_TPYE);
+                    }
+                }
+            });
+
+            /**
+             * commet type:0
+             */
+            ll_comment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.OnItemOtherClick(getAdapterPosition(), Constants.ITEM_COMMENT_TPYE);
+                    }
+                }
+            });
+
+            ll_forward.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.OnItemOtherClick(getAdapterPosition(), Constants.ITEM_FORWARD_TPYE);
                     }
                 }
             });
