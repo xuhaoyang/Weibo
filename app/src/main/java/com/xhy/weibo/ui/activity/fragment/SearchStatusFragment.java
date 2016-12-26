@@ -15,6 +15,7 @@ import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.ui.base.BaseFragment;
+import com.xhy.weibo.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,19 +23,19 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+
 /**
  * Created by xuhaoyang on 16/5/22.
  */
 public class SearchStatusFragment extends BaseFragment implements StatusLogic.GetSearchStatusListCallBack {
 
 
-    public static final String SEARCH_CONTENT = "CONTENT";
 
 
     private View root;
-    @BindView(R.id.swipeRefreshLayout_searchStatus)
+    @BindView(R.id.pull_to_refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.recycler_view_searchStatus)
+    @BindView(R.id.list)
     RecyclerView mRecyclerView;
 
     LinearLayoutManager linearLayoutManager;
@@ -65,7 +66,7 @@ public class SearchStatusFragment extends BaseFragment implements StatusLogic.Ge
         ButterKnife.bind(this, root);
 
         fromBundle = getArguments();
-        keyword = fromBundle.getString(SEARCH_CONTENT);
+        keyword = fromBundle.getString(Constants.SEARCH_CONTENT);
         initRecyclerView();
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
