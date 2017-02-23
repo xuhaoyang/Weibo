@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.xhy.weibo.AccessToken;
 import com.xhy.weibo.AppConfig;
-import com.xhy.weibo.constants.CommonConstants;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
 import com.xhy.weibo.model.Login;

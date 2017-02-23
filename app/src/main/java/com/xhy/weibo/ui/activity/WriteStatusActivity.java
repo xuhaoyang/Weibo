@@ -43,11 +43,10 @@ import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.ImageUpload;
 import com.xhy.weibo.network.NetParams;
 import com.xhy.weibo.utils.Constants;
-import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.EmotionUtils;
 import com.xhy.weibo.utils.ImageUtils;
 import com.xhy.weibo.utils.StringUtils;
-import com.xhy.weibo.widget.WrapHeightGridView;
+import com.xhy.weibo.ui.widget.WrapHeightGridView;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +55,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.commom.utils.ConvertUtils;
+import hk.xhy.android.commom.utils.ScreenUtils;
 
 
 public class WriteStatusActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
@@ -214,8 +215,8 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void initEmotion() {
-        int screenWidth = DisplayUtils.getScreenWidthPixels(this);
-        int spacing = DisplayUtils.dp2px(this, 8);
+        int screenWidth = ScreenUtils.getScreenWidth(this);
+        int spacing = ConvertUtils.dp2px(this, 8);
 
         int itemWidth = (screenWidth - spacing * 8) / 7;
         int gvHeight = itemWidth * 3 + spacing * 4;

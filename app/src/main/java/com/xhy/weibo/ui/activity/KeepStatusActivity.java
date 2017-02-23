@@ -1,6 +1,9 @@
 package com.xhy.weibo.ui.activity;
 
+import android.accounts.NetworkErrorException;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,17 +13,17 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.ui.base.ListActivity;
-import com.xhy.weibo.ui.vh.KeepStatusViewHolder;
+import com.xhy.weibo.ui.interfaces.PushMessage;
+import com.xhy.weibo.ui.vh.StatusViewHolder;
 import com.xhy.weibo.utils.Constants;
-import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.io.IOException;
@@ -30,14 +33,16 @@ import java.util.List;
 import butterknife.ButterKnife;
 import hk.xhy.android.commom.bind.ViewById;
 import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
+import hk.xhy.android.commom.ui.vh.ViewHolder;
 import hk.xhy.android.commom.utils.ActivityUtils;
 import hk.xhy.android.commom.utils.GsonUtil;
+import hk.xhy.android.commom.utils.ViewUtils;
 import hk.xhy.android.commom.widget.PullToRefreshMode;
 import retrofit2.Call;
 
 
-public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Status, Result<List<Status>>>
-        implements OnListItemClickListener {
+public class KeepStatusActivity extends ListActivity<ViewHolder, Status, Result<List<Status>>>
+        implements OnListItemClickListener, PushMessage<Status> {
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -47,22 +52,7 @@ public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Statu
     @ViewById(R.id.coordinator)
     CoordinatorLayout mCoordinatorLayout;
 
-
     private int currentPage = 1;
-
-//    public Handler mHandler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            switch (msg.what) {
-//                case REFRESH_DATA:
-//                    Snackbar.make(mCoordinatorLayout, "取消收藏成功", Snackbar.LENGTH_SHORT).show();
-//                    currentPage = 1;
-//
-//                    onRefresh();
-//                    break;
-//            }
-//        }
-//    };
 
 
     @Override
@@ -84,32 +74,43 @@ public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Statu
         setMode(PullToRefreshMode.BOTH);
         initLoader();
 
-//        init();
-//        initListener();
-//        initRecyclerView();
-//        mSwipeRefreshLayout.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                mSwipeRefreshLayout.setRefreshing(true);
-//                LoadData();
-//            }
-//        });
+        setFooterShowEnable(true);
+        setLoadingView(R.layout.item_footer_loading);
+        setLoadEndView(R.layout.item_footer_end);
+        setLoadFailedView(R.layout.item_footer_fail);
+
 
     }
 
     @Override
-    public KeepStatusViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_status, parent, false);
-        return new KeepStatusViewHolder(currentView);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        switch (viewType) {
+            case TYPE_ITEM:
+                View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_status, parent, false);
+                return new StatusViewHolder(currentView);
+            case TYPE_FOOTER:
+                if (mFooterLayout == null) {
+                    mFooterLayout = new RelativeLayout(this);
+                }
+                ViewHolder viewHolder = ViewHolder.create(mFooterLayout);
+                return viewHolder;
+        }
+        return null;
     }
 
     @Override
-    public void onBindViewHolder(KeepStatusViewHolder holder, int position) {
-        holder.bind(this, getItemsSource().get(position), this);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        if (holder instanceof StatusViewHolder) {
+            ((StatusViewHolder) holder).bind(this, getItemsSource().get(position), this, 5);
+        }
     }
+
+    private boolean isThrows = true;
 
     @Override
     public Result<List<Status>> onLoadInBackground() throws Exception {
+
         int page = 0;
 
         if (isLoadMore()) {
@@ -118,8 +119,17 @@ public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Statu
             page = 1;
         }
 
+//        if (!isEmpty()) {
+//            Thread.sleep(1000);
+//            if (getItemCount() >= 10 && isThrows) {
+//                isThrows = false;
+//                throw new Exception("Test error");
+//            }
+//        }
+
         Call<Result<List<Status>>> resultCall = ApiClient.getApi().
                 getKeepStatusListByUid(AppConfig.getUserId(), page, AppConfig.getAccessToken().getToken());
+
 
         Result<List<Status>> result = null;
         try {
@@ -128,11 +138,12 @@ public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Statu
             e.printStackTrace();
         }
 
+
         return result;
     }
 
     @Override
-    public void onLoadComplete(Result<List<Status>> data) {
+    public void onLoadComplete(final Result<List<Status>> data) {
         Log.e(TAG, ">>>onLoadComplete");
         Log.e(TAG, ">>>" + GsonUtil.toJson(data));
         if (data != null) {
@@ -151,8 +162,8 @@ public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Statu
             }
             getAdapter().notifyDataSetChanged();
             onRefreshComplete();
-
         }
+
     }
 
     @Override
@@ -177,84 +188,21 @@ public class KeepStatusActivity extends ListActivity<KeepStatusViewHolder, Statu
     @Override
     public void OnItemOtherClick(final int postion, int type) {
         final Status status = getItemsSource().get(postion);
-        switch (type) {
-            case Constants.ITEM_LIKE_TPYE:
-                if (status.isKeep()) {
-
-                    StatusLogic.delKeepStatus(this, AppConfig.getUserId(),
-                            status.getId(), AppConfig.getAccessToken().getToken(),
-                            new StatusLogic.DelKeepStatusCallBack() {
-                                @Override
-                                public void onDelKeepSuccess(Result result) {
-                                    if (result.isSuccess()) {
-                                        getItemsSource().remove(status);
-                                        getAdapter().notifyDataSetChanged();
-                                        showSnackbar(result.getMsg());
-                                    }
-                                }
-
-                                @Override
-                                public void onDelKeepFailure(String message) {
-                                    showSnackbar(message);
-                                }
-
-                                @Override
-                                public void onDelKeepError(Throwable t) {
-                                    Logger.show(TAG, t.getMessage(), Log.ERROR);
-
-                                }
-                            });
-
-                }
-                break;
-            case Constants.ITEM_COMMENT_TPYE:
-
-                if (status.getComment() > 0) {
-                    //跳转到评论页
-                    ActivityUtils.startActivity(this, StatusDetailActivity.class, new HashMap<String, Object>() {
-                        {
-                            put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
-                        }
-                    });
-                } else {
-                    //发评论
-                    ActivityUtils.startActivity(this, WriteStatusActivity.class, new HashMap<String, Object>() {
-                        {
-                            put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
-                            put(Constants.TYPE, Constants.COMMENT_TYPE);
-                            put(Constants.TAG, Constants.MAIN_ATY_CODE);
-                        }
-                    });
-                }
-                break;
-
-            case Constants.ITEM_FORWARD_TPYE:
-                /**
-                 * ...尚未写完
-                 */
-
-                ActivityUtils.startActivity(this, WriteStatusActivity.class, new HashMap<String, Object>() {
-                    {
-                        put(Constants.TYPE, Constants.FORWARD_TYPE);
-                        put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
-
-                    }
-                }, Constants.REQUEST_CODE_WRITE_FORWARD);
-
-
-                break;
-
-
-        }
+        StatusViewHolder.bindOnItemOhterClick(this, status, type, this);
     }
 
+    @Override
+    public void pushString(String text) {
+        showSnackbar(text);
+    }
 
-//    private void LoadData() {
-//
-//        StatusLogic.getKeepStatusListByUid(this, AppConfig.getUserId(), currPage,
-//                AppConfig.getAccessToken().getToken(), this);
-//    }
-
+    @Override
+    public void pushResult(boolean b, Status result) {
+        if (b) {
+            getItemsSource().remove(result);
+            getAdapter().notifyDataSetChanged();
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -3,7 +3,6 @@ package com.xhy.weibo.utils;
 import android.util.Log;
 
 import com.xhy.weibo.AppConfig;
-import com.xhy.weibo.constants.CommonConstants;
 
 /**
  * Created by xuhaoyang on 16/5/12.

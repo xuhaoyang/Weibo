@@ -1,4 +1,4 @@
-package com.xhy.weibo.widget;
+package com.xhy.weibo.ui.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

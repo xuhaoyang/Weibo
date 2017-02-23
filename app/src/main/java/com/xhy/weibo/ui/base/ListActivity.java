@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xhy.weibo.R;
@@ -19,6 +20,7 @@ import hk.xhy.android.commom.ui.RecyclerActivity;
 import hk.xhy.android.commom.ui.vh.ViewHolder;
 import hk.xhy.android.commom.utils.ActivityUtils;
 import hk.xhy.android.commom.utils.ErrorUtils;
+import hk.xhy.android.commom.utils.ViewUtils;
 import hk.xhy.android.commom.widget.PullToRefreshMode;
 
 
@@ -96,7 +98,10 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
                 mErrorView.setVisibility(View.INVISIBLE);
             }
             getRecyclerView().setVisibility(View.INVISIBLE);
+
         }
+
+
     }
 
     public void retryRefresh() {
@@ -170,6 +175,9 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
         onRefreshComplete();
         if (!isEmpty()) {
             ErrorUtils.show(this, e);
+            if (ismFooterShow){
+                showLoadFailView();
+            }
         } else {
             ensureView();
             if (mLoadingView != null) {
@@ -195,6 +203,14 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
     @Override
     public void onLoadMore() {
         isLoadMore = true;
+
+        /**
+         * 上拉加载更多
+         */
+        if (ismFooterShow) {
+            showLoadingView();
+        }
+
         forceLoad();
     }
 
@@ -225,8 +241,17 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
             } else {
                 mEmptyView.setVisibility(View.INVISIBLE);
             }
+
         }
         mFirstLoaded = true;
+
+        /**
+         * 完成加载显示完成加载Item
+         */
+        if (ismFooterShow) {
+            showLoadEndView();
+        }
+
     }
 
     protected void setLoadingShow(boolean isShow) {
@@ -251,5 +276,160 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
                 ((TextView) mEmptyView).setText(text);
             }
         }
+    }
+
+    private boolean ismFooterShow = false;
+    public static final int TYPE_ITEM = 0;
+    public static final int TYPE_FOOTER = 1;
+
+    public RelativeLayout mFooterLayout;//footer view
+    private View mFooterLoadingView; //分页加载中view
+    private View mFooterLoadFailedView; //分页加载失败view
+    private View mFooterLoadEndView; //分页加载结束view
+
+    @Override
+    public int getItemViewType(int position) {
+
+        if (isFooterView(position) && ismFooterShow) {
+            return TYPE_FOOTER;
+        } else {
+            return TYPE_ITEM;
+        }
+
+    }
+
+    @Override
+    public int getItemCount() {
+        if (getItemsSource().isEmpty()) {
+            return 0;
+        }
+        return getItemsSource().size() + getFooterViewCount();
+    }
+
+    /**
+     * 返回 footer view数量
+     *
+     * @return
+     */
+    public int getFooterViewCount() {
+        return ismFooterShow && !getItemsSource().isEmpty() ? 1 : 0;
+    }
+
+    /**
+     * 是否是FooterView
+     *
+     * @param position
+     * @return
+     */
+    private boolean isFooterView(int position) {
+        return position >= getItemCount() - 1;
+    }
+
+    /**
+     * 是否显示Footer
+     *
+     * @param isShow
+     */
+    public void setFooterShowEnable(boolean isShow) {
+        ismFooterShow = isShow;
+    }
+
+    /**
+     * 清空footer view
+     */
+    private void removeFooterView() {
+        mFooterLayout.removeAllViews();
+    }
+
+
+    /**
+     * 添加新的footer view
+     *
+     * @param footerView
+     */
+    private void addFooterView(View footerView) {
+        if (footerView == null) {
+            return;
+        }
+
+        if (mFooterLayout == null) {
+            mFooterLayout = new RelativeLayout(this);
+        }
+        removeFooterView();
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        mFooterLayout.addView(footerView, params);
+
+    }
+
+    /**
+     * 初始化加载中布局
+     *
+     * @param loadingView
+     */
+    public void setLoadingView(View loadingView) {
+        mFooterLoadingView = loadingView;
+//        addFooterView(loadingView);
+    }
+
+    public void setLoadingView(int loadingId) {
+        setLoadingView(ViewUtils.inflate(this, loadingId));
+    }
+
+    /**
+     * 显示Footer加载布局
+     */
+    public void showLoadingView() {
+        if (mFooterLoadingView == null) {
+            return;
+        }
+        addFooterView(mFooterLoadingView);
+    }
+
+    /**
+     * 初始化全部加载完成布局
+     *
+     * @param loadEndView
+     */
+    public void setLoadEndView(View loadEndView) {
+        mFooterLoadEndView = loadEndView;
+//        addFooterView(mFooterLoadEndView);
+    }
+
+    public void setLoadEndView(int loadEndId) {
+        setLoadEndView(ViewUtils.inflate(this, loadEndId));
+    }
+
+    public void showLoadEndView() {
+        if (mFooterLoadEndView == null) {
+            return;
+        }
+        addFooterView(mFooterLoadEndView);
+    }
+
+    /**
+     * 初始加载失败布局
+     *
+     * @param loadFailView
+     */
+    public void setLoadFailedView(View loadFailView) {
+        mFooterLoadFailedView = loadFailView;
+        mFooterLoadFailedView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onLoadMore();
+            }
+        });
+    }
+
+    public void setLoadFailedView(int loadFailId) {
+        setLoadFailedView(ViewUtils.inflate(this, loadFailId));
+    }
+
+    public void showLoadFailView() {
+        if (mFooterLoadFailedView==null){
+            return;
+        }
+        addFooterView(mFooterLoadFailedView);
     }
 }

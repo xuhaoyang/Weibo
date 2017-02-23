@@ -55,7 +55,7 @@ public class NotifyStatusFragment extends BaseFragment implements StatusLogic.Ge
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_search_status, container, false);
+        root = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, root);
 
         initRecyclerView();

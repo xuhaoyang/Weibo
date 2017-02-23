@@ -53,6 +53,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.commom.widget.Toaster;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, ServiceConnection, StatusLogic.GetStatusGroupCallBack, StatusLogic.GetStatusListCallBack, UserLoginLogic.GetUserinfoCallBack {
@@ -75,6 +76,12 @@ public class MainActivity extends BaseActivity
     @BindView(R.id.swipeRefreshLayout_home)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
+
+
+    //再按一次确定退出
+    private boolean mConfirmExit = false;
+
+
     Button btnHot;
     Button btnKeep;
     Button btnSettings;
@@ -90,7 +97,7 @@ public class MainActivity extends BaseActivity
     private String gid = "";
     private StatusAdpater statusAdpater = new StatusAdpater(statuses, this);
     private boolean isLoading;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private int currPage = 1;
 
 
@@ -234,6 +241,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onGroupSuccess(List<StatusGroup> statusGroups) {
+        
         for (StatusGroup sg : statusGroups) {
             menu.add(GROUP, sg.getId(), sg.getId(), sg.getName());
         }
@@ -385,11 +393,22 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (!mConfirmExit) {
+                mConfirmExit = true;
+                Toaster.showShort(this, R.string.app_exit_warning);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mConfirmExit = false;
+                    }
+                }, 2000);
+            } else {
+                ActivityUtils.appExit(this);
+            }
         }
     }
 

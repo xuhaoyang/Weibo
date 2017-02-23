@@ -1,6 +1,5 @@
 package com.xhy.weibo.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -15,6 +14,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bobomee.android.common.util.ScreenUtil;
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.R;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
@@ -23,7 +23,6 @@ import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DateUtils;
-import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.StringUtils;
 
 import java.util.List;
@@ -86,7 +85,7 @@ public class CommentAdpater extends RecyclerView.Adapter {
         } else if (viewType == TYPE_FOOTER) {
             FootViewHolder root = new FootViewHolder(
                     LayoutInflater.from(parent.getContext()).
-                            inflate(R.layout.item_comment_foot, parent, false));
+                            inflate(R.layout.item_comment_footer_end, parent, false));
             return root;
         }
         return null;
@@ -148,7 +147,7 @@ public class CommentAdpater extends RecyclerView.Adapter {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(DisplayUtils.getScreenHeightPixels((Activity) mContext) / 2);
+            itemView.setTranslationY(ScreenUtil.getScreenWidth(mContext) / 2);
             itemView.animate()
                     .translationY(0)
                     .setInterpolator(new DecelerateInterpolator(2.f))

@@ -117,7 +117,8 @@ public class StartActivty extends StartUpActivity {
                 @Override
                 public void onLoginError(Throwable error) {
                     Toaster.showShort(StartActivty.this, "网络故障");
-                    Logger.show(TAG, error.getLocalizedMessage(), Log.ERROR);
+                    Logger.show(
+                            TAG, error.getLocalizedMessage(), Log.ERROR);
                     ActivityUtils.appExit(StartActivty.this);
                 }
             });

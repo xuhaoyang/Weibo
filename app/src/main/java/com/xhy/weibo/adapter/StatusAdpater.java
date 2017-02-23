@@ -1,6 +1,5 @@
 package com.xhy.weibo.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -34,9 +33,10 @@ import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DateUtils;
-import com.xhy.weibo.utils.DisplayUtils;
 import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.StringUtils;
+
+import hk.xhy.android.commom.utils.ScreenUtils;
 import hk.xhy.android.commom.utils.ToastUtils;
 
 import java.util.List;
@@ -154,8 +154,8 @@ public class StatusAdpater extends RecyclerView.Adapter {
             ItemViewHolder root = new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_status, parent, false));
             return root;
         } else if (viewType == TYPE_FOOTER) {
-//            View view = LayoutInflater.from(context).inflate(R.layout.item_foot, parent,false);
-            FootViewHolder root = new FootViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_foot, parent, false));
+//            View view = LayoutInflater.from(context).inflate(R.layout.item_footer_loading, parent,false);
+            FootViewHolder root = new FootViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_footer_loading, parent, false));
             return root;
         }
         return null;
@@ -406,7 +406,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(DisplayUtils.getScreenHeightPixels((Activity) context) / 2);
+            itemView.setTranslationY(ScreenUtils.getScreenHeight(context) / 2);
             itemView.animate()
                     .translationY(0)
 //                    .setStartDelay(100 * position)
@@ -417,28 +417,6 @@ public class StatusAdpater extends RecyclerView.Adapter {
         }
     }
 
-    /**
-     * @param statuses
-     * @param type     1完全更新数据,2包含数据
-     */
-    public void updateItems(List<Status> statuses, int type) {
-        switch (type) {
-            case 1:
-                lastAnimatedPosition = -1;
-                this.statuses.clear();
-                statuses.addAll(statuses);
-                notifyDataSetChanged();
-                break;
-            case 2:
-                for (Status s : statuses) {
-                    if (!this.statuses.contains(s)) {
-                        this.statuses.add(s);
-                    }
-                }
-                notifyDataSetChanged();
-                break;
-        }
-    }
 
     @Override
     public int getItemCount() {

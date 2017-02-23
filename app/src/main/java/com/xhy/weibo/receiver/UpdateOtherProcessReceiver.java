@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.xhy.weibo.AppConfig;
-import com.xhy.weibo.constants.CommonConstants;
+import com.xhy.weibo.utils.Constants;
 
 /**
  * Created by xuhaoyang on 16/6/26.
@@ -17,7 +17,7 @@ public class UpdateOtherProcessReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        CommonConstants.isNotify = intent.getBooleanExtra(AppConfig.KEEP_SETTING_ISNOTIFY, false);
+        Constants.isNotify = intent.getBooleanExtra(AppConfig.KEEP_SETTING_ISNOTIFY, false);
 
     }
 }

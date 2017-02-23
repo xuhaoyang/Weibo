@@ -6,6 +6,9 @@ package com.xhy.weibo.utils;
 public class Constants {
 
 
+    public static boolean isNotify = true;
+
+
     //SearchActivity 搜索内容
     public static final String SEARCH_CONTENT = "search_content";
     //StatusDetailActivity status

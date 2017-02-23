@@ -95,11 +95,7 @@
                 <action android:name="com.xhy.weibo.UPDATE_OTHER_PROCESS" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.NetWorkReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
+
 
         <activity
             android:name=".ui.activity.LoginActivity"
@@ -110,6 +106,14 @@
             android:label="@string/title_activity_settings">
 
         </activity>
+
+
+
+        <receiver android:name=".receiver.NetWorkReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="BUG_HD_SDK_GENERAL_KEY"

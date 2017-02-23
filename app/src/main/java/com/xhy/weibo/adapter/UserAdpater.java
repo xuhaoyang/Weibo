@@ -81,7 +81,7 @@ public class UserAdpater extends RecyclerView.Adapter {
         } else if (viewType == TYPE_FOOTER) {
             FootViewHolder root = new FootViewHolder(
                     LayoutInflater.from(parent.getContext()).
-                            inflate(R.layout.item_comment_foot, parent, false));
+                            inflate(R.layout.item_comment_footer_end, parent, false));
             return root;
         }
         return null;

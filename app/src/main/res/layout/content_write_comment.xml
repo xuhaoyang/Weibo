@@ -37,7 +37,7 @@
                 android:textSize="16sp" />
 
 
-            <com.xhy.weibo.widget.WrapHeightGridView
+            <com.xhy.weibo.ui.widget.WrapHeightGridView
                 android:id="@+id/gv_write_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                 android:scrollbars="none"
                 android:verticalSpacing="8dp">
 
-            </com.xhy.weibo.widget.WrapHeightGridView>
+            </com.xhy.weibo.ui.widget.WrapHeightGridView>
 
         </LinearLayout>
     </ScrollView>

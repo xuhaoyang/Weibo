@@ -8,7 +8,7 @@
     <string name="hot_content">热门</string>
     <string name="nav_action_collect">收藏</string>
     <string name="action_notifications">通知</string>
-    <string name="loading">加载中…</string>
+
     <string name="title_activity_status_detail">StatusDetailActivity</string>
 
     <string name="title_activity_write_comment">WriteCommentActivity</string>
@@ -106,5 +106,8 @@
     <string name="list_error">加载数据失败，点击重试</string>
     <string name="list_data_not_found">没有找到数据</string>
     <string name="list_loading">加载数据中</string>
-
+    <string name="loadfail">加载失败，点我再试试？</string>
+    <string name="loading">加载中…</string>
+    <string name="loadend">THE END</string>
+    <string name="app_exit_warning">one more touch app exit</string>
 </resources>
