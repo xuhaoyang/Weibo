@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.xhy.weibo.utils.Logger;
+
+import hk.xhy.android.commom.utils.ActivityUtils;
 import hk.xhy.android.commom.utils.ToastUtils;
 
 /**
@@ -34,8 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void intent2Activity(Class<? extends Activity> tarActivity) {
-        Intent intent = new Intent(this, tarActivity);
-        startActivity(intent);
+        ActivityUtils.startActivity(this, tarActivity);
     }
 
     protected void showLog(String msg) {

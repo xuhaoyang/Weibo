@@ -82,6 +82,9 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
     @Override
     public void onRefresh() {
         Log.e(TAG, ">>>onRefresh");
+
+        getPullToRefreshLayout().setRefreshing(true);
+
         isLoadMore = false;
         restartLoader();
 
