@@ -26,6 +26,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.commom.widget.PullToRefreshLayout;
 
 /**
  * Created by xuhaoyang on 16/5/16.
@@ -33,10 +34,11 @@ import butterknife.ButterKnife;
 public class KeepFragment extends BaseFragment implements StatusLogic.GetTurnStatusCallBack {
 
     private View root;
-    @BindView(R.id.swipeRefreshLayout_comment)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.recycler_view_comment)
+    @BindView(R.id.pull_to_refresh)
+    PullToRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.list)
     RecyclerView mRecyclerView;
+
     LinearLayoutManager linearLayoutManager;
 
     public final static String WID = "wid";
