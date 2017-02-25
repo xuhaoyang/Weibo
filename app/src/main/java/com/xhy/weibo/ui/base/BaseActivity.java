@@ -17,7 +17,7 @@ import hk.xhy.android.commom.utils.ToastUtils;
 /**
  * Created by xuhaoyang on 16/5/12.
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends hk.xhy.android.commom.ui.BaseActivity {
 
     protected String TAG = getClass().getSimpleName();
     protected BaseApplication application;

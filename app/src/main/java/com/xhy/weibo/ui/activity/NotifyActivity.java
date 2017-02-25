@@ -17,29 +17,31 @@ import com.xhy.weibo.ui.activity.fragment.NotifyStatusFragment;
 import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.logic.PushMessageLogic;
 import com.xhy.weibo.model.Result;
+import com.xhy.weibo.ui.base.ViewPagerAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.commom.bind.ViewById;
+import hk.xhy.android.commom.utils.ActivityUtils;
 
 public class NotifyActivity extends BaseActivity {
 
 
     public static final String PUSH = "1";
-    @BindView(R.id.toolbar)
+    @ViewById(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.tabs)
+    @ViewById(R.id.tabs)
     TabLayout tabLayout;
-    @BindView(R.id.container)
+    @ViewById(R.id.container)
     ViewPager mViewPager;
 
-    private PagerAdapter mSectionsPagerAdapter;
+    private ViewPagerAdapter mAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notify);
-        ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -47,26 +49,34 @@ public class NotifyActivity extends BaseActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                ActivityUtils.finishActivity();
             }
         });
 
-
-        mSectionsPagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        setUpViewPager(mViewPager);
         tabLayout.setupWithViewPager(mViewPager);
+    }
 
+    private void setUpViewPager(ViewPager mViewPager) {
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        mAdapter.addFrag(NotifyCommentFragment.newInstance(), "评论");
+        mAdapter.addFrag(NotifyStatusFragment.newInstance(), "提及");
+
+        mViewPager.setAdapter(mAdapter);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         final Intent intent = getIntent();
         final boolean booleanExtra = intent.getBooleanExtra(PUSH, false);
         if (booleanExtra) {
             clearMsg();
         }
-
-
     }
 
     private void clearMsg() {
-
 
         PushMessageLogic.setMsg(this, AppConfig.getUserId(), 1, AppConfig.getAccessToken().getToken(),
                 new PushMessageLogic.SetMsgCallBack() {
@@ -90,70 +100,4 @@ public class NotifyActivity extends BaseActivity {
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_notify, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class PagerAdapter extends FragmentPagerAdapter {
-
-        private NotifyStatusFragment notifyStatusFragment = NotifyStatusFragment.newInstance();
-        private NotifyCommentFragment notifyCommentFragment = NotifyCommentFragment.newInstance();
-
-        public PagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    return notifyCommentFragment;
-                case 1:
-                    return notifyStatusFragment;
-            }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "评论";
-                case 1:
-                    return "提及";
-//                case 2:
-//                    return "SECTION 3";
-            }
-            return null;
-        }
-    }
 }

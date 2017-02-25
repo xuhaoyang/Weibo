@@ -72,16 +72,7 @@ public class SearchUsersFragment extends ListFragment<ViewHolder, User, Result<L
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//        if (viewType == TYPE_ITEM) {
-//            SearchViewHolder root = new SearchViewHolder(
-//                    LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_user, parent, false));
-//            return root;
-//        } else if (viewType == TYPE_FOOTER) {
-//            FootViewHolder root = new FootViewHolder(
-//                    LayoutInflater.from(parent.getContext()).
-//                            inflate(R.layout.item_comment_footer_end, parent, false));
-//            return root;
-//        }
+
         mParentContext = parent.getContext();
         switch (viewType) {
             case TYPE_ITEM:
