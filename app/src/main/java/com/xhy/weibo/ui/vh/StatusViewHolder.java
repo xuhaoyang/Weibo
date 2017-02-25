@@ -21,6 +21,7 @@ import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
+import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.activity.ViewPicActivity;
 import com.xhy.weibo.ui.activity.WriteStatusActivity;
 import com.xhy.weibo.ui.interfaces.PushMessage;
@@ -154,17 +155,14 @@ public class StatusViewHolder extends ViewHolder {
                         fitCenter().into(iv_avatar);
             }
 
-
-            /**
-             * //头像跳转
-             viewHolder.iv_avatar.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-            Intent data = new Intent(context, UserInfoActivity.class);
-            data.putExtra(UserInfoActivity.USER_ID, status.getUid());
-            context.startActivity(data);
-            }
+            iv_avatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ActivityUtils.startActivityByContext(context, UserInfoActivity.class, new HashMap<String, Object>() {{
+                        put(Constants.USER_ID, model.getUid());
+                    }});
+                }
             });
-             */
 
             //微博正文
             tv_content.setText(StringUtils.getWeiboContent(context,
