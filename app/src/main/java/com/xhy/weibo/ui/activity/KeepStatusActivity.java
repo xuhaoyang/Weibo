@@ -145,7 +145,6 @@ public class KeepStatusActivity extends ListActivity<ViewHolder, Status, Result<
     @Override
     public void onLoadComplete(final Result<List<Status>> data) {
         Log.e(TAG, ">>>onLoadComplete");
-        Log.e(TAG, ">>>" + GsonUtil.toJson(data));
         if (data != null) {
             if (data.isSuccess()) {
                 if (!isLoadMore()) {
