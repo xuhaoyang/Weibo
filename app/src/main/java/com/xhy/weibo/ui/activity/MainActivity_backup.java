@@ -9,73 +9,55 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.IMessageServiceRemoteBinder;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.StatusAdpater;
-import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.model.Login;
-import com.xhy.weibo.model.Result;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.logic.UserLoginLogic;
-import com.xhy.weibo.model.StatusGroup;
+import com.xhy.weibo.model.Login;
 import com.xhy.weibo.model.Status;
+import com.xhy.weibo.model.StatusGroup;
 import com.xhy.weibo.model.User;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.service.MessageService;
-import com.xhy.weibo.ui.base.ListActivity;
-import com.xhy.weibo.ui.interfaces.PushMessage;
-import com.xhy.weibo.ui.vh.StatusViewHolder;
+import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.ImageUtils;
-import com.xhy.weibo.utils.RecycleViewDivider;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
 import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.GsonUtil;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
 import hk.xhy.android.commom.widget.Toaster;
-import retrofit2.Call;
 
-public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<Status>>>
-        implements NavigationView.OnNavigationItemSelectedListener, StatusLogic.GetStatusGroupCallBack, UserLoginLogic.GetUserinfoCallBack, OnListItemClickListener, PushMessage<Status> {
-
-    private final String TAG = this.getClass().getSimpleName();
+public class MainActivity_backup extends BaseActivity
+        implements NavigationView.OnNavigationItemSelectedListener, ServiceConnection, StatusLogic.GetStatusGroupCallBack, StatusLogic.GetStatusListCallBack, UserLoginLogic.GetUserinfoCallBack {
 
     public static final int STATUS_GROUP = 0;
     public static final int STATUS_GROUP_ITEMID = 0;
@@ -84,19 +66,25 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     public static final int SETTING_LOGOUT_ITEMID = SETTING_ITEMID + 1;
 
 
-    @ViewById(R.id.coordinator)
-    CoordinatorLayout mCoordinatorLayout;
-    @ViewById(R.id.toolbar)
+//    @BindView(R.id.recycler_view_home)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @ViewById(R.id.drawer_layout)
+    @BindView(R.id.main_Car)
+    CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
-    @ViewById(R.id.nav_view)
+    @BindView(R.id.nav_view)
     NavigationView navigationView;
-    @ViewById(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fab;
+//    @BindView(R.id.swipeRefreshLayout_home)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
 
     //再按一次确定退出
     private boolean mConfirmExit = false;
+
 
     Button btnHot;
     Button btnKeep;
@@ -106,23 +94,31 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
 
     SearchView actionView;
     View headerView;
+    LinearLayoutManager linearLayoutManager;
 
+    List<Status> statuses = new ArrayList<Status>();
     private ActionBarDrawerToggle toggle;
     private String gid = "";
+    private StatusAdpater statusAdpater = new StatusAdpater(statuses, this);
+    private boolean isLoading;
     private final Handler handler = new Handler();
-    private int currentPage = 1;
+    private int currPage = 1;
 
 
+    private int totalPage = 1;
+    private int lastVisibleItemPosition;
     private SearchView.SearchAutoComplete mEditSearch;
     private DBManager dbManager;
     private SQLiteDatabase db;
     private UserDB userDB;
+    private IMessageServiceRemoteBinder binder;
     private Menu menu;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        showLog("onCreate");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         init();
@@ -139,12 +135,23 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         initView();
         initNavigationMenu();
         initListener();
+        initRecyclerView();
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                LoadData();
+            }
+        });
 
         //启动推送
         Intent intent = new Intent(this, MessageService.class);
+//        intent.putExtra("ACCOUNT", AppConfig.getAccount());
+//        intent.putExtra("PASSWORD", AppConfig.getPassword());
+//        intent.putExtra("USERID", AppConfig.getUserId());
         intent.putExtra("TOKEN", AppConfig.getAccessToken().getToken());
-        startService(intent);
 
+        startService(intent);
     }
 
     private void initView() {
@@ -161,127 +168,8 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-        //设置item间间隔样式
-        getRecyclerView().addItemDecoration(new RecycleViewDivider(this,
-                LinearLayoutManager.VERTICAL));
-        //设置下拉刷新颜色
-        getPullToRefreshLayout().setColorSchemeResources(R.color.colorPrimary);
-        /* 解决刷新动画出不来的问题 */
-        getPullToRefreshLayout().setProgressViewOffset(false, 0, (int) TypedValue
-                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources()
-                        .getDisplayMetrics()));
-        setMode(PullToRefreshMode.BOTH);
-        initLoader();
-
-        //开启自定义底部加载item
-        setFooterShowEnable(true);
-        setLoadingView(R.layout.item_footer_loading);
-        setLoadEndView(R.layout.item_footer_end);
-        setLoadFailedView(R.layout.item_footer_fail);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
     }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case TYPE_ITEM:
-                View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_status, parent, false);
-                return new StatusViewHolder(currentView);
-            case TYPE_FOOTER:
-                if (mFooterLayout == null) {
-                    mFooterLayout = new RelativeLayout(this);
-                }
-                ViewHolder viewHolder = ViewHolder.create(mFooterLayout);
-                return viewHolder;
-        }
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        if (holder instanceof StatusViewHolder) {
-            ((StatusViewHolder) holder).bind(this, getItemsSource().get(position), this, 5);
-        }
-    }
-
-    @Override
-    public Result<List<Status>> onLoadInBackground() throws Exception {
-        int page = 0;
-        if (isLoadMore()) {
-            page = currentPage + 1;
-        } else {
-            page = 1;
-        }
-
-        Call<Result<List<Status>>> resultCall = ApiClient.getApi().getStatusList(AppConfig.getUserId(), page, AppConfig.getAccessToken().getToken(), gid, 0);
-        Result<List<Status>> result = null;
-        try {
-            result = resultCall.execute().body();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-
-    }
-
-
-    @Override
-    public void onLoadComplete(Result<List<Status>> data) {
-        Log.e(TAG, ">>>onLoadComplete");
-
-        if (data != null) {
-            if (data.isSuccess()) {
-                if (!isLoadMore()) {
-                    getItemsSource().clear();
-                    currentPage++;
-                } else if (data.getInfo().size() > 0) {
-                    currentPage += 1;
-                }
-
-                getItemsSource().addAll(data.getInfo());
-            } else if (currentPage == 1) {
-                getItemsSource().clear();
-
-            }
-            getAdapter().notifyDataSetChanged();
-            onRefreshComplete();
-        }
-
-    }
-
-
-    @Override
-    public void OnListItemClick(int postion) {
-        final Status status = getItemsSource().get(postion);
-
-        //item点击跳转
-        ActivityUtils.startActivity(this, StatusDetailActivity.class, new HashMap<String, Object>() {
-            {
-                put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
-            }
-        });
-    }
-
-    @Override
-    public void OnItemOtherClick(int postion, int type) {
-        final Status status = getItemsSource().get(postion);
-        StatusViewHolder.bindOnItemOhterClick(this, status, type, this);
-    }
-
-    @Override
-    public void pushString(String text) {
-        showSnackbar(text);
-    }
-
-    @Override
-    public void pushResult(boolean b, Status result) {
-        if (b) {
-//            getItemsSource().remove(result);
-            getAdapter().notifyDataSetChanged();
-        }
-    }
-
 
     private void initUserinfo() {
         initDB();
@@ -289,19 +177,14 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         dbManager.closeDatabase();
         if (!users.isEmpty()) {
             long time = System.currentTimeMillis() - users.get(0).getUptime();
-
-            //加载本地已有数据
-            if (TextUtils.isEmpty(users.get(0).getUsername())) {
+            //大于半天刷新下缓存的用户数据
+            if (time > 43200000 || TextUtils.isEmpty(users.get(0).getUsername())) {
+                UpdataUserinfo();
+            } else {
                 String url = URLs.AVATAR_IMG_URL + users.get(0).getFace();
                 ImageUtils.setImage(headerView_iv_avatar, url);
                 headerView_tv_username.setText(users.get(0).getUsername());
             }
-
-            //大于半天刷新下缓存的用户数据
-            if (time > 43200000) {
-                UpdataUserinfo();
-            }
-
         } else {
             UpdataUserinfo();
         }
@@ -372,11 +255,57 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     @Override
     public void onGroupFailure(String message) {
         showSnackbar(message);
+        showLog(message);
     }
 
     @Override
     public void onGroupError(Throwable t) {
+        showLog(t.getMessage());
+    }
 
+    private void LoadData() {
+
+        StatusLogic.getStatusList(this, AppConfig.getUserId(), currPage, AppConfig.getAccessToken().getToken(), gid, 0, this);
+    }
+
+    @Override
+    public void onStatusListSuccess(List<Status> statuses, int totalPage) {
+        this.totalPage = totalPage;
+        if (currPage == 1) {
+            this.statuses.clear();
+            this.statuses.addAll(statuses);
+            statusAdpater.setLastAnimatedPosition(5);
+        } else {
+            //要判断是否有重复的
+            for (Status s : statuses) {
+                if (!this.statuses.contains(s)) {
+                    this.statuses.add(s);
+                }
+            }
+        }
+        statusAdpater.notifyDataSetChanged();
+        stopRefresh();
+    }
+
+    @Override
+    public void onStatusListFailure(String message) {
+        showSnackbar(message);
+        stopRefresh();
+    }
+
+    @Override
+    public void onStatusListError(Throwable t) {
+        showLog(t.getMessage());
+        isLoading = false;
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void stopRefresh() {
+        mSwipeRefreshLayout.setRefreshing(false);
+        if (statusAdpater != null) {
+            statusAdpater.notifyItemRemoved(statusAdpater.getItemCount());
+        }
+        isLoading = false;
     }
 
 
@@ -386,36 +315,72 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActivityUtils.startActivity(MainActivity.this, WriteStatusActivity.class, new HashMap<String, Object>() {{
-                    put(Constants.TYPE, Constants.NEW_STATUS_TYPE);
-                }}, Constants.REQUEST_CODE_WRITE_STATUS);
+                Intent data = new Intent(MainActivity_backup.this, WriteStatusActivity.class);
+                data.putExtra(Constants.TYPE, Constants.NEW_STATUS_TYPE);
+                startActivityForResult(data, Constants.REQUEST_CODE_WRITE_STATUS);
             }
         });
 
         btnHot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityUtils.startActivity(MainActivity.this, HotsActivity.class);
+                startActivity(new Intent(MainActivity_backup.this, HotsActivity.class));
             }
         });
         btnKeep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityUtils.startActivity(MainActivity.this, KeepStatusActivity.class);
+                startActivity(new Intent(MainActivity_backup.this, KeepStatusActivity.class));
             }
         });
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityUtils.startActivity(MainActivity.this, SettingsActivity.class);
+                startActivity(new Intent(MainActivity_backup.this, SettingsActivity.class));
+            }
+        });
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                currPage = 1;
+                LoadData();
             }
         });
 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+//                showLog("StateChanged = " + newState);
+                int pastVisiblesItems = linearLayoutManager.findFirstVisibleItemPosition();
+                if (newState == RecyclerView.SCROLL_STATE_IDLE
+                        && lastVisibleItemPosition + 1 == statusAdpater.getItemCount() && pastVisiblesItems != 0) {
+                    //这里的判断条件还会导致有点BUG,假设条数不足5条,上拉是无法刷新的,只能通过下拉
+                    if (!isLoading) {
+                        isLoading = true;
+                        if (currPage <= totalPage && statuses.size() > 0) {
+                            currPage += 1;
+                        }
+                        if (!mSwipeRefreshLayout.isRefreshing()) {
+                            mSwipeRefreshLayout.setRefreshing(true);
+                        }
+                        LoadData();
+                    }
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
+
+            }
+        });
 
         headerView_iv_avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent data = new Intent(MainActivity.this, UserInfoActivity.class);
+                Intent data = new Intent(MainActivity_backup.this, UserInfoActivity.class);
                 data.putExtra(Constants.USER_ID, AppConfig.getUserId());
                 startActivity(data);
             }
@@ -423,8 +388,17 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     }
 
 
+    public void initRecyclerView() {
+        linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(statusAdpater);
+    }
+
+
     @Override
     public void onBackPressed() {
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -451,14 +425,25 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         }
         switch (requestCode) {
             case Constants.REQUEST_CODE_WRITE_FORWARD:
-                onRefresh();
+                mSwipeRefreshLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        currPage = 1;
+                        LoadData();
+                        linearLayoutManager.scrollToPosition(0);
+                    }
+                });
                 break;
             case Constants.REQUEST_CODE_WRITE_STATUS:
                 boolean sendSuccess = data.getBooleanExtra(Constants.SEND_STATUS_SUCCESS, false);
                 if (sendSuccess) {
                     Snackbar.make(mCoordinatorLayout, "发送成功", Snackbar.LENGTH_LONG)
                             .show();
-                    onRefresh();
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    currPage = 1;
+                    LoadData();
+                    linearLayoutManager.scrollToPosition(0);
                 } else {
                     Snackbar.make(mCoordinatorLayout, "发送失败", Snackbar.LENGTH_LONG)
                             .show();
@@ -481,7 +466,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
                     return false;
                 }
 
-                ActivityUtils.startActivity(MainActivity.this, SearchActivity.class,
+                ActivityUtils.startActivity(MainActivity_backup.this, SearchActivity.class,
                         new HashMap<String, Object>() {
                             {
                                 put(Constants.SEARCH_CONTENT, query);
@@ -511,7 +496,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
 //        }
         switch (id) {
             case R.id.action_notifications:
-                ActivityUtils.startActivity(this, NotifyActivity.class);
+                intent2Activity(NotifyActivity.class);
                 break;
         }
 
@@ -523,22 +508,37 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
 
-        currentPage = 1;
+        currPage = 1;
         int id = item.getItemId();
+        showLog("onNavigationItemSelected:" + id);
         switch (id) {
             case STATUS_GROUP_ITEMID:
                 gid = "";
-                onRefresh();
+                mSwipeRefreshLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        LoadData();
+                    }
+                });
                 break;
             case SETTING_LOGOUT_ITEMID://注销登录
                 Login.setCurrentLoginUser(null);
                 AppConfig.setAccount(null);
                 AppConfig.setPassword(null);
-                ActivityUtils.goHome(MainActivity.this, LoginActivity.class);
+                ActivityUtils.goHome(MainActivity_backup.this, LoginActivity.class);
                 break;
             default:
                 gid = id + "";
-                onRefresh();
+                statuses.clear();
+                statusAdpater.notifyDataSetChanged();
+                mSwipeRefreshLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        LoadData();
+                    }
+                });
                 break;
         }
 
@@ -548,16 +548,44 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     }
 
     @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+//        binder = IMessageServiceRemoteBinder.Stub.asInterface(service);
+//        try {
+//            binder.setMessageListener(new IMessageListener.Stub() {
+//                @Override
+//                public void setToken(String token, long time) throws RemoteException {
+//                    AppConfig.ACCESS_TOKEN.setToken(token);
+//                    AppConfig.ACCESS_TOKEN.setTokenStartTime(time);
+//                    showLog("-->更新TOKEN成功");
+//                }
+//
+//            });
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//        showLog("Service Connected");
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        showLog("Service disConnected");
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+//        bindService(new Intent(this, MessageService.class), this, Context.BIND_AUTO_CREATE);
+        showLog("onResume");
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        showLog("onStop");
 
     }
+
 
     private void showSnackbar(String msg) {
         showSnackbar(msg, Snackbar.LENGTH_SHORT);

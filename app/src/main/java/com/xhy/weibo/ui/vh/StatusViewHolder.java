@@ -21,6 +21,7 @@ import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
+import com.xhy.weibo.ui.activity.ViewPicActivity;
 import com.xhy.weibo.ui.activity.WriteStatusActivity;
 import com.xhy.weibo.ui.interfaces.PushMessage;
 import com.xhy.weibo.utils.Constants;
@@ -187,14 +188,15 @@ public class StatusViewHolder extends ViewHolder {
                 int sixteen = (int) (scale * 16);
                 int ten = (int) (scale * 10);
                 include_status_image.setPadding(sixteen, ten, sixteen, 0);
-                /**
-                 iv_image.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                Intent intent = new Intent(context, ViewPicActivity.class);
-                intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + model.getMax());
-                context.startActivity(intent);
-                }
-                });*/
+
+                iv_image.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ActivityUtils.startActivityByContext(context, ViewPicActivity.class, new HashMap<String, Object>() {{
+                            put(ViewPicActivity.PIC_URL, URLs.PIC_URL + model.getMax());
+                        }});
+                    }
+                });
 
             } else {
                 include_status_image.setVisibility(View.GONE);

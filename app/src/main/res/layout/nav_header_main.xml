@@ -176,10 +176,8 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:layout_marginBottom="@dimen/lay_8"
-        android:layout_marginLeft="@dimen/lay_8"
-        android:layout_marginRight="@dimen/lay_8"
         android:layout_marginTop="@dimen/lay_8"
         android:background="@color/nav_fenge" />
 </LinearLayout>
