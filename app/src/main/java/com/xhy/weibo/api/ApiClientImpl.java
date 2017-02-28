@@ -145,7 +145,7 @@ public interface ApiClientImpl {
     @FormUrlEncoded
     @POST(URLs.WEIBO_ATM_LIST)
     Call<Result<List<Status>>> getAtStatusList(@Field("token") String token,
-                                               @Query("uid") int uid,
+                                               @Field("uid") int uid,
                                                @Query("page") int page);
 
     @FormUrlEncoded

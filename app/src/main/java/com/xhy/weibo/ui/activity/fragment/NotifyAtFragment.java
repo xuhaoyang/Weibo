@@ -1,112 +1,91 @@
 package com.xhy.weibo.ui.activity.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
-import com.xhy.weibo.adapter.CommentAdpater;
+import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.logic.CommentLogic;
 import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Result;
-import com.xhy.weibo.model.User;
+import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.model.Status;
+import com.xhy.weibo.ui.activity.StatusDetailActivity;
 import com.xhy.weibo.ui.base.ListFragment;
-import com.xhy.weibo.ui.vh.CommentViewHolder;
-import com.xhy.weibo.ui.vh.SearchViewHolder;
+import com.xhy.weibo.ui.interfaces.PushMessage;
+import com.xhy.weibo.ui.vh.StatusViewHolder;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import butterknife.ButterKnife;
 import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
 import hk.xhy.android.commom.ui.vh.ViewHolder;
+import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.commom.utils.GsonUtil;
 import hk.xhy.android.commom.widget.PullToRefreshMode;
 import retrofit2.Call;
 
 /**
- * Created by xuhaoyang on 16/5/16.
+ * Created by xuhaoyang on 16/5/22.
  */
-public class NotifyCommentFragment extends ListFragment<ViewHolder, Comment, Result<List<Comment>>, CardView> implements OnListItemClickListener {
+public class NotifyAtFragment extends ListFragment<ViewHolder, Status, Result<List<Status>>, RelativeLayout> implements OnListItemClickListener, PushMessage<Status> {
 
-    private static final String TAG = NotifyCommentFragment.class.getSimpleName();
+    private static final String TAG = NotifyAtFragment.class.getSimpleName();
+
     private int currentPage = 1;
 
-    public NotifyCommentFragment() {
+    public NotifyAtFragment() {
     }
 
 
-    public static NotifyCommentFragment newInstance() {
-        return new NotifyCommentFragment();
+    public static NotifyAtFragment newInstance() {
+        return new NotifyAtFragment();
     }
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_comment, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
         return view;
+
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_ITEM:
-                CommentViewHolder root = new CommentViewHolder(
-                        LayoutInflater.from(parent.getContext()).
-                                inflate(R.layout.item_comment, parent, false));
-                return root;
+                View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_status, parent, false);
+                return new StatusViewHolder(currentView);
             case TYPE_FOOTER:
                 if (mFooterLayout == null) {
-                    mFooterLayout = new CardView(parent.getContext());
-                    mFooterLayout.setLayoutParams(
-                            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT));
-//                    mFooterLayout = (CardView) ViewUtils.inflate(parent, R.layout.item_comment_cardview);
+                    mFooterLayout = new RelativeLayout(getContext());
                 }
                 ViewHolder viewHolder = ViewHolder.create(mFooterLayout);
                 return viewHolder;
         }
-
         return null;
     }
 
     @Override
-    public void addFooterView(View footerView) {
-
-        Context mContext = mParentContext == null ? getContext() : mParentContext;
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        if (footerView == null) {
-            return;
-        }
-        if (mFooterLayout == null) {
-            mFooterLayout = new CardView(mContext);
-            mFooterLayout.setLayoutParams(params);
-        }
-        removeFooterView();
-
-        mFooterLayout.addView(footerView, params);
-        mFooterLayout.requestLayout();
-    }
-
-    @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (holder instanceof CommentViewHolder) {
-            ((CommentViewHolder) holder).bind(getContext(), getItemsSource().get(position), this);
-
+        if (holder instanceof StatusViewHolder) {
+            ((StatusViewHolder) holder).bind(getContext(), getItemsSource().get(position), this, 5);
         }
     }
 
@@ -126,25 +105,23 @@ public class NotifyCommentFragment extends ListFragment<ViewHolder, Comment, Res
         initLoader();
 
         setFooterShowEnable(true);
-        setLoadingView(R.layout.item_comment_footer_loading);
-        setLoadEndView(R.layout.item_comment_footer_end);
-        setLoadFailedView(R.layout.item_comment_footer_fail);
+        setLoadingView(R.layout.item_footer_loading);
+        setLoadEndView(R.layout.item_footer_end);
+        setLoadFailedView(R.layout.item_footer_fail);
 
     }
 
     @Override
-    public Result<List<Comment>> onLoadInBackground() throws Exception {
+    public Result<List<Status>> onLoadInBackground() throws Exception {
         int page = 0;
         if (isLoadMore()) {
             page = currentPage + 1;
         } else {
             page = 0;
         }
-
-        Call<Result<List<Comment>>> resultCall = ApiClient.getApi().getUserCommentList(AppConfig.getAccessToken().getToken(),
+        Call<Result<List<Status>>> resultCall = ApiClient.getApi().getAtStatusList(AppConfig.getAccessToken().getToken(),
                 AppConfig.getUserId(), page);
-
-        Result<List<Comment>> result = null;
+        Result<List<Status>> result = null;
         try {
             result = resultCall.execute().body();
         } catch (IOException e) {
@@ -152,11 +129,11 @@ public class NotifyCommentFragment extends ListFragment<ViewHolder, Comment, Res
         }
 
         return result;
+
     }
 
     @Override
-    public void onLoadComplete(Result<List<Comment>> data) {
-        Log.e(TAG, ">>>onLoadComplete");
+    public void onLoadComplete(Result<List<Status>> data) {
 
         if (data != null) {
             if (data.isSuccess()) {
@@ -176,18 +153,36 @@ public class NotifyCommentFragment extends ListFragment<ViewHolder, Comment, Res
             onRefreshComplete();
 
         }
-
     }
 
     @Override
     public void OnListItemClick(int postion) {
-        /**
-         * 暂时不需要
-         */
+        final Status status = getItemsSource().get(postion);
+
+        //item点击跳转
+        ActivityUtils.startActivity(getActivity(), StatusDetailActivity.class, new HashMap<String, Object>() {
+            {
+                put(Constants.STATUS_INTENT, GsonUtil.toJson(status));
+            }
+        });
     }
 
     @Override
     public void OnItemOtherClick(int postion, int type) {
+        final Status status = getItemsSource().get(postion);
+        StatusViewHolder.bindOnItemOhterClick(getActivity(), status, type, this);
+    }
 
+    @Override
+    public void pushString(String text) {
+
+    }
+
+    @Override
+    public void pushResult(boolean b, Status result) {
+        if (b) {
+//            getItemsSource().remove(result);
+            getAdapter().notifyDataSetChanged();
+        }
     }
 }

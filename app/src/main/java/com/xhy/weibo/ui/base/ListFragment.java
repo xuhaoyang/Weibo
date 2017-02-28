@@ -24,7 +24,7 @@ import hk.xhy.android.commom.widget.PullToRefreshMode;
 /**
  * Created by xuhaoyang on 6/2/16.
  */
-public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Result>
+public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Result, T extends ViewGroup>
         extends hk.xhy.android.commom.ui.fragment.ListFragment<VH, Item, Result> implements SwipeRefreshLayout.OnRefreshListener,
         RecyclerFragment.OnLoadMoreListener {
     private final String TAG = this.getClass().getSimpleName();
@@ -235,7 +235,7 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
     public static final int TYPE_ITEM = 0;
     public static final int TYPE_FOOTER = 1;
 
-    public CardView mFooterLayout;//footer view
+    public T mFooterLayout;//footer view
     private View mFooterLoadingView; //分页加载中view
     private View mFooterLoadFailedView; //分页加载失败view
     private View mFooterLoadEndView; //分页加载结束view
@@ -290,7 +290,7 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
     /**
      * 清空footer view
      */
-    private void removeFooterView() {
+    public void removeFooterView() {
         mFooterLayout.removeAllViews();
     }
 
@@ -302,27 +302,22 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
      */
     public void addFooterView(View footerView) {
         Context mContext = mParentContext == null ? getContext() : mParentContext;
-        CardView.LayoutParams params = new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,
-                CardView.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
         if (footerView == null) {
             return;
         }
 
         if (mFooterLayout == null) {
-            mFooterLayout = new CardView(mContext);
-            mFooterLayout.setLayoutParams(params);
-//            mFooterLayout = new FrameLayout(mContext);
-//            return;
+            mFooterLayout = (T) new RelativeLayout(mContext);
         }
         removeFooterView();
-//        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-//                ViewGroup.LayoutParams.WRAP_CONTENT);
-
 
         mFooterLayout.addView(footerView, params);
         mFooterLayout.requestLayout();
-        getAdapter().notifyDataSetChanged();
     }
+
+
 
     /**
      * 初始化加载中布局
@@ -331,7 +326,7 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
      */
     public void setLoadingView(View loadingView) {
         mFooterLoadingView = loadingView;
-//        addFooterView(loadingView);
+        addFooterView(loadingView);
     }
 
     public void setLoadingView(int loadingId) {
@@ -356,7 +351,7 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
      */
     public void setLoadEndView(View loadEndView) {
         mFooterLoadEndView = loadEndView;
-//        addFooterView(mFooterLoadEndView);
+        addFooterView(mFooterLoadEndView);
     }
 
     public void setLoadEndView(int loadEndId) {
