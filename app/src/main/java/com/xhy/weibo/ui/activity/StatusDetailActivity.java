@@ -39,6 +39,8 @@ import com.xhy.weibo.utils.StringUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.commom.bind.ViewById;
+import hk.xhy.android.commom.utils.ActivityUtils;
 
 public class StatusDetailActivity extends BaseActivity {
 
@@ -49,30 +51,30 @@ public class StatusDetailActivity extends BaseActivity {
 
 
 
-    @BindView(R.id.toolbar)
+    @ViewById(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.viewpager)
+    @ViewById(R.id.viewpager)
     ViewPager viewPager;
-    @BindView(R.id.tabs)
+    @ViewById(R.id.tabs)
     TabLayout tabLayout;
-    @BindView(R.id.tv_content)
+    @ViewById(R.id.tv_content)
     TextView tv_content;
-    @BindView(R.id.include_status_detail_image)
+    @ViewById(R.id.include_status_detail_image)
     FrameLayout include_status_detail_image;
-    @BindView(R.id.iv_image)
+    @ViewById(R.id.iv_image)
     ImageView iv_image;
 
     //转发内容
-    @BindView(R.id.tv_retweeted_content)
+    @ViewById(R.id.tv_retweeted_content)
     TextView tv_retweeted_content;
-    @BindView(R.id.include_forward_detail_status)
+    @ViewById(R.id.include_forward_detail_status)
     LinearLayout include_forward_detail_status;
-    @BindView(R.id.layout_forward_img)
+    @ViewById(R.id.layout_forward_img)
     FrameLayout layout_forward_img;
-    @BindView(R.id.iv_image_forward)
+    @ViewById(R.id.iv_image_forward)
     ImageView iv_image_forward;
 
-    @BindView(R.id.detail_Car)
+    @ViewById(R.id.detail_Car)
     public CoordinatorLayout mCoordinatorLayout;
 
     private Intent fromIntent;
@@ -92,13 +94,12 @@ public class StatusDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_status_detail);
-        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                ActivityUtils.finishActivity();
             }
         });
 
@@ -234,12 +235,12 @@ public class StatusDetailActivity extends BaseActivity {
             switch (position) {
                 case 0:
                     i = new Bundle();
-                    i.putInt(CommentFragment.WID, status.getId());
+                    i.putInt(Constants.STATUS_ID, status.getId());
                     commentFragment.setArguments(i);
                     return commentFragment;
                 case 1:
                     i = new Bundle();
-                    i.putInt(CommentFragment.WID, status.getId());
+                    i.putInt(Constants.STATUS_ID, status.getId());
                     keepFragment.setArguments(i);
                     return keepFragment;
 

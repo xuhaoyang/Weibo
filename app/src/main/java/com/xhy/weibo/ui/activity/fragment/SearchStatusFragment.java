@@ -10,6 +10,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
@@ -41,7 +42,7 @@ import retrofit2.Call;
 /**
  * Created by xuhaoyang on 16/5/22.
  */
-public class SearchStatusFragment extends ListFragment<ViewHolder, Status, Result<List<Status>>> implements OnListItemClickListener, PushMessage<Status> {
+public class SearchStatusFragment extends ListFragment<ViewHolder, Status, Result<List<Status>>, LinearLayout> implements OnListItemClickListener, PushMessage<Status> {
 
     private final static String TAG = SearchStatusFragment.class.getSimpleName();
 

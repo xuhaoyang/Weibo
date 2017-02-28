@@ -37,7 +37,7 @@ import retrofit2.Call;
 /**
  * Created by xuhaoyang on 16/5/22.
  */
-public class SearchUsersFragment extends ListFragment<ViewHolder, User, Result<List<User>>> implements OnListItemClickListener {
+public class SearchUsersFragment extends ListFragment<ViewHolder, User, Result<List<User>>, CardView> implements OnListItemClickListener {
 
 
     private static final String TAG = SearchUsersFragment.class.getSimpleName();
@@ -85,7 +85,6 @@ public class SearchUsersFragment extends ListFragment<ViewHolder, User, Result<L
                     mFooterLayout.setLayoutParams(
                             new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT));
-//                    mFooterLayout = (CardView) ViewUtils.inflate(parent, R.layout.item_comment_cardview);
                 }
                 ViewHolder viewHolder = ViewHolder.create(mFooterLayout);
                 return viewHolder;

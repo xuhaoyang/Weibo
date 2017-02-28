@@ -3,9 +3,6 @@ package com.xhy.weibo.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -13,14 +10,12 @@ import android.view.View;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.ui.activity.fragment.NotifyCommentFragment;
-import com.xhy.weibo.ui.activity.fragment.NotifyStatusFragment;
+import com.xhy.weibo.ui.activity.fragment.NotifyAtFragment;
 import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.logic.PushMessageLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.ui.base.ViewPagerAdapter;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import hk.xhy.android.commom.bind.ViewById;
 import hk.xhy.android.commom.utils.ActivityUtils;
 
@@ -60,7 +55,7 @@ public class NotifyActivity extends BaseActivity {
     private void setUpViewPager(ViewPager mViewPager) {
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         mAdapter.addFrag(NotifyCommentFragment.newInstance(), "评论");
-        mAdapter.addFrag(NotifyStatusFragment.newInstance(), "提及");
+        mAdapter.addFrag(NotifyAtFragment.newInstance(), "提及");
 
         mViewPager.setAdapter(mAdapter);
 

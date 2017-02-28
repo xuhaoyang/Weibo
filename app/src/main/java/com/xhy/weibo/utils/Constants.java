@@ -26,6 +26,7 @@ public class Constants {
 
     //UserInfoActivty
     public static final String USER_ID = "UID";
+    public static final String STATUS_ID="wid";
     public static final String USER_NAME = "NAME";
     public static final String SEND_FORWORD_SUCCESS = "SEND_FORWORD_OK";
     public static final String SEND_STATUS_SUCCESS = "SEND_STATUS_OK";

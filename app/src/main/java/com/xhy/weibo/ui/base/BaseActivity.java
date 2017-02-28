@@ -27,6 +27,9 @@ public abstract class BaseActivity extends hk.xhy.android.commom.ui.BaseActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActivityUtils.addActivity(this);
+
         /**
          * 竖屏
          */

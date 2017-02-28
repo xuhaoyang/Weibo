@@ -19,6 +19,7 @@ import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
 import com.xhy.weibo.ui.base.BaseFragment;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ public class KeepFragment extends BaseFragment implements StatusLogic.GetTurnSta
 
     LinearLayoutManager linearLayoutManager;
 
-    public final static String WID = "wid";
     public final static int REFRESH_DATA = 100;
 
     private int wid;
@@ -64,7 +64,7 @@ public class KeepFragment extends BaseFragment implements StatusLogic.GetTurnSta
         ButterKnife.bind(this, root);
         //获得当前微博id
         final Bundle i = getArguments();
-        wid = i.getInt(WID);
+        wid = i.getInt(Constants.STATUS_ID);
         initRecyclerView();
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         mRecyclerView.addItemDecoration(new RecycleViewDivider(getContext(), LinearLayoutManager.VERTICAL));
