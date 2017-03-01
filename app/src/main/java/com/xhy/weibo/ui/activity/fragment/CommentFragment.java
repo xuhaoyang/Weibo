@@ -1,15 +1,12 @@
 package com.xhy.weibo.ui.activity.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,26 +16,19 @@ import android.widget.FrameLayout;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
+import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
-import com.xhy.weibo.adapter.CommentAdpater;
-import com.xhy.weibo.ui.base.BaseFragment;
-import com.xhy.weibo.logic.CommentLogic;
-import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.ui.base.ListFragment;
 import com.xhy.weibo.ui.vh.CommentViewHolder;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
 import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.widget.PullToRefreshLayout;
 import hk.xhy.android.commom.widget.PullToRefreshMode;
 import retrofit2.Call;
 
@@ -120,7 +110,6 @@ public class CommentFragment extends ListFragment<ViewHolder, Comment, Result<Li
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (holder instanceof CommentViewHolder) {
             ((CommentViewHolder) holder).bind(getContext(), getItemsSource().get(position), this);
-
         }
     }
 
