@@ -181,7 +181,6 @@ public class NotifyAtFragment extends ListFragment<ViewHolder, Status, Result<Li
     @Override
     public void pushResult(boolean b, Status result) {
         if (b) {
-//            getItemsSource().remove(result);
             getAdapter().notifyDataSetChanged();
         }
     }

@@ -65,9 +65,6 @@ public class CommentFragment extends ListFragment<ViewHolder, Comment, Result<Li
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_comment, container, false);
         return view;
-//        final Bundle i = getArguments();
-//        wid = i.getInt(WID);
-//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
     }
 
