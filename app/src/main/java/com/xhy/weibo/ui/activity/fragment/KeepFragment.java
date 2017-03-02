@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
@@ -170,10 +169,8 @@ public class KeepFragment extends ListFragment<ViewHolder, Status, Result<List<S
                 if (!isLoadMore()) {
                     getItemsSource().clear();
                     currentPage = 1;
-
                 } else if (data.getInfo().size() > 0) {
                     currentPage += 1;
-
                 }
 
                 getItemsSource().addAll(data.getInfo());

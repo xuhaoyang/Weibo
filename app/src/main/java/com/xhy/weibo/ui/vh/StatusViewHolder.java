@@ -2,6 +2,7 @@ package com.xhy.weibo.ui.vh;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -118,8 +119,6 @@ public class StatusViewHolder extends ViewHolder {
     public void bind(final Context context, final Status model, final OnListItemClickListener listener,
                      final int lastAnimatedPosition) {
 
-        Log.e(TAG, ">>>" + GsonUtil.toJson(model));
-
         this.lastAnimatedPosition = lastAnimatedPosition;
 
         //初始化动画
@@ -163,6 +162,35 @@ public class StatusViewHolder extends ViewHolder {
                     }});
                 }
             });
+
+
+            //显示转发内容
+            final Status forward_status = model.getStatus();
+            if (forward_status != null) {
+                tv_retweeted_content
+                        .setText(StringUtils.getWeiboContent(context, tv_retweeted_content, "@" + forward_status.getUsername() + ": " + forward_status.getContent()));
+                include_forward_status.setVisibility(View.VISIBLE);
+                if (!TextUtils.isEmpty(forward_status.getMedium())) {
+                    include_status_image_forward.setVisibility(View.VISIBLE);
+                    iv_image_forward.setVisibility(View.VISIBLE);
+                    String url = URLs.PIC_URL + forward_status.getMedium();
+                    setImage(iv_image_forward, url);
+                    iv_image_forward.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, ViewPicActivity.class);
+                            intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + forward_status.getMax());
+                            context.startActivity(intent);
+                        }
+                    });
+                } else {
+                    include_status_image_forward.setVisibility(View.GONE);
+                    iv_image_forward.setVisibility(View.GONE);
+                }
+            } else {
+                include_forward_status.setVisibility(View.GONE);
+                iv_image_forward.setVisibility(View.GONE);
+            }
 
             //微博正文
             tv_content.setText(StringUtils.getWeiboContent(context,
@@ -211,9 +239,16 @@ public class StatusViewHolder extends ViewHolder {
                 }
             });
 
-            /**
-             * like type:0
-             */
+            include_forward_status.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.OnItemOtherClick(getAdapterPosition(), Constants.ITEM_FORWARD_STATUS_TYPE);
+                    }
+                }
+            });
+
+
             ll_like.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -223,9 +258,7 @@ public class StatusViewHolder extends ViewHolder {
                 }
             });
 
-            /**
-             * commet type:0
-             */
+
             ll_comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -363,9 +396,12 @@ public class StatusViewHolder extends ViewHolder {
                     }
                 }, Constants.REQUEST_CODE_WRITE_FORWARD);
 
-
                 break;
-
+            case Constants.ITEM_FORWARD_STATUS_TYPE:
+                ActivityUtils.startActivity(activity, StatusDetailActivity.class, new HashMap<String, Object>() {{
+                    put(Constants.STATUS_INTENT, GsonUtil.toJson(status.getStatus()));
+                }});
+                break;
 
         }
 

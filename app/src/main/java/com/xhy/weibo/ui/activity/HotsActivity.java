@@ -91,6 +91,7 @@ public class HotsActivity extends ListActivity<HotViewHolder, Hot, Result<List<H
             if (data.isSuccess()) {
                 if (!isLoadMore()) {
                     getItemsSource().clear();
+                    currentPage = 1;
                 } else if (data.getInfo().size() > 0) {
                     currentPage += 1;
                 }

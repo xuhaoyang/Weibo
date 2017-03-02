@@ -1,33 +1,27 @@
 package com.xhy.weibo.ui.activity;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -35,18 +29,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xhy.weibo.AppConfig;
-import com.xhy.weibo.IMessageServiceRemoteBinder;
 import com.xhy.weibo.R;
-import com.xhy.weibo.adapter.StatusAdpater;
 import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.model.Login;
-import com.xhy.weibo.model.Result;
 import com.xhy.weibo.db.DBManager;
 import com.xhy.weibo.db.UserDB;
+import com.xhy.weibo.event.StatusMainListChangeEvent;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.logic.UserLoginLogic;
-import com.xhy.weibo.model.StatusGroup;
+import com.xhy.weibo.model.Login;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
+import com.xhy.weibo.model.StatusGroup;
 import com.xhy.weibo.model.User;
 import com.xhy.weibo.network.URLs;
 import com.xhy.weibo.service.MessageService;
@@ -57,12 +50,13 @@ import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.ImageUtils;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import hk.xhy.android.commom.bind.ViewById;
 import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
 import hk.xhy.android.commom.ui.vh.ViewHolder;
@@ -124,15 +118,20 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         init();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         initUserinfo();
-
     }
 
     private void init() {
@@ -234,7 +233,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
             if (data.isSuccess()) {
                 if (!isLoadMore()) {
                     getItemsSource().clear();
-                    currentPage++;
+                    currentPage = 1;
                 } else if (data.getInfo().size() > 0) {
                     currentPage += 1;
                 }
@@ -277,9 +276,14 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     @Override
     public void pushResult(boolean b, Status result) {
         if (b) {
-//            getItemsSource().remove(result);
             getAdapter().notifyDataSetChanged();
         }
+    }
+
+    @Subscribe
+    public void onListChangeEvent(StatusMainListChangeEvent event) {
+        Log.e(TAG, ">>>StatusMainListChangeEvent");
+        onRefresh();
     }
 
 
@@ -500,15 +504,8 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
         switch (id) {
             case R.id.action_notifications:
                 ActivityUtils.startActivity(this, NotifyActivity.class);
@@ -545,18 +542,6 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
     }
 
     private void showSnackbar(String msg) {
