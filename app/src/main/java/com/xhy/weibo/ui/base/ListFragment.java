@@ -76,7 +76,10 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
         Log.e(TAG, ">>>onRefresh");
 
         //显示加载效果
-        getPullToRefreshLayout().setRefreshing(true);
+        if (!isLoadMore()) {
+            getPullToRefreshLayout().setRefreshing(true);
+
+        }
 
         isLoadMore = false;
         restartLoader();

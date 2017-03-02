@@ -83,7 +83,11 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
     public void onRefresh() {
         Log.e(TAG, ">>>onRefresh");
 
-        getPullToRefreshLayout().setRefreshing(true);
+        //显示加载效果
+         if (!isLoadMore()) {
+            getPullToRefreshLayout().setRefreshing(true);
+
+        }
 
         isLoadMore = false;
         restartLoader();
@@ -178,7 +182,7 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
         onRefreshComplete();
         if (!isEmpty()) {
             ErrorUtils.show(this, e);
-            if (ismFooterShow){
+            if (ismFooterShow) {
                 showLoadFailView();
             }
         } else {
@@ -430,7 +434,7 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
     }
 
     public void showLoadFailView() {
-        if (mFooterLoadFailedView==null){
+        if (mFooterLoadFailedView == null) {
             return;
         }
         addFooterView(mFooterLoadFailedView);

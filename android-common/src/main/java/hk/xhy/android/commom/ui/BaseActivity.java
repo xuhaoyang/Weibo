@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import hk.xhy.android.commom.bind.Bind;
+import hk.xhy.android.commom.utils.ActivityUtils;
 
 
 /**
@@ -26,7 +27,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            this.finish();
+            ActivityUtils.finishActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
