@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,8 @@ import android.widget.FrameLayout;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
+import com.xhy.weibo.event.CommentListChangeEvent;
+import com.xhy.weibo.event.KeepListChangeEvent;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
@@ -24,6 +27,9 @@ import com.xhy.weibo.ui.interfaces.PushMessage;
 import com.xhy.weibo.ui.vh.KeepViewHolder;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.RecycleViewDivider;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,6 +44,7 @@ import retrofit2.Call;
  */
 public class KeepFragment extends ListFragment<ViewHolder, Status, Result<List<Status>>, CardView> implements OnListItemClickListener, PushMessage<Status> {
 
+    private final static String TAG = KeepFragment.class.getSimpleName();
 
     public final static int REFRESH_DATA = 100;
 
@@ -47,6 +54,18 @@ public class KeepFragment extends ListFragment<ViewHolder, Status, Result<List<S
 
 
     public KeepFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Nullable
@@ -86,6 +105,7 @@ public class KeepFragment extends ListFragment<ViewHolder, Status, Result<List<S
 
     /**
      * 覆写方法
+     *
      * @param footerView
      */
     @Override
@@ -221,6 +241,12 @@ public class KeepFragment extends ListFragment<ViewHolder, Status, Result<List<S
         if (b) {
             getAdapter().notifyDataSetChanged();
         }
+    }
+
+    @Subscribe
+    public void onListChangeEvent(KeepListChangeEvent event) {
+        Log.e(TAG, ">>>KeepListChangeEvent");
+        onRefresh();
     }
 
 }

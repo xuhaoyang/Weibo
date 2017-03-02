@@ -12,25 +12,13 @@ import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.IMessageListener;
 import com.xhy.weibo.R;
-import com.xhy.weibo.AccessToken;
 import com.xhy.weibo.logic.PushMessageLogic;
 import com.xhy.weibo.model.NotifyInfo;
-import com.xhy.weibo.entity.NotifyReciver;
-import com.xhy.weibo.network.GsonRequest;
-import com.xhy.weibo.network.URLs;
-import com.xhy.weibo.network.VolleyQueueSingleton;
 import com.xhy.weibo.receiver.NotificationReceiver;
 import com.xhy.weibo.utils.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MessageService extends Service {
 
