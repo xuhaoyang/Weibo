@@ -32,6 +32,8 @@ public interface URLs {
     String WEIBO_TURN_WEIBO = API_VERSION + "turnWeibo.html";
     //发送微博
     String WEIBO_SEND_WEIBO = API_VERSION + "sendWeibo.html";
+    //删除微博
+    String WEIBO_DELETE_WEIBO = API_VERSION + "delWeibo.html";
     //发布评论
     String WEIBO_SET_COMMENT = API_VERSION + "setComment.html";
 

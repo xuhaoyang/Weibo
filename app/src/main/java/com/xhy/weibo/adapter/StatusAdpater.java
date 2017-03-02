@@ -253,10 +253,6 @@ public class StatusAdpater extends RecyclerView.Adapter {
                 viewHolder.include_forward_status.setVisibility(View.VISIBLE);
                 if (!TextUtils.isEmpty(forward_status.getMedium())) {
                     viewHolder.include_status_image_forward.setVisibility(View.VISIBLE);
-//                    final float scale = viewHolder.include_status_image_forward.getResources().getDisplayMetrics().density;
-//                    int sixteen = (int) (scale * 16);
-//                    int ten = (int) (scale * 10);
-//                    viewHolder.include_status_image_forward.setPadding(sixteen, 0, sixteen, sixteen);
                     viewHolder.iv_image_forward.setVisibility(View.VISIBLE);
                     String url = URLs.PIC_URL + forward_status.getMedium();
                     setImage(viewHolder.iv_image_forward, url);

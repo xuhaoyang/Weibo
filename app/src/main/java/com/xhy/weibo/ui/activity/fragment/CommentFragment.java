@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.FrameLayout;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
+import com.xhy.weibo.event.CommentListChangeEvent;
 import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
@@ -23,6 +25,9 @@ import com.xhy.weibo.ui.base.ListFragment;
 import com.xhy.weibo.ui.vh.CommentViewHolder;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.RecycleViewDivider;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,10 +49,20 @@ public class CommentFragment extends ListFragment<ViewHolder, Comment, Result<Li
 
     private int wid;
     private int currentPage = 1;
-    private StatusDetailActivity mActivity;
-
 
     public CommentFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Nullable
@@ -56,13 +71,6 @@ public class CommentFragment extends ListFragment<ViewHolder, Comment, Result<Li
         View view = inflater.inflate(R.layout.fragment_comment, container, false);
         return view;
 
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mActivity = (StatusDetailActivity) context;
-        mActivity.setmHandler(mHandler);
     }
 
     @Override
@@ -166,10 +174,8 @@ public class CommentFragment extends ListFragment<ViewHolder, Comment, Result<Li
                 if (!isLoadMore()) {
                     getItemsSource().clear();
                     currentPage = 1;
-
                 } else if (data.getInfo().size() > 0) {
                     currentPage += 1;
-
                 }
 
                 getItemsSource().addAll(data.getInfo());
@@ -180,19 +186,6 @@ public class CommentFragment extends ListFragment<ViewHolder, Comment, Result<Li
 
         }
     }
-
-    public Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case REFRESH_DATA:
-                    currentPage = 1;
-                    onRefresh();
-                    break;
-            }
-        }
-    };
-
 
     public static CommentFragment newInstance() {
         return new CommentFragment();
@@ -207,5 +200,11 @@ public class CommentFragment extends ListFragment<ViewHolder, Comment, Result<Li
     @Override
     public void OnItemOtherClick(int postion, int type) {
 
+    }
+
+    @Subscribe
+    public void onListChangeEvent(CommentListChangeEvent event) {
+        Log.e(TAG, ">>>CommentListChangeEvent");
+        onRefresh();
     }
 }

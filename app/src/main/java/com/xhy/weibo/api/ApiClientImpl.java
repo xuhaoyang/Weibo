@@ -92,6 +92,11 @@ public interface ApiClientImpl {
                            @Field("token") String token);
 
     @FormUrlEncoded
+    @POST(URLs.WEIBO_DELETE_WEIBO)
+    Call<Result> delWeibo(@Query("wid") int wid,
+                           @Field("token") String token);
+
+    @FormUrlEncoded
     @POST(URLs.WEIBO_ADD_FOLLOW)
     Call<Result> addFollow(@Field("uid") int uid,
                            @Field("follow") int follow,

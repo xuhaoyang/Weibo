@@ -377,6 +377,35 @@ public class StatusLogic {
         });
     }
 
+    public static void delWeibo(final int wid, final String token, final DelStatusCallback callback) {
+        final Call<Result> resultCall = ApiClient.getApi().delWeibo(wid, token);
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                if (response.isSuccessful()) {
+                    Result result = response.body();
+                    if (result.isSuccess()) {
+                        callback.onDelStatusSuccess(result.getMsg());
+                    } else {
+                        callback.onDelStatusFailure(result.getMsg());
+                    }
+                } else {
+                    callback.onDelStatusFailure("请求失败");
+                    try {
+                        Logger.show(TAG, response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                callback.onDelStatusError(t);
+            }
+        });
+    }
+
     public static void getSearchStatusList(final Context context, final String keyword, final int page,
                                            final String token, final GetSearchStatusListCallBack callBack) {
         Call<Result<List<Status>>> resultCall = ApiClient.getApi().getSearchStatusList(token, keyword, page);
@@ -453,6 +482,15 @@ public class StatusLogic {
         void onStatusListFailure(String message);
 
         void onStatusListError(Throwable t);
+    }
+
+    public interface DelStatusCallback {
+        void onDelStatusSuccess(String message);
+
+        void onDelStatusFailure(String message);
+
+        void onDelStatusError(Throwable t);
+
     }
 
     public interface AddKeepStatusCallBack {

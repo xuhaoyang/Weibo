@@ -7,9 +7,6 @@ import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -25,6 +22,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
+import com.xhy.weibo.event.CommentListChangeEvent;
+import com.xhy.weibo.event.StatusMainListChangeEvent;
 import com.xhy.weibo.ui.activity.fragment.CommentFragment;
 import com.xhy.weibo.ui.activity.fragment.KeepFragment;
 import com.xhy.weibo.ui.base.BaseActivity;
@@ -32,15 +31,17 @@ import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.ui.base.ViewPagerAdapter;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.StringUtils;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import org.greenrobot.eventbus.EventBus;
+
 import hk.xhy.android.commom.bind.ViewById;
 import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.commom.widget.Toaster;
 
 public class StatusDetailActivity extends BaseActivity {
 
@@ -48,13 +49,13 @@ public class StatusDetailActivity extends BaseActivity {
     // 跳转到写评论页面code
     private static final int REQUEST_CODE_WRITE_COMMENT = 1;
     private static final int REQUEST_CODE_WRITE_FORWARD = 2;
-
+    private static final int MENU_DELETE_STATUS_ITEMID = 1003;
 
 
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
     @ViewById(R.id.viewpager)
-    ViewPager viewPager;
+    ViewPager mViewPager;
     @ViewById(R.id.tabs)
     TabLayout tabLayout;
     @ViewById(R.id.tv_content)
@@ -80,7 +81,8 @@ public class StatusDetailActivity extends BaseActivity {
     private Intent fromIntent;
 
     private Status status;
-    private TabsAdapter tabsAdapter;
+
+    private ViewPagerAdapter mAdapter;
 
     //操作fragment中的数据
     public Handler mHandler;
@@ -93,6 +95,8 @@ public class StatusDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //界面
         setContentView(R.layout.activity_status_detail);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -105,29 +109,30 @@ public class StatusDetailActivity extends BaseActivity {
 
         //获得传入的信息
         fromIntent = getIntent();
-
-
         /**
          * 因为这里传输方式 会变成json形式 保留原有的获取数据的方式
          */
         Object val = fromIntent.getSerializableExtra(Constants.STATUS_INTENT);
-
         if (val instanceof String) {//前者如果不是序列化来的数据,会未空
             status = Status.parseObject(fromIntent.getStringExtra(Constants.STATUS_INTENT));
         } else if (val instanceof Status) {
             status = (Status) val;
         } else {
-            finish();
+            ActivityUtils.finishActivity();
         }
 
 
         if (status != null) {
-            tabsAdapter = new TabsAdapter(getSupportFragmentManager(), status);
-            viewPager.setAdapter(tabsAdapter);
-            tabLayout.setupWithViewPager(viewPager);
+            setUpViewPager(mViewPager);
+            tabLayout.setupWithViewPager(mViewPager);
         }
 
+        initData();
 
+
+    }
+
+    private void initData() {
         getSupportActionBar().setTitle(status.getUsername());
         getSupportActionBar().setSubtitle(DateUtils.getShotTime(status.getTime()));
         //微博正文
@@ -178,8 +183,6 @@ public class StatusDetailActivity extends BaseActivity {
         } else {
             include_forward_detail_status.setVisibility(View.GONE);
             tv_retweeted_content.setVisibility(View.GONE);
-//            layout_forward_img.setVisibility(View.GONE);
-//            iv_image_forward.setVisibility(View.GONE);
         }
 
         //转发微博被删除
@@ -188,16 +191,16 @@ public class StatusDetailActivity extends BaseActivity {
             tv_retweeted_content.setVisibility(View.VISIBLE);
             include_forward_detail_status.setVisibility(View.VISIBLE);
         }
+    }
 
+    private void setUpViewPager(ViewPager mViewPager) {
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        Bundle bundle = new Bundle();
+        bundle.putInt(Constants.STATUS_ID, status.getId());
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        mAdapter.addFrag(CommentFragment.newInstance(), "评论", bundle);
+        mAdapter.addFrag(KeepFragment.newInstance(), "转发", bundle);
+        mViewPager.setAdapter(mAdapter);
 
     }
 
@@ -207,68 +210,12 @@ public class StatusDetailActivity extends BaseActivity {
 
     }
 
-    class TabsAdapter extends FragmentPagerAdapter {
-        private Status status;
-        private CommentFragment commentFragment = CommentFragment.newInstance();
-        private KeepFragment keepFragment = KeepFragment.newInstance();
-
-        public CommentFragment getCommentFragment() {
-            return commentFragment;
-        }
-
-        public TabsAdapter(FragmentManager fm, Status status) {
-            super(fm);
-            this.status = status;
-        }
-
-        public TabsAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        public void setStatus(Status status) {
-            this.status = status;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            Bundle i;
-            switch (position) {
-                case 0:
-                    i = new Bundle();
-                    i.putInt(Constants.STATUS_ID, status.getId());
-                    commentFragment.setArguments(i);
-                    return commentFragment;
-                case 1:
-                    i = new Bundle();
-                    i.putInt(Constants.STATUS_ID, status.getId());
-                    keepFragment.setArguments(i);
-                    return keepFragment;
-
-            }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "评论";
-                case 1:
-                    return "转发";
-            }
-            return "";
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        return super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_status_detail, menu);
+        if (status.getUid() == AppConfig.getUserId()) {
+            menu.add(0, MENU_DELETE_STATUS_ITEMID, MENU_DELETE_STATUS_ITEMID, "删除微博");
+        }
         return true;
     }
 
@@ -337,7 +284,30 @@ public class StatusDetailActivity extends BaseActivity {
 
                 }
                 break;
+            case MENU_DELETE_STATUS_ITEMID:
+                showToast("删除微博");
+                StatusLogic.delWeibo(status.getId(), AppConfig.getAccessToken().getToken(),
+                        new StatusLogic.DelStatusCallback() {
+                            @Override
+                            public void onDelStatusSuccess(String message) {
+                                showToast(message);
+                                ActivityUtils.finishActivity();
+                                //刷新Mainactivity的list
+                                EventBus.getDefault().post(new StatusMainListChangeEvent());
+                            }
 
+                            @Override
+                            public void onDelStatusFailure(String message) {
+                                showToast(message);
+                            }
+
+                            @Override
+                            public void onDelStatusError(Throwable t) {
+                                Logger.show(TAG, t.getMessage(), Log.ERROR);
+                            }
+                        });
+
+                break;
             default:
                 break;
         }
@@ -359,12 +329,13 @@ public class StatusDetailActivity extends BaseActivity {
             case REQUEST_CODE_WRITE_COMMENT:
                 // 如果是评论发送成功的返回结果,则重新加载最新评论,同时要求滚动至评论部分
                 boolean sendCommentSuccess =
-                        data.getBooleanExtra(WriteStatusActivity.SEND_COMMENT_SUCCESS, false);
+                        data.getBooleanExtra(Constants.SEND_COMMENT_SUCCESS, false);
                 if (sendCommentSuccess) {
-                    //通过Handler进行刷新茶瓯哦
-                    Message message = new Message();
-                    message.what = CommentFragment.REFRESH_DATA;
-                    mHandler.sendMessage(message);
+                    //通过Handler进行刷新
+//                    Message message = new Message();
+//                    message.what = CommentFragment.REFRESH_DATA;
+//                    mHandler.sendMessage(message);
+                    EventBus.getDefault().post(new CommentListChangeEvent());
                 }
                 break;
             case REQUEST_CODE_WRITE_FORWARD:

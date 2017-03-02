@@ -1,5 +1,6 @@
 package com.xhy.weibo.ui.base;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -29,6 +30,12 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     }
 
     public void addFrag(Fragment fragment, String title) {
+        mFragmentList.add(fragment);
+        mFragmentTitleList.add(title);
+    }
+
+    public void addFrag(Fragment fragment, String title, Bundle bundle) {
+        fragment.setArguments(bundle);
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
     }

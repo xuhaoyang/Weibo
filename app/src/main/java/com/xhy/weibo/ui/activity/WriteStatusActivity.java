@@ -55,14 +55,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.commom.utils.ActivityUtils;
 import hk.xhy.android.commom.utils.ConvertUtils;
 import hk.xhy.android.commom.utils.ScreenUtils;
 
 
 public class WriteStatusActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
-
-    public static final String COMMENT_INTENT = "comment";
-    public static final String SEND_COMMENT_SUCCESS = "SEND_COMMENT_OK";
 
 
     public static final int REQUEST_CODE_AT_USERNAME = 201;
@@ -130,7 +128,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                ActivityUtils.finishActivity();
             }
         });
 
@@ -154,14 +152,22 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         } else if (val instanceof Status) {
                             status = (Status) val;
                         } else {
-                            finish();
+                            ActivityUtils.finishActivity();
                         }
                         getSupportActionBar().setTitle("发表评论");
                         new_take_photo.setVisibility(View.GONE);
                         break;
                     //来自评论列表的回复[获得是Comment信息]
                     case Constants.COMMENT_ADPATER_CODE:
-                        comment = (Comment) getIntent().getSerializableExtra(COMMENT_INTENT);
+                        Object valc = getIntent().getSerializableExtra(Constants.COMMENT_INTENT);
+                        if (valc instanceof String) {//前者如果不是序列化来的数据,会未空
+                            comment = Comment.parseObject(getIntent().getStringExtra(Constants.COMMENT_INTENT));
+                        } else if (valc instanceof Comment) {
+                            comment = (Comment) valc;
+                        } else {
+                            ActivityUtils.finishActivity();
+                        }
+
                         getSupportActionBar().setTitle("回复评论");
                         original = "@" + comment.getUsername() + ": " + comment.getContent();
                         new_edit.setHint(original);
@@ -178,7 +184,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 } else if (val instanceof Status) {
                     status = (Status) val;
                 } else {
-                    finish();
+                    ActivityUtils.finishActivity();
                 }
 
 //                status = (Status) getIntent().getSerializableExtra(Constants.STATUS_INTENT);
@@ -277,7 +283,6 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
         new_take_photo.setOnClickListener(this);
     }
 
-    private static final int UPLOAD_OK = 10001;
 
     private Handler imageHandler = new Handler() {
     };
@@ -337,6 +342,10 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
             showToast("内容不能为空");
             return;
         }
+
+        //禁止重复点击
+        new_send.setClickable(false);
+
         //转发?评论
         switch (type) {
             case Constants.COMMENT_TYPE:
@@ -359,17 +368,17 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                             case Constants.DETAIL_ATY_CODE:
                                 status.setComment(status.getComment() + 1);
                                 data = new Intent();
-                                data.putExtra(SEND_COMMENT_SUCCESS, true);
+                                data.putExtra(Constants.SEND_COMMENT_SUCCESS, true);
                                 setResult(RESULT_OK, data);
                                 break;
                             //来自评论列表的回复[获得是Comment信息]
                             case Constants.COMMENT_ADPATER_CODE:
                                 data = new Intent();
-                                data.putExtra(SEND_COMMENT_SUCCESS, true);
+                                data.putExtra(Constants.SEND_COMMENT_SUCCESS, true);
                                 setResult(RESULT_OK, data);
                                 break;
                         }
-                        WriteStatusActivity.this.finish();
+                        ActivityUtils.finishActivity();
                     }
 
                     @Override
@@ -435,7 +444,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                                 Intent data = new Intent();
                                 data.putExtra(Constants.SEND_FORWORD_SUCCESS, true);
                                 setResult(RESULT_OK, data);
-                                WriteStatusActivity.this.finish();
+                                ActivityUtils.finishActivity();
                             }
 
                             @Override
@@ -459,7 +468,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         Intent data = new Intent();
                         data.putExtra(Constants.SEND_STATUS_SUCCESS, true);
                         setResult(RESULT_OK, data);
-                        WriteStatusActivity.this.finish();
+                        ActivityUtils.finishActivity();
                     }
 
                     @Override
