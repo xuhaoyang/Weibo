@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
@@ -42,7 +43,7 @@ import retrofit2.Call;
 /**
  * Created by xuhaoyang on 16/5/22.
  */
-public class SearchStatusFragment extends ListFragment<ViewHolder, Status, Result<List<Status>>, LinearLayout> implements OnListItemClickListener, PushMessage<Status> {
+public class SearchStatusFragment extends ListFragment<ViewHolder, Status, Result<List<Status>>, RelativeLayout> implements OnListItemClickListener, PushMessage<Status> {
 
     private final static String TAG = SearchStatusFragment.class.getSimpleName();
 
@@ -69,9 +70,6 @@ public class SearchStatusFragment extends ListFragment<ViewHolder, Status, Resul
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        fromBundle = getArguments();
-        keyword = fromBundle.getString(Constants.SEARCH_CONTENT);
-
         return view;
 
     }
@@ -84,10 +82,11 @@ public class SearchStatusFragment extends ListFragment<ViewHolder, Status, Resul
                             .inflate(R.layout.item_status, parent, false));
             return root;
         } else if (viewType == TYPE_FOOTER) {
-            FootViewHolder root = new FootViewHolder(
-                    LayoutInflater.from(parent.getContext()).
-                            inflate(R.layout.item_footer_loading, parent, false));
-            return root;
+            if (mFooterLayout == null) {
+                mFooterLayout = new RelativeLayout(getContext());
+            }
+            ViewHolder viewHolder = ViewHolder.create(mFooterLayout);
+            return viewHolder;
         }
 
         return null;
@@ -104,6 +103,10 @@ public class SearchStatusFragment extends ListFragment<ViewHolder, Status, Resul
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        fromBundle = getArguments();
+        keyword = fromBundle.getString(Constants.SEARCH_CONTENT);
+
         //设置item间间隔样式
         getRecyclerView().addItemDecoration(new RecycleViewDivider(getContext(), LinearLayoutManager.VERTICAL));
         //设置下拉刷新颜色
@@ -114,6 +117,12 @@ public class SearchStatusFragment extends ListFragment<ViewHolder, Status, Resul
                         .getDisplayMetrics()));
         setMode(PullToRefreshMode.BOTH);
         initLoader();
+
+        //开启自定义底部加载item
+        setFooterShowEnable(true);
+        setLoadingView(R.layout.item_footer_loading);
+        setLoadEndView(R.layout.item_footer_end);
+        setLoadFailedView(R.layout.item_footer_fail);
     }
 
     @Override

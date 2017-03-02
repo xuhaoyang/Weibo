@@ -1,4 +1,4 @@
-package com.xhy.weibo.entity;
+package com.xhy.weibo.model;
 
 /**
  * Created by xuhaoyang on 16/5/31.

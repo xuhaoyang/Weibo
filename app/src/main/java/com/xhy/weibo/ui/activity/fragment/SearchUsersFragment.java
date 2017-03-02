@@ -1,5 +1,6 @@
 package com.xhy.weibo.ui.activity.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -93,6 +94,25 @@ public class SearchUsersFragment extends ListFragment<ViewHolder, User, Result<L
     }
 
     @Override
+    public void addFooterView(View footerView) {
+
+        Context mContext = mParentContext == null ? getContext() : mParentContext;
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (footerView == null) {
+            return;
+        }
+        if (mFooterLayout == null) {
+            mFooterLayout = new CardView(mContext);
+            mFooterLayout.setLayoutParams(params);
+        }
+        removeFooterView();
+
+        mFooterLayout.addView(footerView, params);
+        mFooterLayout.requestLayout();
+    }
+
+    @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (holder instanceof SearchViewHolder) {
             ((SearchViewHolder) holder).bind(getItemsSource().get(position), this);
@@ -116,8 +136,9 @@ public class SearchUsersFragment extends ListFragment<ViewHolder, User, Result<L
         initLoader();
 
         setFooterShowEnable(true);
-        setLoadingView(R.layout.item_footer_loading);
+        setLoadingView(R.layout.item_comment_footer_loading);
         setLoadEndView(R.layout.item_comment_footer_end);
+        setLoadFailedView(R.layout.item_comment_footer_fail);
 
     }
 
@@ -174,76 +195,8 @@ public class SearchUsersFragment extends ListFragment<ViewHolder, User, Result<L
     @Override
     public void onLoadError(Exception e) {
         super.onLoadError(e);
-//        ErrorUtils.show(getContext(), e);
     }
 
-//    @Override
-//    public int getItemViewType(int position) {
-//        if (position + 1 == getItemCount()) {
-//            return TYPE_FOOTER;
-//        } else {
-//            return TYPE_ITEM;
-//        }
-//    }
-//
-//    @Override
-//    public int getItemCount() {
-//        if (!getItemsSource().isEmpty()) {
-//            return getItemsSource().size() + 1;
-//        }
-//
-//
-//        return 0;
-//    }
-
-    //    public void initRecyclerView() {
-//        mRecyclerView.addItemDecoration(new RecycleViewDivider(getContext(), LinearLayoutManager.VERTICAL));
-//        userAdpater = new UserAdpater(getContext(), users);
-//        linearLayoutManager = new LinearLayoutManager(getContext());
-//        mRecyclerView.setLayoutManager(linearLayoutManager);
-//        mRecyclerView.setAdapter(userAdpater);
-//    }
-
-//    private void LoadData() {
-//
-//        UserLoginLogic.getSearchUserList(getContext(), AppConfig.getUserId(), keyword, currPage, AppConfig.getAccessToken().getToken(), this);
-//
-//    }
-//
-//    @Override
-//    public void onSearchUserSuccess(List<User> users, int totalPage) {
-//        this.totalPage = totalPage;
-//        if (currPage == 1) {
-//            this.users.clear();
-//            this.users.addAll(users);
-//        } else {
-//            for (User u : users) {
-//                if (!this.users.contains(u)) {
-//                    this.users.add(u);
-//                }
-//            }
-//        }
-//        userAdpater.notifyDataSetChanged();
-//        stopRefresh();
-//
-//    }
-//
-//    @Override
-//    public void onSearchUserFailure(String message) {
-//        showLog(message);
-//        stopRefresh();
-//    }
-//
-//    @Override
-//    public void onSearchUserError(Throwable error) {
-//        showLog(error.getMessage());
-//        stopRefresh();
-//    }
-//
-//    private void stopRefresh() {
-//        isLoading = false;
-//        mSwipeRefreshLayout.setRefreshing(false);
-//    }
 
     @Override
     public void OnListItemClick(final int postion) {

@@ -1,4 +1,4 @@
-package com.xhy.weibo.network;
+package com.xhy.weibo.api;
 
 import android.util.Log;
 
