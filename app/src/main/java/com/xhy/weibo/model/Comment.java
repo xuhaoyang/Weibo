@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by xuhaoyang on 16/5/16.
  */
-public class Comment implements Serializable {
+public class Comment extends Model implements Serializable {
 
 
     private int id;//该条评论的ID
@@ -115,5 +115,15 @@ public class Comment implements Serializable {
 
     public void setUid(int uid) {
         this.uid = uid;
+    }
+
+    /**
+     * 转换json为Model
+     *
+     * @param json
+     * @return
+     */
+    public static Comment parseObject(final String json) {
+        return Model.parseObject(json, Comment.class);
     }
 }

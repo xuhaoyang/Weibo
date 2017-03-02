@@ -27,6 +27,7 @@ import hk.xhy.android.commom.bind.ViewById;
 import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
 import hk.xhy.android.commom.ui.vh.ViewHolder;
 import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.commom.utils.GsonUtil;
 import hk.xhy.android.commom.utils.ScreenUtils;
 
 /**
@@ -145,7 +146,7 @@ public class KeepViewHolder extends ViewHolder {
                                 new HashMap<String, Object>() {{
                                     put(Constants.TYPE, Constants.FORWARD_TYPE);
                                     put(Constants.TAG, Constants.COMMENT_ADPATER_CODE);
-                                    put(Constants.STATUS_INTENT, model);
+                                    put(Constants.STATUS_INTENT, GsonUtil.toJson(model));
 
                                 }});
                         break;

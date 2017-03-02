@@ -173,7 +173,7 @@ public class CommentAdpater extends RecyclerView.Adapter {
                         //评论方式
                         data.putExtra(Constants.TYPE, Constants.COMMENT_TYPE);
                         data.putExtra(Constants.TAG, Constants.COMMENT_ADPATER_CODE);
-                        data.putExtra(WriteStatusActivity.COMMENT_INTENT, comment);
+                        data.putExtra(Constants.COMMENT_INTENT, comment);
                         mContext.startActivity(data);
                         break;
 //                    case R.id.action_commet_forward:

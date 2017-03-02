@@ -23,10 +23,12 @@ public class Constants {
     public static final int ITEM_LIKE_TPYE = 0;
     public static final int ITEM_COMMENT_TPYE = 1;
     public static final int ITEM_FORWARD_TPYE = 2;
+    public static final int ITEM_FORWARD_STATUS_TYPE = 3;
+
 
     //UserInfoActivty
     public static final String USER_ID = "UID";
-    public static final String STATUS_ID="wid";
+    public static final String STATUS_ID = "wid";
     public static final String USER_NAME = "NAME";
     public static final String SEND_FORWORD_SUCCESS = "SEND_FORWORD_OK";
     public static final String SEND_STATUS_SUCCESS = "SEND_STATUS_OK";
@@ -43,6 +45,10 @@ public class Constants {
     public static final int COMMENT_TYPE = 101;
     public static final int FORWARD_TYPE = 102;
     public static final int NEW_STATUS_TYPE = 103;
+
+    public static final String COMMENT_INTENT = "comment";
+    public static final String SEND_COMMENT_SUCCESS = "SEND_COMMENT_OK";
+
 
     //Request
     public static final int REQUEST_CODE_WRITE_FORWARD = 2;

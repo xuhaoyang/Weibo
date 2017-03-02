@@ -1,7 +1,6 @@
 package com.xhy.weibo.ui.vh;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
@@ -11,7 +10,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bobomee.android.common.util.ScreenUtil;
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.R;
 import com.xhy.weibo.model.Comment;
@@ -28,6 +26,7 @@ import hk.xhy.android.commom.bind.ViewById;
 import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
 import hk.xhy.android.commom.ui.vh.ViewHolder;
 import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.commom.utils.GsonUtil;
 import hk.xhy.android.commom.utils.ScreenUtils;
 
 /**
@@ -146,7 +145,7 @@ public class CommentViewHolder extends ViewHolder {
                                 new HashMap<String, Object>() {{
                                     put(Constants.TYPE, Constants.COMMENT_TYPE);
                                     put(Constants.TAG, Constants.COMMENT_ADPATER_CODE);
-                                    put(WriteStatusActivity.COMMENT_INTENT, comment);
+                                    put(Constants.COMMENT_INTENT, GsonUtil.toJson(comment));
 
                                 }});
                         break;
