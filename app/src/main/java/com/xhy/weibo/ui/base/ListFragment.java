@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -72,9 +73,13 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
 
     @Override
     public void onRefresh() {
+        Log.e(TAG, ">>>onRefresh");
+
+        //显示加载效果
+        getPullToRefreshLayout().setRefreshing(true);
+
         isLoadMore = false;
         restartLoader();
-
 
         // 首次加载处理
         if (!mFirstLoaded) {
@@ -155,12 +160,21 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
             if (mEmptyView != null) {
                 if (getItemsSource().size() == 0) {
                     mEmptyView.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyView.setVisibility(View.INVISIBLE);
                 }
             }
             if (mErrorView != null) {
                 mErrorView.setVisibility(View.INVISIBLE);
             }
             getRecyclerView().setVisibility(View.VISIBLE);
+        } else {
+            if (getItemsSource().size() == 0) {
+                mEmptyView.setVisibility(View.VISIBLE);
+            } else {
+                mEmptyView.setVisibility(View.INVISIBLE);
+            }
+
         }
         mFirstLoaded = true;
 
@@ -316,7 +330,6 @@ public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Res
         mFooterLayout.addView(footerView, params);
         mFooterLayout.requestLayout();
     }
-
 
 
     /**
