@@ -20,7 +20,7 @@ import com.xhy.weibo.R;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.activity.ViewPicActivity;

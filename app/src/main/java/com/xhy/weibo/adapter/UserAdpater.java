@@ -17,7 +17,7 @@ import com.xhy.weibo.R;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.model.User;
-import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.utils.Constants;
 
 import java.util.List;

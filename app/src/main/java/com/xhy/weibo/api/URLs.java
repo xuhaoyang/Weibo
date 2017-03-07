@@ -13,6 +13,8 @@ public interface URLs {
 
     //登录
     String WEIBO_USER_LOGIN = API_VERSION + "userLogin.html";
+    //注册
+    String WEIBO_USER_REGISTER= API_VERSION + "userRegister.html";
     //微博分组
     String WEIBO_GET_GROUP = API_VERSION + "getGroup.html";
     //获取微博列表

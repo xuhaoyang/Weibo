@@ -30,7 +30,7 @@ import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.ui.base.ViewPagerAdapter;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.DateUtils;

@@ -41,7 +41,7 @@ import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.model.StatusGroup;
 import com.xhy.weibo.model.User;
-import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.service.MessageService;
 import com.xhy.weibo.ui.base.ListActivity;
 import com.xhy.weibo.ui.interfaces.PushMessage;

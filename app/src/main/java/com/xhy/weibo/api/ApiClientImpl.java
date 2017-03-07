@@ -28,6 +28,12 @@ public interface ApiClientImpl {
                               @Field("password") String password);
 
     @FormUrlEncoded
+    @POST(URLs.WEIBO_USER_REGISTER)
+    Call<Result> register(@Field("account") String account,
+                          @Field("password") String password,
+                          @Field("uname") String uname);
+
+    @FormUrlEncoded
     @POST(URLs.WEIBO_GET_USERINFO)
     Call<Result<User>> getUserinfo(@Field("uid") int uid,
                                    @Field("username") String username,
@@ -94,7 +100,7 @@ public interface ApiClientImpl {
     @FormUrlEncoded
     @POST(URLs.WEIBO_DELETE_WEIBO)
     Call<Result> delWeibo(@Query("wid") int wid,
-                           @Field("token") String token);
+                          @Field("token") String token);
 
     @FormUrlEncoded
     @POST(URLs.WEIBO_ADD_FOLLOW)

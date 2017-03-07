@@ -1,22 +1,15 @@
 package com.xhy.weibo;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.animation.Animation;
 
-import com.xhy.weibo.db.DBManager;
-import com.xhy.weibo.db.UserDB;
 import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.Login;
 import com.xhy.weibo.ui.activity.LoginActivity;
 import com.xhy.weibo.ui.activity.MainActivity;
 import com.xhy.weibo.ui.base.StartUpActivity;
-
-import java.util.List;
 
 import hk.xhy.android.commom.utils.ActivityUtils;
 import hk.xhy.android.commom.utils.Logger;
@@ -85,7 +78,7 @@ public class StartActivty extends StartUpActivity {
             ActivityUtils.goHome(StartActivty.this, MainActivity.class);
             finish();
         } else {
-            ActivityUtils.startActivity(StartActivty.this, LoginActivity.class);
+            ActivityUtils.goHome(StartActivty.this, LoginActivity.class);
         }
 
     }

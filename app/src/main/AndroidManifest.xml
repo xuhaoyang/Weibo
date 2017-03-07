@@ -101,6 +101,9 @@
             android:name=".ui.activity.LoginActivity"
             android:label="@string/title_activity_login" />
 
+        <activity android:name=".ui.activity.RegisterActivity"
+            android:theme="@style/Translucent" />
+
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:label="@string/title_activity_settings">

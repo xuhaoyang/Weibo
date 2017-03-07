@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide;
 import com.xhy.weibo.R;
 import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.activity.WriteStatusActivity;
 import com.xhy.weibo.utils.Constants;

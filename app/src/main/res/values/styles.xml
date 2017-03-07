@@ -56,7 +56,6 @@
     </style>
 
 
-
     <style name="RadioButtonEmotionDashboard">
         <item name="android:layout_width">0dp</item>
         <item name="android:textSize">@dimen/txtsize_body</item>
@@ -66,5 +65,17 @@
         <item name="android:background">@drawable/bg_dgray2white_sel</item>
         <item name="android:button">@null</item>
         <item name="android:gravity">center</item>
+    </style>
+
+
+    <style name="Translucent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="TextLabel" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorControlActivated">#FFCC00</item>
     </style>
 </resources>

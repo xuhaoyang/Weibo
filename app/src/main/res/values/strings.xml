@@ -13,7 +13,7 @@
 
     <string name="title_activity_write_comment">WriteCommentActivity</string>
     <string name="image_deccribtion">图片描述</string>
-    <string name="action_comment">评论</string>
+    <string name="action_comment">comment</string>
     <string name="action_keep">收藏</string>
     <string name="action_forward">转发</string>
     <string name="action_commet_comment">回复评论</string>
@@ -31,12 +31,25 @@
     <string name="action_sign_in">登录</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">密码不符合格式</string>
+    <string name="error_invalid_password">This password is invalid</string>
+    <string name="error_not_match_password">This password is not match</string>
     <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">必须填写</string>
+    <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="login_success">login success</string>
+    <string name="login">LOGIN</string>
+    <string name="Username">Username</string>
+    <string name="Password">Password</string>
+    <string name="forgot_your_password">Forgot your password ?</string>
+    <string name="go">GO</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="next">NEXT</string>
+    <string name="register">REGISTER</string>
+
+
+
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -105,9 +118,11 @@
     <!--Public -->
     <string name="list_error">加载数据失败，点击重试</string>
     <string name="list_data_not_found">没有找到数据</string>
-    <string name="list_loading">加载数据中</string>
-    <string name="loadfail">加载失败，点我再试试？</string>
-    <string name="loading">加载中…</string>
+    <string name="list_loading">loading...</string>
     <string name="loadend">THE END</string>
     <string name="app_exit_warning">one more touch app exit</string>
+    <string name="loading">loading...</string>
+    <string name="loadfail">load fail, please touch me</string>
+    <string name="tr_fab_name">loginFab</string>
+    <string name="nickname">nickname</string>
 </resources>

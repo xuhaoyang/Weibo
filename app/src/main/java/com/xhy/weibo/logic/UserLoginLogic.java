@@ -23,6 +23,14 @@ import retrofit2.Response;
 public class UserLoginLogic {
     public static final String TAG = UserLoginLogic.class.getSimpleName();
 
+    /**
+     * 登录
+     *
+     * @param context
+     * @param account  账户
+     * @param password 密码
+     * @param callback
+     */
     public static void login(final Context context, final String account, final String password, final LoginCallback callback) {
         Call<Result<Login>> callLogin = ApiClient.getApi().login(account, password);
         callLogin.enqueue(new Callback<Result<Login>>() {
@@ -47,6 +55,42 @@ public class UserLoginLogic {
                 callback.onLoginError(t);
             }
         });
+
+    }
+
+    /**
+     * 注册新的账户
+     * @param account
+     * @param password
+     * @param uname
+     * @param callback
+     */
+    public static void register(final String account, final String password,
+                                final String uname, final RegisterCallback callback) {
+        Call<Result> resultCall = ApiClient.getApi().register(account, password, uname);
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                if (response.isSuccessful()) {
+                    Result result = response.body();
+                    if (result.isSuccess()) {
+                        callback.onRegisterSuccess(result.getMsg());
+                    } else {
+                        callback.onRegisterFailure(result.getMsg());
+                    }
+                } else {
+                    Logger.show(TAG, "ErrorCode:" + response.code());
+                    callback.onRegisterFailure(response.code() + "：注册失败");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                callback.onRegisterError(t);
+            }
+        });
+
 
     }
 
@@ -266,6 +310,14 @@ public class UserLoginLogic {
         void onLoginFailure(int errorCode, String errorMessage);
 
         void onLoginError(Throwable error);
+    }
+
+    public interface RegisterCallback {
+        void onRegisterSuccess(String message);
+
+        void onRegisterFailure(String message);
+
+        void onRegisterError(Throwable t);
     }
 
     public interface GetUserinfoCallBack {

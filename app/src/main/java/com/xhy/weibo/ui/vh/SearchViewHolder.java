@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.R;
 import com.xhy.weibo.model.User;
-import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.api.URLs;
 
 import hk.xhy.android.commom.bind.ViewById;
 import hk.xhy.android.commom.ui.vh.OnListItemClickListener;

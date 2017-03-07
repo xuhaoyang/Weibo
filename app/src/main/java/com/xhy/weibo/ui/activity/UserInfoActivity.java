@@ -24,7 +24,7 @@ import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.model.User;
-import com.xhy.weibo.network.URLs;
+import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.utils.Constants;
 
 import java.util.ArrayList;
