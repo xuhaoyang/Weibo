@@ -5,6 +5,9 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorPrimarytext">#000</color>
     <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="gray">#bebebe</color>
+
     <color name="txt_black">#232323</color>
     <color name="txt_gray">#565656</color>
     <color name="txt_light_gray">#898989</color>
@@ -25,5 +28,7 @@
 
     <color name="primaryGrayPre">#aa777777</color>
     <color name="primaryGrayLine">#dfdfdf</color>
+
+
 
 </resources>

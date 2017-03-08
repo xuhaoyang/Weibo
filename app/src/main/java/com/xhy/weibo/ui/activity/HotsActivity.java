@@ -118,6 +118,11 @@ public class HotsActivity extends ListActivity<HotViewHolder, Hot, Result<List<H
     }
 
     @Override
+    public void onLoadStart() {
+
+    }
+
+    @Override
     public void onBindViewHolder(HotViewHolder holder, int position) {
         holder.bind(getItemsSource().get(position), this);
 

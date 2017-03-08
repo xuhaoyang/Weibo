@@ -18,4 +18,6 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+
+    <dimen name="cardview_default_margin">0dp</dimen>
 </resources>

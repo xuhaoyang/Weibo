@@ -49,7 +49,6 @@
     <string name="register">REGISTER</string>
 
 
-
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -114,7 +113,6 @@
     <string name="push_msg_get_fail">获得消息失败</string>
 
 
-
     <!--Public -->
     <string name="list_error">加载数据失败，点击重试</string>
     <string name="list_data_not_found">没有找到数据</string>
@@ -125,4 +123,5 @@
     <string name="loadfail">load fail, please touch me</string>
     <string name="tr_fab_name">loginFab</string>
     <string name="nickname">nickname</string>
+    <string name="title_activity_setting">Setting</string>
 </resources>

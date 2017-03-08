@@ -197,6 +197,11 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     }
 
     @Override
+    public void onLoadStart() {
+
+    }
+
+    @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (holder instanceof StatusViewHolder) {
             ((StatusViewHolder) holder).bind(this, getItemsSource().get(position), this, 5);
@@ -411,7 +416,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityUtils.startActivity(MainActivity.this, SettingsActivity.class);
+                ActivityUtils.startActivity(MainActivity.this, SettingActivity.class);
             }
         });
 

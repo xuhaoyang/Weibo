@@ -100,6 +100,11 @@ public class KeepStatusActivity extends ListActivity<ViewHolder, Status, Result<
     }
 
     @Override
+    public void onLoadStart() {
+
+    }
+
+    @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (holder instanceof StatusViewHolder) {
             ((StatusViewHolder) holder).bind(this, getItemsSource().get(position), this, 5);

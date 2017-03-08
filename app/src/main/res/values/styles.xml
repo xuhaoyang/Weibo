@@ -78,4 +78,17 @@
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorControlActivated">#FFCC00</item>
     </style>
+
+    <style name="SettingCheckBox" parent="AppTheme">
+        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+    </style>
+
+    <style name="SettingItemLayoutStyle" parent="" >
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <!--<item name="android:clickable">true</item>-->
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
 </resources>

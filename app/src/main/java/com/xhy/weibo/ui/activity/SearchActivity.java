@@ -15,12 +15,13 @@ import android.view.View;
 import com.xhy.weibo.R;
 import com.xhy.weibo.ui.activity.fragment.SearchStatusFragment;
 import com.xhy.weibo.ui.activity.fragment.SearchUsersFragment;
+import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.utils.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseActivity {
 
 
 
