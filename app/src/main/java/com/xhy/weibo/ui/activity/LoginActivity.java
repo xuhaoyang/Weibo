@@ -30,8 +30,8 @@ import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.Login;
 import com.xhy.weibo.ui.base.BaseActivity;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.utils.ActivityUtils;
 
 
 /**

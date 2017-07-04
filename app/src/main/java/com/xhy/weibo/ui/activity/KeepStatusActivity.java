@@ -1,9 +1,6 @@
 package com.xhy.weibo.ui.activity;
 
-import android.accounts.NetworkErrorException;
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,13 +28,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.GsonUtil;
-import hk.xhy.android.commom.utils.ViewUtils;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 import retrofit2.Call;
 
 

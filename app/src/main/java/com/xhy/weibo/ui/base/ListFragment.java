@@ -4,29 +4,26 @@ package com.xhy.weibo.ui.base;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.api.ApiClientImpl;
 
-import hk.xhy.android.commom.ui.fragment.RecyclerFragment;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ErrorUtils;
-import hk.xhy.android.commom.utils.ViewUtils;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import hk.xhy.android.common.ui.fragment.RecyclerFragment;
+import hk.xhy.android.common.utils.ErrorUtils;
+import hk.xhy.android.common.utils.ViewUtils;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 
 /**
  * Created by xuhaoyang on 6/2/16.
  */
 public abstract class ListFragment<VH extends RecyclerView.ViewHolder, Item, Result, T extends ViewGroup>
-        extends hk.xhy.android.commom.ui.fragment.ListFragment<VH, Item, Result> implements SwipeRefreshLayout.OnRefreshListener,
+        extends hk.xhy.android.common.ui.fragment.ListFragment<VH, Item, Result> implements SwipeRefreshLayout.OnRefreshListener,
         RecyclerFragment.OnLoadMoreListener {
     private final String TAG = this.getClass().getSimpleName();
 

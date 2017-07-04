@@ -20,6 +20,10 @@ import com.xhy.weibo.model.NotifyInfo;
 import com.xhy.weibo.receiver.NotificationReceiver;
 import com.xhy.weibo.utils.Logger;
 
+import java.util.Calendar;
+
+import hk.xhy.android.common.utils.TimeUtils;
+
 public class MessageService extends Service {
 
     private static final String TAG = MessageService.class.getSimpleName();
@@ -175,10 +179,23 @@ public class MessageService extends Service {
             while (isRunning) {
                 try {
                     Logger.show("MessageService", "进入了Thread");
-                    //休息
-                    Thread.sleep(15000);
-                    Logger.show("MessageService", "休息时间过了,运行了");
-                    if (AppConfig.isNotify()) {
+
+                    //通知间隔
+                    long notificationInterval = AppConfig.getNotificaitonInterval();
+                    Thread.sleep(notificationInterval);
+
+                    boolean is = AppConfig.isNotify();
+                    boolean isDND = false;
+
+                    final int curHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
+                    Logger.show(TAG, "当前小时：" + curHour);
+                    if (curHour >= 1 && curHour <= 8 && AppConfig.getDoNotDisturb()) {
+                        isDND = true;
+                    }
+
+                    if (is && !isDND) {
+                        Logger.show("MessageService", "开启了通知");
 //                        Intent data = new Intent();
 //                        data.setAction("com.xhy.weibo.UPDATE_TOKEN");
 //                        data.putExtra(AppConfig.KEEP_TOKEN, AppConfig.ACCESS_TOKEN.getToken());
@@ -201,7 +218,7 @@ public class MessageService extends Service {
 
                             @Override
                             public void onGetMsgFailure(String message) {
-                                Logger.show(TAG,message);
+                                Logger.show(TAG, message);
                             }
 
                             @Override

@@ -2,8 +2,6 @@ package com.xhy.weibo.ui.activity.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,7 +18,6 @@ import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.event.CommentListChangeEvent;
 import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Result;
-import com.xhy.weibo.ui.activity.StatusDetailActivity;
 import com.xhy.weibo.ui.base.ListFragment;
 import com.xhy.weibo.ui.vh.CommentViewHolder;
 import com.xhy.weibo.utils.Constants;
@@ -32,9 +29,9 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 import java.util.List;
 
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 import retrofit2.Call;
 
 /**

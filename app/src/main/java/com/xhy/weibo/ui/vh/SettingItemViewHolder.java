@@ -9,9 +9,9 @@ import android.widget.TextView;
 import com.xhy.weibo.R;
 import com.xhy.weibo.model.Setting;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
 
 /**
  * Created by xuhaoyang on 2017/3/8.

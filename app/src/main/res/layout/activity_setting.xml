@@ -21,7 +21,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <hk.xhy.android.commom.widget.PullToRefreshLayout
+    <hk.xhy.android.common.widget.PullToRefreshLayout
         android:id="@id/pull_to_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,7 +31,7 @@
             android:id="@id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </hk.xhy.android.commom.widget.PullToRefreshLayout>
+    </hk.xhy.android.common.widget.PullToRefreshLayout>
 
     <include layout="@layout/simple_layout_list_empty" />
 

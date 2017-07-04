@@ -16,8 +16,8 @@ import com.xhy.weibo.logic.PushMessageLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.ui.base.ViewPagerAdapter;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.utils.ActivityUtils;
 
 public class NotifyActivity extends BaseActivity {
 

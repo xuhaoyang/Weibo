@@ -11,16 +11,20 @@ import com.xhy.weibo.model.Setting;
 import com.xhy.weibo.ui.base.ListActivity;
 import com.xhy.weibo.ui.vh.SettingHeadViewHolder;
 import com.xhy.weibo.ui.vh.SettingItemViewHolder;
+import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ViewUtils;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.utils.ViewUtils;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 
 public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Setting>> implements OnListItemClickListener {
 
@@ -32,6 +36,8 @@ public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Sett
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //设置item间间隔样式
         getRecyclerView().addItemDecoration(new RecycleViewDivider(this,
@@ -107,7 +113,7 @@ public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Sett
         notify.setId(1);
         notify.setWeight(1);
         notify.setConfig(Setting.ITEM_SINGLE);
-        notify.setFunctionConfig(Setting.ITEM_OPTIONS);
+        notify.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
         notify.setMainHead("通知设置");
         settings.add(notify);
 
@@ -115,7 +121,7 @@ public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Sett
         userinfo.setId(1);
         userinfo.setWeight(1);
         userinfo.setConfig(Setting.ITEM_SINGLE);
-        userinfo.setFunctionConfig(Setting.ITEM_OPTIONS);
+        userinfo.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
         userinfo.setMainHead("用户设置");
         settings.add(userinfo);
 
@@ -123,7 +129,7 @@ public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Sett
         feedback.setId(2);
         feedback.setWeight(2);
         feedback.setConfig(Setting.ITEM_SINGLE);
-        feedback.setFunctionConfig(Setting.ITEM_OPTIONS);
+        feedback.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
         feedback.setMainHead("意见反馈");
         settings.add(feedback);
 
@@ -131,7 +137,7 @@ public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Sett
         about.setId(3);
         about.setWeight(3);
         about.setConfig(Setting.ITEM_SINGLE);
-        about.setFunctionConfig(Setting.ITEM_OPTIONS);
+        about.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
         about.setMainHead("关于");
         settings.add(about);
 
@@ -153,7 +159,10 @@ public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Sett
     }
 
     @Override
-    public void OnListItemClick(int postion) {
+    public void OnListItemClick(final int postion) {
+        ActivityUtils.startActivity(this,SettingChildActivity.class,new HashMap<String, Object>(){{
+            put(Constants.SETTING_ITEM_CONTENT, GsonUtil.toJson(getItemsSource().get(postion)));
+        }});
 
     }
 

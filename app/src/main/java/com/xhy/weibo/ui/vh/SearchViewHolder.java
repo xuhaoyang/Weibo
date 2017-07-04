@@ -1,6 +1,5 @@
 package com.xhy.weibo.ui.vh;
 
-import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,10 +12,10 @@ import com.xhy.weibo.R;
 import com.xhy.weibo.model.User;
 import com.xhy.weibo.api.URLs;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.GsonUtil;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.GsonUtil;
 
 /**
  * Created by xuhaoyang on 2016/12/24.

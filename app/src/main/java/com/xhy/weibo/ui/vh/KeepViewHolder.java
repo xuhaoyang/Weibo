@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.R;
-import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
@@ -23,12 +22,12 @@ import com.xhy.weibo.utils.StringUtils;
 
 import java.util.HashMap;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.GsonUtil;
-import hk.xhy.android.commom.utils.ScreenUtils;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.utils.ScreenUtils;
 
 /**
  * Created by xuhaoyang on 2017/2/25.

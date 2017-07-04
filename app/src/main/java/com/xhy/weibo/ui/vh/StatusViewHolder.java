@@ -32,12 +32,12 @@ import com.xhy.weibo.utils.StringUtils;
 
 import java.util.HashMap;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.GsonUtil;
-import hk.xhy.android.commom.utils.ScreenUtils;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.utils.ScreenUtils;
 
 /**
  * Created by xuhaoyang on 16/9/12.
@@ -287,7 +287,7 @@ public class StatusViewHolder extends ViewHolder {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(ScreenUtils.getScreenHeight(itemView.getContext()) / 2);
+            itemView.setTranslationY(ScreenUtils.getScreenHeight() / 2);
             itemView.animate()
                     .translationY(0)
 //                    .setStartDelay(100 * position)

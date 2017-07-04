@@ -2,7 +2,7 @@ package com.xhy.weibo.model;
 
 import android.text.TextUtils;
 
-import hk.xhy.android.commom.utils.GsonUtil;
+import hk.xhy.android.common.utils.GsonUtil;
 
 /**
  * Created by xuhaoyang on 16/9/7.

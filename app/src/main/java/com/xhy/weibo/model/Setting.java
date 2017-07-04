@@ -13,8 +13,8 @@ public class Setting extends Model {
     public static final int ITEM_SINGLE = 1002;//单层菜单
     public static final int ITEM_TWICE = 1003;//双层菜单
 
-    public static final int ITEM_ALERTDIALOG = 1101;//弹出窗口菜单
-    public static final int ITEM_OPTIONS = 1102;
+    public static final int FUNCTION_ITEM_DIALOG = 1101;//弹出窗口菜单
+    public static final int FUNCTION_ITEM_OPTIONS = 1102;
 
     private static final String CHECKBOX = "CB";
     private int id;
@@ -23,7 +23,7 @@ public class Setting extends Model {
     private int weight;//权重 用于排序
     private int config;//菜单种类
     private int functionConfig;
-    private Dialog dialog;
+    private DialogData dialogData;
 
     public int getConfig() {
         return config;
@@ -81,11 +81,21 @@ public class Setting extends Model {
         return AppConfig.getBoolean(id + CHECKBOX, false);
     }
 
-    public Dialog getDialog() {
-        return dialog;
+    public DialogData getDialogData() {
+        return dialogData;
     }
 
-    public void setDialog(Dialog dialog) {
-        this.dialog = dialog;
+    public void setDialogData(DialogData dialogData) {
+        this.dialogData = dialogData;
+    }
+
+    /**
+     * 转换json为Model
+     *
+     * @param json
+     * @return
+     */
+    public static Setting parseObject(final String json){
+        return Model.parseObject(json,Setting.class);
     }
 }

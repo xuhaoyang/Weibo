@@ -2,7 +2,7 @@ package com.xhy.weibo.ui.vh;
 
 import android.view.View;
 
-import hk.xhy.android.commom.ui.vh.ViewHolder;
+import hk.xhy.android.common.ui.vh.ViewHolder;
 
 /**
  * Created by xuhaoyang on 2016/12/24.
