@@ -98,6 +98,7 @@
 
         <activity
             android:name=".ui.activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/title_activity_login" />
         <activity
             android:name=".ui.activity.RegisterActivity"
@@ -116,7 +117,8 @@
         <activity
             android:name=".ui.activity.SettingActivity"
             android:label="@string/title_activity_setting"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.activity.SettingChildActivity"></activity>
     </application>
 
 </manifest>

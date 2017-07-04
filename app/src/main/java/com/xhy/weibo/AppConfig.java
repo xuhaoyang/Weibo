@@ -1,12 +1,11 @@
 package com.xhy.weibo;
 
 import com.xhy.weibo.model.Login;
-import com.xhy.weibo.utils.Time;
 
-import hk.xhy.android.commom.utils.ConstUtils;
-import hk.xhy.android.commom.utils.ConvertUtils;
-import hk.xhy.android.commom.utils.PreferenceUtils;
-import hk.xhy.android.commom.utils.TimeUtils;
+import hk.xhy.android.common.utils.ConstUtils;
+import hk.xhy.android.common.utils.PreferenceUtils;
+import hk.xhy.android.common.utils.TimeUtils;
+import hk.xhy.android.common.utils.Utils;
 
 /**
  * Created by xuhaoyang on 16/7/21.
@@ -143,7 +142,7 @@ public class AppConfig extends PreferenceUtils {
      */
     public static AccessToken getAccessToken() {
         if (ACCESS_TOKEN == null) {
-            ACCESS_TOKEN = new AccessToken(getAccount(), getPassword(), getContext());
+            ACCESS_TOKEN = new AccessToken(getAccount(), getPassword(), Utils.getContext());
         }
         return ACCESS_TOKEN;
     }

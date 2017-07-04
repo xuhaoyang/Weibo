@@ -39,9 +39,8 @@ import com.xhy.weibo.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.widget.Toaster;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.utils.ActivityUtils;
 
 public class StatusDetailActivity extends BaseActivity {
 

@@ -11,9 +11,9 @@ import com.xhy.weibo.ui.activity.LoginActivity;
 import com.xhy.weibo.ui.activity.MainActivity;
 import com.xhy.weibo.ui.base.StartUpActivity;
 
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.Logger;
-import hk.xhy.android.commom.widget.Toaster;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.Logger;
+import hk.xhy.android.common.widget.Toaster;
 
 public class StartActivty extends StartUpActivity {
 

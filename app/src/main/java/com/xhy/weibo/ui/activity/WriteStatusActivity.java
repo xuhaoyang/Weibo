@@ -55,9 +55,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.ConvertUtils;
-import hk.xhy.android.commom.utils.ScreenUtils;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.ConvertUtils;
+import hk.xhy.android.common.utils.ScreenUtils;
 
 
 public class WriteStatusActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {

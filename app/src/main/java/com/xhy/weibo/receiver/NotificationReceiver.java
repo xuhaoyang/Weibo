@@ -8,7 +8,7 @@ import android.util.Log;
 import com.xhy.weibo.ui.activity.MainActivity;
 import com.xhy.weibo.ui.activity.NotifyActivity;
 
-import hk.xhy.android.commom.utils.AppUtils;
+import hk.xhy.android.common.utils.AppUtils;
 
 /**
  * Created by xuhaoyang on 16/6/5.

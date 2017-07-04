@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.AppConfig;
@@ -36,8 +35,8 @@ import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.StringUtils;
 
-import hk.xhy.android.commom.utils.ScreenUtils;
-import hk.xhy.android.commom.utils.ToastUtils;
+import hk.xhy.android.common.utils.ScreenUtils;
+import hk.xhy.android.common.utils.ToastUtils;
 
 import java.util.List;
 
@@ -402,7 +401,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(ScreenUtils.getScreenHeight(context) / 2);
+            itemView.setTranslationY(ScreenUtils.getScreenHeight() / 2);
             itemView.animate()
                     .translationY(0)
 //                    .setStartDelay(100 * position)
