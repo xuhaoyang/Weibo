@@ -12,15 +12,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
+import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.logic.StatusLogic;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
-import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
 import com.xhy.weibo.ui.activity.ViewPicActivity;
@@ -39,7 +38,6 @@ import hk.xhy.android.commom.ui.vh.ViewHolder;
 import hk.xhy.android.commom.utils.ActivityUtils;
 import hk.xhy.android.commom.utils.GsonUtil;
 import hk.xhy.android.commom.utils.ScreenUtils;
-import hk.xhy.android.commom.utils.ToastUtils;
 
 /**
  * Created by xuhaoyang on 16/9/12.

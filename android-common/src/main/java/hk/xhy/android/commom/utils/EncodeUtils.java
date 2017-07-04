@@ -10,15 +10,16 @@ import java.net.URLEncoder;
 
 /**
  * <pre>
-
- *     time  : 2016/8/7
+ *     author: Blankj
+ *     blog  : http://blankj.com
+ *     time  : 2016/08/07
  *     desc  : 编码解码相关工具类
  * </pre>
  */
-public class EncodeUtils {
+public final class EncodeUtils {
 
     private EncodeUtils() {
-        throw new UnsupportedOperationException("u can't fuck me...");
+        throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
     /**
@@ -142,7 +143,7 @@ public class EncodeUtils {
      * @param input 要Html编码的字符串
      * @return Html编码后的字符串
      */
-    public static String htmlEncode(String input) {
+    public static String htmlEncode(CharSequence input) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             return Html.escapeHtml(input);
         } else {
@@ -187,7 +188,12 @@ public class EncodeUtils {
      * @param input 待解码的字符串
      * @return Html解码后的字符串
      */
-    public static String htmlDecode(String input) {
-        return Html.fromHtml(input).toString();
+    @SuppressWarnings("deprecation")
+    public static CharSequence htmlDecode(String input) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(input, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            return Html.fromHtml(input);
+        }
     }
 }

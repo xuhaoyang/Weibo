@@ -312,7 +312,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                                         status.setKeep(false);
                                         status.setKeep(status.getKeep() - 1);
                                         notifyItemChanged(position);
-                                        ToastUtils.showToast(context, result.getMsg(), Toast.LENGTH_SHORT);
+                                        ToastUtils.showShort(result.getMsg());
                                         if (mHandler != null) {
                                             Message message = new Message();
                                             message.what = KeepStatusActivity.REFRESH_DATA;
@@ -323,7 +323,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                                     @Override
                                     public void onDelKeepFailure(String message) {
 
-                                        ToastUtils.showToast(context, message, Toast.LENGTH_SHORT);
+                                        ToastUtils.showShort(message);
 
                                     }
 
@@ -340,12 +340,12 @@ public class StatusAdpater extends RecyclerView.Adapter {
                                         status.setKeep(true);
                                         status.setKeep(status.getKeep() + 1);
                                         notifyItemChanged(position);
-                                        ToastUtils.showToast(context, result.getMsg(), Toast.LENGTH_SHORT);
+                                        ToastUtils.showShort(result.getMsg());
                                     }
 
                                     @Override
                                     public void onAddKeepFailure(String message) {
-                                        ToastUtils.showToast(context, message, Toast.LENGTH_SHORT);
+                                        ToastUtils.showShort(message);
                                     }
 
                                     @Override

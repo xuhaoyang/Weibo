@@ -28,7 +28,7 @@ public class ShellUtils {
      * 判断设备是否root
      * @return {@code true}: root<br>{@code false}: 没root
      */
-    public static boolean isRoot() {
+    public static boolean checkRootPermission() {
         return execCmd("echo root", true, false).result == 0;
     }
 

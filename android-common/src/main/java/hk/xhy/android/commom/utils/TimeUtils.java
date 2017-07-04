@@ -2,13 +2,14 @@ package hk.xhy.android.commom.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 
 /**
  * <pre>
-
+ *
  *     time  : 2016/8/2
  *     desc  : 时间相关工具类
  * </pre>
@@ -307,7 +308,7 @@ public class TimeUtils {
      *                     </ul>
      * @return unit时间戳
      */
-    private static long milliseconds2Unit(long milliseconds, int unit) {
+    public static long milliseconds2Unit(long milliseconds, int unit) {
         switch (unit) {
             case ConstUtils.MSEC:
             case ConstUtils.SEC:
@@ -483,4 +484,40 @@ public class TimeUtils {
     public static boolean isLeapYear(int year) {
         return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
     }
+
+    /**
+     * 获得当前时间的小时
+     *
+     * @return 当前小时
+     */
+    public static int getCurTimeHour() {
+        return Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+    }
+
+    /**
+     * 天/小时/分/秒 转 毫秒
+     *
+     * @param time 时间
+     * @param unit <ul>
+     *             <li>{@link ConstUtils#MSEC}: 毫秒</li>
+     *             <li>{@link ConstUtils#SEC }: 秒</li>
+     *             <li>{@link ConstUtils#MIN }: 分</li>
+     *             <li>{@link ConstUtils#HOUR}: 小时</li>
+     *             <li>{@link ConstUtils#DAY }: 天</li>
+     *             </ul>
+     * @return 毫秒
+     */
+    public static long convertTimeMillis(int time, int unit) {
+        switch (unit) {
+            case ConstUtils.MSEC:
+            case ConstUtils.SEC:
+            case ConstUtils.MIN:
+            case ConstUtils.HOUR:
+            case ConstUtils.DAY:
+                return time * unit;
+        }
+        return -1;
+    }
+
+
 }

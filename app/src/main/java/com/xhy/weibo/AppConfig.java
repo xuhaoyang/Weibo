@@ -1,8 +1,12 @@
 package com.xhy.weibo;
 
 import com.xhy.weibo.model.Login;
+import com.xhy.weibo.utils.Time;
 
+import hk.xhy.android.commom.utils.ConstUtils;
+import hk.xhy.android.commom.utils.ConvertUtils;
 import hk.xhy.android.commom.utils.PreferenceUtils;
+import hk.xhy.android.commom.utils.TimeUtils;
 
 /**
  * Created by xuhaoyang on 16/7/21.
@@ -96,6 +100,41 @@ public class AppConfig extends PreferenceUtils {
         putBoolean("isNotify", flag);
     }
 
+    /**
+     * 获得通知间隔
+     *
+     * @return 单位毫秒
+     */
+    public static long getNotificaitonInterval() {
+        return getLong("notificationinterval", TimeUtils.convertTimeMillis(2, ConstUtils.MIN));
+    }
+
+    /**
+     * 保存通知间隔时间
+     *
+     * @param time 单位分
+     */
+    public static void setNotificationInterval(int time) {
+        putLong("notificationinterval", TimeUtils.convertTimeMillis(time, ConstUtils.MIN));
+    }
+
+    /**
+     * 设置免打扰开关
+     *
+     * @param flag true开/false关
+     */
+    public static void setDoNotDisturb(boolean flag) {
+        putBoolean("DoNotDisturb", flag);
+    }
+
+    /**
+     * 获得免打扰开关值
+     *
+     * @return
+     */
+    public static boolean getDoNotDisturb() {
+        return getBoolean("DoNotDisturb", false);
+    }
 
     /**
      * 获取AccessToken

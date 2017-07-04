@@ -107,7 +107,7 @@ public class ImageUtils {
         // 未安装SD卡时不做保存
         String storageState = Environment.getExternalStorageState();
         if (!storageState.equals(Environment.MEDIA_MOUNTED)) {
-            ToastUtils.showToast(context, "未检测到SD卡", Toast.LENGTH_SHORT);
+            ToastUtils.showShort("未检测到SD卡");
             return;
         }
 

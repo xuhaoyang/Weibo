@@ -47,7 +47,7 @@ public abstract class BaseActivity extends hk.xhy.android.commom.ui.BaseActivity
     }
 
     protected void showToast(String msg) {
-        ToastUtils.showToast(this, msg, Toast.LENGTH_SHORT);
+        ToastUtils.showShort(msg);
     }
 
 }

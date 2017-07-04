@@ -1,6 +1,5 @@
 package com.xhy.weibo.ui.interfaces;
 
-import com.xhy.weibo.model.Result;
 
 /**
  * Created by xuhaoyang on 2017/1/10.

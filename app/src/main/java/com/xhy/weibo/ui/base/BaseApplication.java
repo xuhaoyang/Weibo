@@ -21,7 +21,7 @@ public class BaseApplication extends hk.xhy.android.commom.Application {
         getApplicationContext();
         context = getApplicationContext();
         AppConfig.initialize(this);
-        FIR.init(this);
+//        FIR.init(this);
 
         mDBManager = new DBManager(context);
         mDBManager.openDatabase();

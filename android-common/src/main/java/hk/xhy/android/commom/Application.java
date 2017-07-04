@@ -1,5 +1,7 @@
 package hk.xhy.android.commom;
 
+import hk.xhy.android.commom.utils.Utils;
+
 /**
  * Created by xuhaoyang on 16/9/7.
  */

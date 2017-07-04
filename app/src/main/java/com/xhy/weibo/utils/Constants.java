@@ -53,4 +53,11 @@ public class Constants {
     //Request
     public static final int REQUEST_CODE_WRITE_FORWARD = 2;
     public static final int REQUEST_CODE_WRITE_STATUS = 3;
+
+    /**
+     * Settings
+     */
+    public static final String SETTING_ITEM_CONTENT = "setting_item_content";
+
+
 }

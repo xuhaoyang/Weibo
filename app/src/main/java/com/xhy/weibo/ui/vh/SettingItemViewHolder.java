@@ -2,7 +2,6 @@ package com.xhy.weibo.ui.vh;
 
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,9 +46,12 @@ public class SettingItemViewHolder extends ViewHolder {
 
 
         switch (item.getFunctionConfig()) {
-            case Setting.ITEM_ALERTDIALOG://弹出框 隐藏checkbox
-            case Setting.ITEM_OPTIONS:
+            case Setting.FUNCTION_ITEM_DIALOG://弹出框 隐藏checkbox
+            case Setting.FUNCTION_ITEM_OPTIONS:
                 item_switch.setVisibility(View.GONE);
+                break;
+            default:
+                item_switch.setChecked(item.getCheckBoxIs());
                 break;
         }
 
@@ -80,6 +82,7 @@ public class SettingItemViewHolder extends ViewHolder {
                     /**
                      * 略有疑问 不知道怎么写
                      */
+                    listener.OnListItemClick(getAdapterPosition());
                 }
             }
         });

@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 import com.xhy.weibo.utils.Logger;
+
 import hk.xhy.android.commom.utils.ToastUtils;
 
 /**
@@ -19,6 +20,6 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void showToast(String msg) {
-        ToastUtils.showToast(getContext(), msg, Toast.LENGTH_SHORT);
+        ToastUtils.showShort(msg);
     }
 }

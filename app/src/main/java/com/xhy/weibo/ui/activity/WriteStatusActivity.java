@@ -222,7 +222,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
     private void initEmotion() {
         int screenWidth = ScreenUtils.getScreenWidth(this);
-        int spacing = ConvertUtils.dp2px(this, 8);
+        int spacing = ConvertUtils.dp2px(8);
 
         int itemWidth = (screenWidth - spacing * 8) / 7;
         int gvHeight = itemWidth * 3 + spacing * 4;
