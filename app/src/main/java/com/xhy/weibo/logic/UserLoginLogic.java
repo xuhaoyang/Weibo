@@ -3,6 +3,7 @@ package com.xhy.weibo.logic;
 import android.content.Context;
 import android.util.Log;
 
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.model.Login;
@@ -13,6 +14,7 @@ import com.xhy.weibo.utils.Logger;
 import java.io.IOException;
 import java.util.List;
 
+import hk.xhy.android.common.utils.LogUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,6 +62,7 @@ public class UserLoginLogic {
 
     /**
      * 注册新的账户
+     *
      * @param account
      * @param password
      * @param uname
@@ -79,7 +82,7 @@ public class UserLoginLogic {
                         callback.onRegisterFailure(result.getMsg());
                     }
                 } else {
-                    Logger.show(TAG, "ErrorCode:" + response.code());
+                    LogUtils.w("ErrorCode:" + response.code());
                     callback.onRegisterFailure(response.code() + "：注册失败");
 
                 }
@@ -92,6 +95,45 @@ public class UserLoginLogic {
         });
 
 
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param uid
+     * @param username
+     * @param truename
+     * @param sex
+     * @param intro
+     * @param token
+     * @param callback
+     */
+    public static void setUserinfo(final int uid, final String username, final String truename,
+                                   final String sex, final String intro, final String token,
+                                   final SetUserinfoCallBack callback) {
+        final Call<Result> resultCall = ApiClient.getApi().setUserinfo(uid, username, truename, sex, intro, token);
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                if (response.isSuccessful()) {
+                    final Result result = response.body();
+                    if (result.isSuccess()) {
+                        callback.onUserInfoSuccess(result.getMsg());
+                    } else {
+                        callback.onUserInfoFailure(result.getMsg());
+                    }
+                } else {
+                    LogUtils.w("ErrorCode:" + response.code());
+                    callback.onUserInfoFailure(response.code() + "：用户信息更新失败");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                callback.onUserInfoError(t);
+            }
+        });
     }
 
     /**
@@ -118,7 +160,7 @@ public class UserLoginLogic {
                         callBack.onUserInfoFailure(body.getCode(), body.getMsg());
                     }
                 } else {
-                    Logger.show(TAG, "ErrorCode:" + response.code());
+                    LogUtils.w("ErrorCode:" + response.code());
                     callBack.onUserInfoFailure(response.code(), "获取失败");
                 }
             }
@@ -156,7 +198,7 @@ public class UserLoginLogic {
                 } else {
                     callBack.onAddFollowFailure("关注失败");
                     try {
-                        Logger.show(TAG, response.errorBody().string());
+                        LogUtils.w(response.errorBody().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -195,7 +237,7 @@ public class UserLoginLogic {
                 } else {
                     callBack.onDelFollowFailure("取消关注失败");
                     try {
-                        Logger.show(TAG, response.errorBody().string());
+                        LogUtils.w(response.errorBody().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -272,7 +314,7 @@ public class UserLoginLogic {
                 } else {
                     callBack.onSearchUserFailure(context.getResources().getString(R.string.search_fail));
                     try {
-                        Logger.show(TAG, response.errorBody().string());
+                        LogUtils.w(response.errorBody().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -342,6 +384,14 @@ public class UserLoginLogic {
         void onSearchUserFailure(String message);
 
         void onSearchUserError(Throwable error);
+    }
+
+    public interface SetUserinfoCallBack {
+        void onUserInfoSuccess(String message);
+
+        void onUserInfoFailure(String message);
+
+        void onUserInfoError(Throwable error);
     }
 
 

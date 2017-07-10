@@ -15,6 +15,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -74,8 +75,9 @@ public class ApiClient {
         mOkHttpClient = builder.build();
 
         api = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(URLs.API_VERSION).client(mOkHttpClient).
-                        build().create(ApiClientImpl.class);
+                .baseUrl(URLs.API_VERSION).client(mOkHttpClient)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build().create(ApiClientImpl.class);
     }
 
     public static ApiClientImpl getApi() {

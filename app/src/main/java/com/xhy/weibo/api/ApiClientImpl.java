@@ -10,12 +10,16 @@ import com.xhy.weibo.model.StatusGroup;
 import com.xhy.weibo.model.User;
 
 import java.util.List;
+import java.util.Map;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Field;
+import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 /**
  * Created by xuhaoyang on 16/7/19.
@@ -39,6 +43,21 @@ public interface ApiClientImpl {
                                    @Field("username") String username,
                                    @Field("userid") int userId,
                                    @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SET_USERINFO)
+    Call<Result> setUserinfo(@Field("uid") int uid,
+                             @Field("username") String username,
+                             @Field("truename") String truename,
+                             @Field("sex") String sex,
+                             @Field("intro") String intro,
+                             @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SET_USERINFO)
+    Observable<Result> setUserinfoRx(@Field("uid") int uid,
+                                     @FieldMap Map<String, String> maps,
+                                     @Field("token") String token);
 
     @FormUrlEncoded
     @POST(URLs.WEIBO_GET_GROUP)

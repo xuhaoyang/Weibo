@@ -15,6 +15,16 @@ public class User {
     private int mutual;//对方关注我
     private int followed;//我关注了对方
     private long uptime;//数据库更新/插入时间戳
+    private String truename;
+    private String sex;
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
 
     @Override
     public String toString() {
@@ -31,6 +41,14 @@ public class User {
         sb.append(", uptime=").append(uptime);
         sb.append('}');
         return sb.toString();
+    }
+
+    public String getTruename() {
+        return truename;
+    }
+
+    public void setTruename(String truename) {
+        this.truename = truename;
     }
 
     public long getUptime() {

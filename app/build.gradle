@@ -56,6 +56,7 @@ dependencies {
 
     compile rootProject.ext.dependencies["rxjava"]
     compile rootProject.ext.dependencies["rxandroid"]
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
 
 
     //框架工具

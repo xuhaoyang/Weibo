@@ -21,9 +21,9 @@ allprojects {
         maven {
             url "http://maven.bughd.com/public"
         }
-        maven{
-            url "https://dl.bintray.com/xuhaoyang/maven"
-        }
+//        maven{
+//            url "https://dl.bintray.com/xuhaoyang/maven"
+//        }
 
     }
 }
