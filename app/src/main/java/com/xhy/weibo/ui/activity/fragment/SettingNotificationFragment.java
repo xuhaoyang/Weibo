@@ -21,6 +21,7 @@ import com.xhy.weibo.model.DialogData;
 import com.xhy.weibo.model.Item;
 import com.xhy.weibo.model.Setting;
 import com.xhy.weibo.ui.base.ListFragment;
+import com.xhy.weibo.ui.interfaces.SaveDatas;
 import com.xhy.weibo.ui.vh.SettingHeadViewHolder;
 import com.xhy.weibo.ui.vh.SettingItemViewHolder;
 import com.xhy.weibo.utils.RecycleViewDivider;
@@ -32,8 +33,9 @@ import hk.xhy.android.common.ui.vh.OnListItemClickListener;
 import hk.xhy.android.common.ui.vh.ViewHolder;
 import hk.xhy.android.common.utils.ConstUtils;
 import hk.xhy.android.common.utils.ConvertUtils;
-import hk.xhy.android.common.utils.ErrorUtils;
-import hk.xhy.android.common.utils.TimeUtils;
+import hk.xhy.android.common.utils.FragmentUtils;
+import hk.xhy.android.common.utils.LogUtils;
+import hk.xhy.android.common.utils.ObjectUtils;
 import hk.xhy.android.common.utils.ViewUtils;
 import hk.xhy.android.common.widget.PullToRefreshMode;
 
@@ -41,7 +43,8 @@ import hk.xhy.android.common.widget.PullToRefreshMode;
  * Created by xuhaoyang on 2017/3/9.
  */
 
-public class SettingNotificationFragment extends ListFragment<ViewHolder, Setting, List<Setting>, FrameLayout> implements OnListItemClickListener {
+public class SettingNotificationFragment extends ListFragment<ViewHolder, Setting, List<Setting>, FrameLayout>
+        implements OnListItemClickListener, FragmentUtils.OnBackClickListener {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -155,7 +158,7 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         final int[] intervalItemValue = getResources().getIntArray(R.array.dialog_content_item_notification_interval_values);
         intervalData.setItems(new ArrayList<Item<Integer>>() {{
             for (int i = 0; i < intervalItem.length; i++) {
-                add(new Item(0, intervalItem[i], intervalItemValue[i]));
+                add(new Item(i, intervalItem[i], intervalItemValue[i]));
             }
         }});
         interval.setId(3);
@@ -163,7 +166,7 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         interval.setConfig(Setting.ITEM_TWICE);
         interval.setFunctionConfig(Setting.FUNCTION_ITEM_DIALOG);
         interval.setMainHead(getString(R.string.title_item_notification_interval));
-        interval.setSubHead(TimeUtils.milliseconds2Unit(AppConfig.getNotificaitonInterval(), ConstUtils.MIN) + "分钟");
+        interval.setSubHead(AppConfig.getNotificaitonInterval() / ConstUtils.MIN + " " + getString(R.string.content_minute));
         interval.setDialogData(intervalData);
 
         settings.add(interval);
@@ -183,12 +186,12 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
     @Override
     public void onLoadError(Exception e) {
         super.onLoadError(e);
-        ErrorUtils.show(getmActivity(), e);
+        LogUtils.e(e);
     }
 
     @Override
     public int getItemViewType(int position) {
-        Setting setting = getItemsSource().get(position);
+        final Setting setting = getItemsSource().get(position);
         return setting.getConfig();
     }
 
@@ -255,12 +258,31 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
                     final Item item = items.get(i);
                     final RadioButton rb = new RadioButton(context);
                     rb.setText(item.getName());
+
+
                     final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
                     layoutParams.setMargins(layout_px_16, 0, 0, layout_px_16);
                     rb.setLayoutParams(layoutParams);
                     rb.setTextSize(16f);
                     radioGroup.addView(rb);
+                }
+
+                //判断当前是不是设置选项
+                for (int i = 0; i < items.size(); i++) {
+                    final Item item = items.get(i);
+                    try {
+                        LogUtils.v(item.getValue());
+                        LogUtils.v(AppConfig.getNotificaitonInterval());
+                        if (ObjectUtils.compare(item.getValue(), Integer.parseInt(AppConfig.getNotificaitonInterval() + "") / ConstUtils.MIN) == 0) {
+                            final RadioButton childAt = (RadioButton) radioGroup.getChildAt(i);
+                            childAt.setChecked(true);
+
+                        }
+                    } catch (Exception e) {
+                        LogUtils.e(e);
+                    }
+
                 }
 
                 linearLayout.addView(radioGroup);
@@ -309,8 +331,9 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
 
     }
 
-    public interface SaveDatas<T extends Object> {
-        void save(T value);
+    @Override
+    public boolean onBackClick() {
+        return false;
     }
 
 }

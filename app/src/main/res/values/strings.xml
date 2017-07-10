@@ -76,7 +76,10 @@
         <item>-1</item>
     </string-array>
 
-
+    <string-array name="dialog_content_item_sex">
+        <item>男</item>
+        <item>女</item>
+    </string-array>
     <string-array name="dialog_content_item_notification_interval">
         <item>2 minutes</item>
         <item>5 minutes</item>
@@ -125,4 +128,13 @@
     <string name="title_item_donotdisturb_mode_content">Do not notify me between 1AM-8AM</string>
     <string name="title_item_regular_settings">Regular settings</string>
     <string name="title_item_notification_interval">Notification interval</string>
+    <string name="content_minute">minutes</string>
+    <string name="title_item_user_settings">User</string>
+    <string name="title_item_nickname">nick name</string>
+    <string name="title_item_truename">real name</string>
+    <string name="title_item_sex">gender</string>
+    <string name="title_item_intro">intro</string>
+    <string name="content_ok">OK</string>
+    <string name="content_cancel">cancel</string>
+    <string name="content_please_input">please input</string>
 </resources>

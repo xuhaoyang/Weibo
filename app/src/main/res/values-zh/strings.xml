@@ -35,4 +35,13 @@
         <item>30分钟</item>
         <item>1小时</item>
     </string-array>
+    <string name="content_minute">分钟</string>
+    <string name="title_item_user_settings">用户设置</string>
+    <string name="title_item_nickname">昵称</string>
+    <string name="title_item_truename">真实姓名</string>
+    <string name="title_item_sex">性别</string>
+    <string name="title_item_intro">介绍</string>
+    <string name="content_cancel">取消</string>
+    <string name="content_ok">确定</string>
+    <string name="content_please_input">请输入</string>
 </resources>

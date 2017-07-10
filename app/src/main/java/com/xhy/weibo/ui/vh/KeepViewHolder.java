@@ -118,7 +118,7 @@ public class KeepViewHolder extends ViewHolder {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(ScreenUtils.getScreenHeight(itemView.getContext()) / 2);
+            itemView.setTranslationY(ScreenUtils.getScreenHeight() / 2);
             itemView.animate()
                     .translationY(0)
 //                    .setStartDelay(100 * position)
