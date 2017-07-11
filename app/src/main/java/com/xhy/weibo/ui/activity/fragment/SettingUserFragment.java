@@ -251,79 +251,50 @@ public class SettingUserFragment extends ListFragment<ViewHolder, Setting, List<
     public void OnListItemClick(int postion) {
         final Setting setting = getItemsSource().get(postion);
         final int id = setting.getId();
-        switch (id) {
-            case 1:
-            case 2:
-            case 4:
-                showDialog(getmActivity(), setting, new SaveDatas<String>() {
-                    @Override
-                    public void save(final String value) {
+        showDialog(getmActivity(), setting, new SaveDatas<String>() {
+            @Override
+            public void save(final String value) {
 
-                        ApiClient.getApi().setUserinfoRx(AppConfig.getUserId(), new HashMap<String, String>() {{
-                            String name = null;
-                            switch (id) {
-                                case 1:
-                                    name = "username";
-                                    break;
-                                case 2:
-                                    name = "truename";
-                                    break;
-                                case 4:
-                                    name = "intro";
-                                    break;
+                ApiClient.getApi().setUserinfoRx(AppConfig.getUserId(), new HashMap<String, String>() {{
+                    String name = null;
+                    switch (id) {
+                        case 1:
+                            name = "username";
+                            break;
+                        case 2:
+                            name = "truename";
+                            break;
+                        case 3:
+                            name = "sex";
+                            break;
+                        case 4:
+                            name = "intro";
+                            break;
+                    }
+                    put(name, value);
+
+                }}, AppConfig.getAccessToken().getToken())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Result>() {
+                            @Override
+                            public void accept(@NonNull Result result) throws Exception {
+                                ToastUtils.showShort(result.getMsg());
+                                if (result.isSuccess()) {
+                                    onRefresh();
+                                }
                             }
-                            put(name, value);
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                ToastUtils.showShort(throwable.getLocalizedMessage());
+                                LogUtils.e(throwable);
+                            }
+                        });
+            }
+        });
 
-                        }}, AppConfig.getAccessToken().getToken())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Consumer<Result>() {
-                                    @Override
-                                    public void accept(@NonNull Result result) throws Exception {
-                                        ToastUtils.showShort(result.getMsg());
-                                        if (result.isSuccess()) {
-                                            onRefresh();
-                                        }
-                                    }
-                                }, new Consumer<Throwable>() {
-                                    @Override
-                                    public void accept(@NonNull Throwable throwable) throws Exception {
-                                        ToastUtils.showShort(throwable.getLocalizedMessage());
-                                        LogUtils.e(throwable);
-                                    }
-                                });
-                    }
-                });
 
-                break;
-
-            case 3:
-                showDialog(getmActivity(), setting, new SaveDatas<String>() {
-                    @Override
-                    public void save(String value) {
-                        UserLoginLogic.setUserinfo(AppConfig.getUserId(), null, null, value,
-                                null, AppConfig.getAccessToken().getToken(), new UserLoginLogic.SetUserinfoCallBack() {
-                                    @Override
-                                    public void onUserInfoSuccess(String message) {
-                                        ToastUtils.showShort(message);
-                                        onRefresh();
-                                    }
-
-                                    @Override
-                                    public void onUserInfoFailure(String message) {
-                                        ToastUtils.showShort(message);
-
-                                    }
-
-                                    @Override
-                                    public void onUserInfoError(Throwable error) {
-                                        LogUtils.e(error);
-                                    }
-                                });
-                    }
-                });
-                break;
-        }
     }
 
     @Override
