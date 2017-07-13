@@ -140,14 +140,14 @@ public class StatusViewHolder extends ViewHolder {
                 iv_ic_like.setImageResource(R.drawable.ic_like_empty);
             }
 
-            tv_subhead.setText(model.getUsername());
+            tv_subhead.setText(model.getUserinfo().getUsername());
             tv_caption.setText(DateUtils.getShotTime(model.getTime()));
 
             //显示头像
-            if (TextUtils.isEmpty(model.getFace())) {
+            if (TextUtils.isEmpty(model.getUserinfo().getFace50())) {
                 iv_avatar.setImageResource(R.drawable.user_avatar);
             } else {
-                String url = URLs.AVATAR_IMG_URL + model.getFace();
+                String url = URLs.AVATAR_IMG_URL + model.getUserinfo().getFace50();
                 Glide.with(iv_avatar.getContext()).load(url).
                         fitCenter().into(iv_avatar);
             }
@@ -166,18 +166,18 @@ public class StatusViewHolder extends ViewHolder {
             final Status forward_status = model.getStatus();
             if (forward_status != null) {
                 tv_retweeted_content
-                        .setText(StringUtils.getWeiboContent(context, tv_retweeted_content, "@" + forward_status.getUsername() + ": " + forward_status.getContent()));
+                        .setText(StringUtils.getWeiboContent(context, tv_retweeted_content, "@" + forward_status.getUserinfo().getUsername() + ": " + forward_status.getContent()));
                 include_forward_status.setVisibility(View.VISIBLE);
-                if (!TextUtils.isEmpty(forward_status.getMedium())) {
+                if (forward_status.getPicture() != null) {
                     include_status_image_forward.setVisibility(View.VISIBLE);
                     iv_image_forward.setVisibility(View.VISIBLE);
-                    String url = URLs.PIC_URL + forward_status.getMedium();
+                    String url = URLs.PIC_URL + forward_status.getPicture().getMedium();
                     setImage(iv_image_forward, url);
                     iv_image_forward.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(context, ViewPicActivity.class);
-                            intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + forward_status.getMax());
+                            intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + forward_status.getPicture().getMax());
                             context.startActivity(intent);
                         }
                     });
@@ -202,9 +202,9 @@ public class StatusViewHolder extends ViewHolder {
             }
 
             //带图片的微博
-            if (!TextUtils.isEmpty(model.getMedium())) {
+            if (model.getPicture() != null) {
 
-                String url = URLs.PIC_URL + model.getMedium();
+                String url = URLs.PIC_URL + model.getPicture().getMedium();
                 setImage(iv_image, url);
                 include_status_image.setVisibility(View.VISIBLE);
                 iv_image.setVisibility(View.VISIBLE);
@@ -217,7 +217,7 @@ public class StatusViewHolder extends ViewHolder {
                     @Override
                     public void onClick(View v) {
                         ActivityUtils.startActivityByContext(context, ViewPicActivity.class, new HashMap<String, Object>() {{
-                            put(ViewPicActivity.PIC_URL, URLs.PIC_URL + model.getMax());
+                            put(ViewPicActivity.PIC_URL, URLs.PIC_URL + model.getPicture().getMax());
                         }});
                     }
                 });

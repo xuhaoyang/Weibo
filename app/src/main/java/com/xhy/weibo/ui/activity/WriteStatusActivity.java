@@ -432,7 +432,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 int inStatusId = 0;
                 String content = commentStr;
                 if (inStatus != null) {
-                    content = content + "//@" + status.getUsername() + ":" + status.getContent();
+                    content = content + "//@" + status.getUserinfo().getUsername() + ":" + status.getContent();
                     inStatusId = inStatus.getId();
                 }
 

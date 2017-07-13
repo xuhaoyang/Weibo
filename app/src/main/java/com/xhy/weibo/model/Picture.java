@@ -3,7 +3,7 @@ package com.xhy.weibo.model;
 /**
  * Created by xuhaoyang on 16/5/31.
  */
-public class Picture {
+public class Picture extends Model{
 
     private int id;
     private int wid;//微博的id

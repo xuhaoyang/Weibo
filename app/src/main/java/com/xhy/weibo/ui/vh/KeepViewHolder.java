@@ -69,10 +69,10 @@ public class KeepViewHolder extends ViewHolder {
             runEnterAnimation(this.itemView, getAdapterPosition());
 
             //设置头像
-            if (TextUtils.isEmpty(model.getFace())) {
+            if (TextUtils.isEmpty(model.getUserinfo().getFace50())) {
                 iv_avatar.setImageResource(R.drawable.user_avatar);
             } else {
-                String url = URLs.AVATAR_IMG_URL + model.getFace();
+                String url = URLs.AVATAR_IMG_URL + model.getUserinfo().getFace50();
                 Glide.with(iv_avatar.getContext()).load(url).error(R.drawable.user_avatar).
                         fitCenter().into(iv_avatar);
             }
@@ -88,7 +88,7 @@ public class KeepViewHolder extends ViewHolder {
             });
 
             //设置用户名
-            tv_subhead.setText(model.getUsername());
+            tv_subhead.setText(model.getUserinfo().getUsername());
             //设置时间
             tv_caption.setText(DateUtils.getShotTime(model.getTime()));
             //设置正文
