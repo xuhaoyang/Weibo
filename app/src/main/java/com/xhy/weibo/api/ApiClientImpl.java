@@ -38,6 +38,12 @@ public interface ApiClientImpl {
                           @Field("uname") String uname);
 
     @FormUrlEncoded
+    @POST(URLs.WEIBO_CHANGE_PASSWORD)
+    Observable<Result> changePassword(@FieldMap Map<String, String> maps,
+                                @Field("token") String uname);
+
+
+    @FormUrlEncoded
     @POST(URLs.WEIBO_GET_USERINFO)
     Call<Result<User>> getUserinfo(@Field("uid") int uid,
                                    @Field("username") String username,

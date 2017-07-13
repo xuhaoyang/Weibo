@@ -5,6 +5,8 @@ package com.xhy.weibo.model;
  */
 public class Picture {
 
+    private int id;
+    private int wid;//微博的id
     private String max;
     private String medium;
     private String mini;
@@ -41,5 +43,21 @@ public class Picture {
 
     public void setMini(String mini) {
         this.mini = mini;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getWid() {
+        return wid;
+    }
+
+    public void setWid(int wid) {
+        this.wid = wid;
     }
 }

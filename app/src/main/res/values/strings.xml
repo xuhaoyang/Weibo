@@ -137,4 +137,8 @@
     <string name="content_ok">OK</string>
     <string name="content_cancel">cancel</string>
     <string name="content_please_input">please input</string>
+    <string name="title_item_change_the_password">Change the password</string>
+    <string name="content_old_password">Old password</string>
+    <string name="content_new_password">New password</string>
+    <string name="content_confirm_password">Confirm password</string>
 </resources>

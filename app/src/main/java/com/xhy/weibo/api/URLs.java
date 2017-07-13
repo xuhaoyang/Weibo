@@ -26,6 +26,10 @@ public interface URLs {
     String WEIBO_GET_USERINFO = API_VERSION + "getUserInfo.html";
     String WEIBO_SET_USERINFO = API_VERSION + "setUserInfo.html";
 
+    //用户修改密码
+    String WEIBO_CHANGE_PASSWORD = API_VERSION+ "changePwd.html";
+
+
 
     //微博添加收藏
     String WEIBO_ADD_KEEP = API_VERSION + "keepWeibo.html";

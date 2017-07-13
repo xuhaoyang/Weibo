@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.method.PasswordTransformationMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -20,12 +22,14 @@ import android.widget.TextView;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.DialogData;
 import com.xhy.weibo.model.Item;
+import com.xhy.weibo.model.Login;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Setting;
 import com.xhy.weibo.model.User;
+import com.xhy.weibo.ui.activity.LoginActivity;
+import com.xhy.weibo.ui.activity.MainActivity;
 import com.xhy.weibo.ui.base.ListFragment;
 import com.xhy.weibo.ui.interfaces.SaveDatas;
 import com.xhy.weibo.ui.vh.SettingHeadViewHolder;
@@ -35,10 +39,13 @@ import com.xhy.weibo.utils.RecycleViewDivider;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import hk.xhy.android.common.ui.vh.OnListItemClickListener;
 import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
 import hk.xhy.android.common.utils.ConstUtils;
 import hk.xhy.android.common.utils.ConvertUtils;
 import hk.xhy.android.common.utils.LogUtils;
@@ -47,18 +54,11 @@ import hk.xhy.android.common.utils.ToastUtils;
 import hk.xhy.android.common.utils.ViewUtils;
 import hk.xhy.android.common.widget.PullToRefreshMode;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
-
-import static android.R.attr.value;
 
 /**
  * Created by xuhaoyang on 2017/7/10.
@@ -172,6 +172,9 @@ public class SettingUserFragment extends ListFragment<ViewHolder, Setting, List<
         username.setFunctionConfig(Setting.FUNCTION_ITEM_DIALOG);
         DialogData usernameData = new DialogData();
         usernameData.setConfig(DialogData.TEXT);
+        usernameData.setItems(new ArrayList<Item>() {{
+            add(new Item(0, getString(R.string.content_please_input), "username", 0));
+        }});
         username.setDialogData(usernameData);
         settings.add(username);
 
@@ -185,6 +188,10 @@ public class SettingUserFragment extends ListFragment<ViewHolder, Setting, List<
         truename.setFunctionConfig(Setting.FUNCTION_ITEM_DIALOG);
         DialogData truenameData = new DialogData();
         truenameData.setConfig(DialogData.TEXT);
+        truenameData.setItems(new ArrayList<Item>() {{
+            add(new Item(0, getString(R.string.content_please_input), "truename", 0));
+
+        }});
         truename.setDialogData(truenameData);
         settings.add(truename);
 
@@ -200,7 +207,7 @@ public class SettingUserFragment extends ListFragment<ViewHolder, Setting, List<
         final String[] sexarr = getResources().getStringArray(R.array.dialog_content_item_sex);
         sexData.setItems(new ArrayList<Item>() {{
             for (int i = 0; i < sexarr.length; i++) {
-                add(new Item(i, sexarr[i], sexarr[i]));
+                add(new Item(i, sexarr[i], "sex"));
             }
         }});
         sexData.setConfig(DialogData.RAIDO);
@@ -217,11 +224,32 @@ public class SettingUserFragment extends ListFragment<ViewHolder, Setting, List<
         intro.setFunctionConfig(Setting.FUNCTION_ITEM_DIALOG);
         DialogData introData = new DialogData();
         introData.setConfig(DialogData.TEXT);
+        introData.setItems(new ArrayList<Item>() {{
+            add(new Item(0, getString(R.string.content_please_input), "intro", 0));
+        }});
         intro.setDialogData(introData);
         settings.add(intro);
 
 
         // 地点
+
+        // 密码
+        Setting password = new Setting();
+        password.setId(6);
+        password.setWeight(6);
+        password.setConfig(Setting.ITEM_SINGLE);
+        password.setMainHead(getString(R.string.title_item_change_the_password));
+        password.setFunctionConfig(Setting.FUNCTION_ITEM_DIALOG);
+        DialogData<String> passwordData = new DialogData<>();
+        passwordData.setConfig(DialogData.TEXT);
+        passwordData.setItems(new ArrayList<Item<String>>() {{
+            add(new Item<String>(0, getString(R.string.content_old_password), "old_pwd", 0));
+            add(new Item<String>(1, getString(R.string.content_new_password), "new_pwd", 1));
+            add(new Item<String>(2, getString(R.string.content_confirm_password), "confirm_pwd", 2));
+
+        }});
+        password.setDialogData(passwordData);
+        settings.add(password);
 
         return settings;
 
@@ -250,47 +278,75 @@ public class SettingUserFragment extends ListFragment<ViewHolder, Setting, List<
     @Override
     public void OnListItemClick(int postion) {
         final Setting setting = getItemsSource().get(postion);
+
         final int id = setting.getId();
-        showDialog(getmActivity(), setting, new SaveDatas<String>() {
+        showDialog(getmActivity(), setting, new SaveDatas<HashMap<String, String>>() {
             @Override
-            public void save(final String value) {
+            public void save(final HashMap<String, String> value) {
 
-                ApiClient.getApi().setUserinfoRx(AppConfig.getUserId(), new HashMap<String, String>() {{
-                    String name = null;
-                    switch (id) {
-                        case 1:
-                            name = "username";
-                            break;
-                        case 2:
-                            name = "truename";
-                            break;
-                        case 3:
-                            name = "sex";
-                            break;
-                        case 4:
-                            name = "intro";
-                            break;
-                    }
-                    put(name, value);
+                switch (id) {
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                        ApiClient.getApi().setUserinfoRx(AppConfig.getUserId(), new HashMap<String, String>() {{
+                            final Iterator<Entry<String, String>> iterator = value.entrySet().iterator();
+                            while (iterator.hasNext()) {
+                                final Entry<String, String> next = iterator.next();
+                                put(next.getKey(), next.getValue());
+                            }
+                        }}, AppConfig.getAccessToken().getToken())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<Result>() {
+                                    @Override
+                                    public void accept(@NonNull Result result) throws Exception {
+                                        ToastUtils.showShort(result.getMsg());
+                                        if (result.isSuccess()) {
+                                            onRefresh();
+                                        }
+                                    }
+                                }, new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(@NonNull Throwable throwable) throws Exception {
+                                        ToastUtils.showShort(throwable.getLocalizedMessage());
+                                        LogUtils.e(throwable);
+                                    }
+                                });
+                        break;
+                    case 6:
+                        ApiClient.getApi().changePassword(new HashMap<String, String>() {{
+                            final Iterator<Entry<String, String>> iterator = value.entrySet().iterator();
+                            while (iterator.hasNext()) {
+                                final Entry<String, String> next = iterator.next();
+                                put(next.getKey(), next.getValue());
+                            }
+                        }}, AppConfig.getAccessToken().getToken())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<Result>() {
+                                    @Override
+                                    public void accept(@NonNull Result result) throws Exception {
+                                        ToastUtils.showShort(result.getMsg());
+                                        if (result.isSuccess()) {
+                                            onRefresh();
+                                            Login.setCurrentLoginUser(null);
+                                            AppConfig.setAccount(null);
+                                            AppConfig.setPassword(null);
+                                            ActivityUtils.goHome(getmActivity(), LoginActivity.class);
+                                        }
+                                    }
+                                }, new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(@NonNull Throwable throwable) throws Exception {
+                                        ToastUtils.showShort(throwable.getLocalizedMessage());
+                                        LogUtils.e(throwable);
+                                    }
+                                });
 
-                }}, AppConfig.getAccessToken().getToken())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<Result>() {
-                            @Override
-                            public void accept(@NonNull Result result) throws Exception {
-                                ToastUtils.showShort(result.getMsg());
-                                if (result.isSuccess()) {
-                                    onRefresh();
-                                }
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(@NonNull Throwable throwable) throws Exception {
-                                ToastUtils.showShort(throwable.getLocalizedMessage());
-                                LogUtils.e(throwable);
-                            }
-                        });
+                }
+
+
             }
         });
 
@@ -313,39 +369,65 @@ public class SettingUserFragment extends ListFragment<ViewHolder, Setting, List<
 
             case DialogData.TEXT:
 
+                final HashMap<String, EditText> editTextTempMap = new HashMap<>();
+
                 linearLayout.setLayoutParams(
                         new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
                 linearLayout.setPadding(layout_px_16, layout_px_16, layout_px_16, layout_px_16);
 
-                final LinearLayout lin2 = new LinearLayout(context);
-                lin2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                lin2.setOrientation(LinearLayout.HORIZONTAL);
+                if (setting.getDialogData().getItems() == null) {
+                    return;
+                }
+
+                final ArrayList<Item<String>> tempList = setting.getDialogData().getItems();
+                for (int i = 0; i < tempList.size(); i++) {
+                    //子视图
+                    final LinearLayout lin2 = new LinearLayout(context);
+                    lin2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    lin2.setOrientation(LinearLayout.HORIZONTAL);
 
 
-                final TextView textView = new TextView(context);
-                final EditText editText = new EditText(context);
+                    final TextView textView = new TextView(context);
+                    final EditText editText = new EditText(context);
 
-                final LinearLayout.LayoutParams tvParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                final LinearLayout.LayoutParams edParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    editTextTempMap.put(tempList.get(i).getValue(), editText);
 
-                tvParams.setMargins(layout_px_8, layout_px_8, layout_px_8, layout_px_8);
-                edParams.setMargins(layout_px_8, layout_px_8, layout_px_8, layout_px_8);
+                    if (tempList.get(i).getValue().contains("pwd")) {
+                        editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    }
 
-                textView.setLayoutParams(tvParams);
-                editText.setLayoutParams(edParams);
 
-                textView.setText(getString(R.string.content_please_input) + setting.getMainHead());
-                lin2.addView(textView);
-                lin2.addView(editText);
+                    final LinearLayout.LayoutParams tvParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    final LinearLayout.LayoutParams edParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                linearLayout.addView(lin2);
+                    tvParams.setMargins(layout_px_8, layout_px_8, layout_px_8, layout_px_8);
+                    edParams.setMargins(layout_px_8, layout_px_8, layout_px_8, layout_px_8);
+
+                    textView.setLayoutParams(tvParams);
+                    editText.setLayoutParams(edParams);
+
+                    textView.setText(tempList.get(i).getName());
+                    lin2.addView(textView);
+                    lin2.addView(editText);
+
+                    linearLayout.addView(lin2);
+
+                }
+
 
                 builder.setTitle(setting.getMainHead());
                 builder.setPositiveButton(R.string.content_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        callBack.save(editText.getText().toString());
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        final Iterator<Map.Entry<String, EditText>> iterator = editTextTempMap.entrySet().iterator();
+                        while (iterator.hasNext()) {
+
+                            final Map.Entry<String, EditText> next = iterator.next();
+                            map.put(next.getKey(), next.getValue().getText().toString());
+                        }
+                        callBack.save(map);
                     }
                 });
                 builder.setCancelable(true);
@@ -418,7 +500,10 @@ public class SettingUserFragment extends ListFragment<ViewHolder, Setting, List<
                                     final Item item = items.get(j);
                                     final String name = item.getName();
                                     if (name != null && name.equals(rd.getText().toString())) {
-                                        callBack.save(item.getValue());
+
+                                        callBack.save(new HashMap<String, String>() {{
+                                            put((String) item.getValue(), item.getName());
+                                        }});
                                     }
                                 }
                             }

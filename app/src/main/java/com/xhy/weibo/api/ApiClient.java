@@ -66,7 +66,7 @@ public class ApiClient {
                 .addInterceptor(httpLoggingInterceptor)
                 .retryOnConnectionFailure(true)//错误重连
                 .connectTimeout(10, TimeUnit.SECONDS)//设置超时时间
-                .readTimeout(10, TimeUnit.SECONDS)//设置读取超时时间
+                .readTimeout(10, TimeUnit.SECONDS)//设置读取超时时间a
                 .writeTimeout(10, TimeUnit.SECONDS);//设置写入超时时间
 //        int cacheSize = 10 * 1024 * 1024; // 10 MiB
 //        Cache cache = new Cache(.getContext().getCacheDir(), cacheSize);

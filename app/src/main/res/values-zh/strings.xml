@@ -44,4 +44,7 @@
     <string name="content_cancel">取消</string>
     <string name="content_ok">确定</string>
     <string name="content_please_input">请输入</string>
+    <string name="content_old_password">旧密码</string>
+    <string name="content_new_password">新密码</string>
+    <string name="content_confirm_password">确认密码</string>
 </resources>
