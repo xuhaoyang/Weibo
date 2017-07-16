@@ -47,4 +47,6 @@
     <string name="content_old_password">旧密码</string>
     <string name="content_new_password">新密码</string>
     <string name="content_confirm_password">确认密码</string>
+    <string name="content_location_positioning">正在定位</string>
+    <string name="content_location_fail">定位失败</string>
 </resources>

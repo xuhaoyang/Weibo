@@ -18,6 +18,7 @@ import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.logic.StatusLogic;
+import com.xhy.weibo.model.Map;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.ui.activity.StatusDetailActivity;
@@ -100,6 +101,11 @@ public class StatusViewHolder extends ViewHolder {
     public ImageView iv_ic_forward;
     @ViewById(R.id.tv_forward)
     public TextView tv_forward;
+
+    @ViewById(R.id.ll_location)
+    public LinearLayout ll_location;
+    @ViewById(R.id.tv_location)
+    public TextView tv_location;
 
     private boolean animateItems = false;
     private int lastAnimatedPosition = -1;
@@ -225,6 +231,15 @@ public class StatusViewHolder extends ViewHolder {
             } else {
                 include_status_image.setVisibility(View.GONE);
                 iv_image.setVisibility(View.GONE);
+            }
+
+            //地图信息
+            if (model.getMaps() != null) {
+                Map maps = model.getMaps();
+                ll_location.setVisibility(View.VISIBLE);
+                tv_location.setText(maps.getName());
+            }else {
+                ll_location.setVisibility(View.GONE);
             }
 
             //item范围的跳转

@@ -3,8 +3,7 @@
     android:id="@+id/cv_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    >
+    android:layout_marginBottom="8dp">
 
     <LinearLayout
         android:id="@+id/ll_content"
@@ -21,8 +20,7 @@
             style="@style/TextViewBody"
             android:layout_width="match_parent"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            />
+            android:paddingRight="16dp" />
 
         <!--图片-->
         <include
@@ -35,6 +33,29 @@
             android:id="@+id/include_forward_status"
             layout="@layout/include_forward_status"
             android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/ll_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp"
+            android:paddingRight="16dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_location" />
+
+            <TextView
+                android:id="@+id/tv_location"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:textColor="@color/txt_location_blue"
+                android:textSize="12dp" />
+        </LinearLayout>
 
         <include layout="@layout/include_bottom_btn" />
     </LinearLayout>

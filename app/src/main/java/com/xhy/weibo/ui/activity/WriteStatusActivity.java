@@ -1,5 +1,6 @@
 package com.xhy.weibo.ui.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,13 +27,26 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.amap.api.services.core.AMapException;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.core.PoiItem;
+import com.amap.api.services.poisearch.PoiResult;
+import com.amap.api.services.poisearch.PoiSearch;
 import com.google.gson.Gson;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.adapter.EmotionGvAdapter;
 import com.xhy.weibo.adapter.EmotionPagerAdapter;
 import com.xhy.weibo.adapter.WriteStatusGridImgsAdapter;
+import com.xhy.weibo.api.ApiClient;
+import com.xhy.weibo.model.Map;
 import com.xhy.weibo.ui.base.BaseActivity;
 import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Picture;
@@ -42,6 +57,7 @@ import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.api.ImageUpload;
 import com.xhy.weibo.api.NetParams;
+import com.xhy.weibo.utils.AmapUtils;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.EmotionUtils;
 import com.xhy.weibo.utils.ImageUtils;
@@ -51,16 +67,26 @@ import com.xhy.weibo.ui.widget.WrapHeightGridView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import hk.xhy.android.common.utils.ActivityUtils;
 import hk.xhy.android.common.utils.ConvertUtils;
+import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.utils.LogUtils;
 import hk.xhy.android.common.utils.ScreenUtils;
+import hk.xhy.android.common.utils.ToastUtils;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 
-public class WriteStatusActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class WriteStatusActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener, AMapLocationListener, PoiSearch.OnPoiSearchListener {
 
 
     public static final int REQUEST_CODE_AT_USERNAME = 201;
@@ -80,6 +106,13 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
     ImageButton new_trend;
     @BindView(R.id.new_send)
     ImageButton new_send;
+    @BindView(R.id.new_location)
+    ImageButton new_location;
+
+    @BindView(R.id.tv_location)
+    TextView tv_location;
+    @BindView(R.id.ll_location)
+    LinearLayout ll_location;
 
     @BindView(R.id.new_edit)
     EditText new_edit;
@@ -113,6 +146,13 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
     private WriteStatusGridImgsAdapter statusImgsAdapter;
     private EmotionPagerAdapter emotionPagerGvAdapter;
     private InputMethodManager inputMethodManager;
+
+    private AMapLocationClient locationClient = null;
+    private AMapLocationClientOption option = null;
+    private Map maps = null;
+
+    private PoiSearch.Query query;
+    private PoiSearch poiSearch;
 
 
     @Override
@@ -156,6 +196,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         }
                         getSupportActionBar().setTitle("发表评论");
                         new_take_photo.setVisibility(View.GONE);
+                        new_location.setVisibility(View.VISIBLE);
                         break;
                     //来自评论列表的回复[获得是Comment信息]
                     case Constants.COMMENT_ADPATER_CODE:
@@ -172,11 +213,13 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         original = "@" + comment.getUsername() + ": " + comment.getContent();
                         new_edit.setHint(original);
                         new_take_photo.setVisibility(View.GONE);
+                        new_location.setVisibility(View.VISIBLE);
                         break;
                 }
                 break;
             case Constants.FORWARD_TYPE:
                 new_take_photo.setVisibility(View.GONE);
+                new_location.setVisibility(View.VISIBLE);
                 Object val = getIntent().getSerializableExtra(Constants.STATUS_INTENT);
 
                 if (val instanceof String) {//前者如果不是序列化来的数据,会未空
@@ -281,6 +324,9 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
         new_friend.setOnClickListener(this);
         new_emotion.setOnClickListener(this);
         new_take_photo.setOnClickListener(this);
+        new_location.setOnClickListener(this);
+
+        ll_location.setOnClickListener(this);
     }
 
 
@@ -317,7 +363,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                         public void run() {
                             picture = pictureReciver.getInfo();
                             mDialog.dismiss();
-                            sendComment();
+                            sendMessage();
                         }
                     }).sendToTarget();
 
@@ -336,7 +382,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
     }
 
-    private void sendComment() {
+    private void sendMessage() {
         String commentStr = new_edit.getText().toString();
         if (TextUtils.isEmpty(commentStr)) {
             showToast("内容不能为空");
@@ -349,7 +395,6 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
         //转发?评论
         switch (type) {
             case Constants.COMMENT_TYPE:
-                String url = null;
                 //父级微博id
                 int pWid = 0;
                 CommentLogic.SetCommentCallBack callBack = new CommentLogic.SetCommentCallBack() {
@@ -461,7 +506,43 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 break;
             case Constants.NEW_STATUS_TYPE:
 
+
                 final String new_content = commentStr;
+
+                final Status weibo = new Status();
+                weibo.setContent(new_content);
+                weibo.setUid(AppConfig.getUserId());
+                weibo.setPicture(picture);
+                weibo.setMaps(maps);
+
+                LogUtils.v(weibo.toJSONString());
+
+
+                ApiClient.getApi().sendWeibo(RequestBody.create(MediaType.parse("charset=utf-8"), weibo.toJSONString()), new HashMap<String, String>() {{
+                    put("token", AppConfig.getAccessToken().getToken());
+                }}).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Result>() {
+                            @Override
+                            public void accept(@NonNull Result result) throws Exception {
+                                ToastUtils.showShort(result.getMsg());
+                                LogUtils.v(GsonUtil.toJson(result));
+                                if (result.isSuccess()) {
+                                    Intent data = new Intent();
+                                    data.putExtra(Constants.SEND_STATUS_SUCCESS, true);
+                                    setResult(RESULT_OK, data);
+                                    ActivityUtils.finishActivity();
+                                }
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                ToastUtils.showShort(throwable.getLocalizedMessage());
+                                LogUtils.e(throwable);
+
+                            }
+                        });
+/*
                 StatusLogic.SendWeiboCallBack sendWeiboCallBack = new StatusLogic.SendWeiboCallBack() {
                     @Override
                     public void onSendSuccess(Result result) {
@@ -490,7 +571,9 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 } else {
                     StatusLogic.sendWeibo(AppConfig.getUserId(), new_content, AppConfig.getAccessToken().getToken()
                             , null, null, null, sendWeiboCallBack);
-                }
+                }*/
+
+
                 break;
             default:
                 break;
@@ -506,13 +589,25 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 if (imgUris.size() > 0) {
                     sendImage(imgUris.get(0));
                 } else {
-                    sendComment();
+                    sendMessage();
                 }
                 break;
             case R.id.new_take_photo:
-                if (imgUris.size() == 0) {
-                    ImageUtils.showImagePickDialog(this);
-                }
+                RxPermissions read = new RxPermissions(this);
+                read.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+                        if (granted) {
+                            if (imgUris.size() == 0) {
+                                ImageUtils.showImagePickDialog(WriteStatusActivity.this);
+                            }
+                        } else {
+                            ToastUtils.showShort("没有权限！");
+                        }
+
+                    }
+                });
+
                 break;
             case R.id.new_emotion:
                 if (ll_emotion_dashboard.getVisibility() == View.VISIBLE) {
@@ -538,6 +633,39 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
             case R.id.new_friend:
                 Intent data = new Intent(this, AtActivity.class);
                 startActivityForResult(data, REQUEST_CODE_AT_USERNAME);
+                break;
+            case R.id.new_location:
+
+                RxPermissions rxPermissions = new RxPermissions(this);
+                rxPermissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        .subscribe(new Consumer<Boolean>() {
+                            @Override
+                            public void accept(@NonNull Boolean granted) throws Exception {
+                                if (granted) {
+                                    option = AmapUtils.getDefaultOption();
+                                    option.setOnceLocation(true);
+                                    option.setOnceLocation(true);
+                                    //初始化client
+                                    locationClient = new AMapLocationClient(WriteStatusActivity.this.getApplicationContext());
+                                    //设置定位参数
+                                    locationClient.setLocationOption(option);
+                                    // 设置定位监听
+                                    locationClient.setLocationListener(WriteStatusActivity.this);
+                                    locationClient.startLocation();
+                                    showProgressDialog(R.string.content_location_positioning);
+
+                                } else {
+                                    ToastUtils.showShort("没有权限");
+                                }
+                            }
+                        });
+
+
+                break;
+            case R.id.ll_location:
+                ll_location.setVisibility(View.GONE);
+                tv_location.setText(null);
+                maps = null;
                 break;
         }
     }
@@ -623,5 +751,94 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
     private void showSnackbar(String msg, int length) {
         Snackbar.make(mCoordinatorLayout, msg, length).show();
+    }
+
+    @Override
+    public void onLocationChanged(AMapLocation location) {
+        if (null != location) {
+
+            StringBuffer sb = new StringBuffer();
+            //errCode等于0代表定位成功，其他的为定位失败，具体的可以参照官网定位错误码说明
+            if (location.getErrorCode() == 0) {
+                sb.append("定位成功" + "\n");
+                sb.append("定位类型: " + location.getLocationType() + "\n");
+                sb.append("经    度    : " + location.getLongitude() + "\n");
+                sb.append("纬    度    : " + location.getLatitude() + "\n");
+                sb.append("精    度    : " + location.getAccuracy() + "米" + "\n");
+                sb.append("提供者    : " + location.getProvider() + "\n");
+
+                sb.append("速    度    : " + location.getSpeed() + "米/秒" + "\n");
+                sb.append("角    度    : " + location.getBearing() + "\n");
+                // 获取当前提供定位服务的卫星个数
+                sb.append("星    数    : " + location.getSatellites() + "\n");
+                sb.append("国    家    : " + location.getCountry() + "\n");
+                sb.append("省            : " + location.getProvince() + "\n");
+                sb.append("市            : " + location.getCity() + "\n");
+                sb.append("城市编码 : " + location.getCityCode() + "\n");
+                sb.append("区            : " + location.getDistrict() + "\n");
+                sb.append("区域 码   : " + location.getAdCode() + "\n");
+                sb.append("地    址    : " + location.getAddress() + "\n");
+                sb.append("兴趣点    : " + location.getPoiName() + "\n");
+            } else {
+                //定位失败
+                sb.append("定位失败" + "\n");
+                sb.append("错误码:" + location.getErrorCode() + "\n");
+                sb.append("错误信息:" + location.getErrorInfo() + "\n");
+                sb.append("错误描述:" + location.getLocationDetail() + "\n");
+            }
+            LogUtils.v(sb.toString());
+            if (maps == null) {
+                maps = new Map();
+            }
+            maps.setLatitude(location.getLatitude());
+            maps.setLongitude(location.getLongitude());
+            maps.setName(location.getPoiName());
+
+            query = new PoiSearch.Query("", "", "");// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
+            query.setPageSize(20);// 设置每页最多返回多少条poiitem
+            query.setPageNum(1);// 设置查第一页
+            poiSearch = new PoiSearch(this, query);
+            poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(location.getLatitude(), location.getLongitude()), 1000));
+            poiSearch.setOnPoiSearchListener(this);
+            poiSearch.searchPOIAsyn();// 异步搜索
+            dismissProgressDialog();
+        }
+
+    }
+
+    @Override
+    public void onPoiSearched(PoiResult result, int rcode) {
+        if (rcode == AMapException.CODE_AMAP_SUCCESS) {
+            if (result != null && result.getQuery() != null) {// 搜索poi的结果
+                if (result.getQuery().equals(query)) {// 是否是同一条
+                    final ArrayList<PoiItem> pois = result.getPois();
+                    if (pois != null && pois.size() > 0) {
+                        final PoiItem poiItem = pois.get(0);
+                        maps.setAddress(poiItem.getSnippet());
+                        maps.setName(poiItem.getTitle());
+                        maps.setCitycode(poiItem.getCityCode());
+                        maps.setCityname(poiItem.getCityName());
+                        tv_location.setText(maps.getName());
+                        ll_location.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+        } else {
+            //查询失败
+            if (!TextUtils.isEmpty(maps.getName())) {
+                tv_location.setText(maps.getName());
+                ll_location.setVisibility(View.VISIBLE);
+            } else {
+                ToastUtils.showShort(R.string.content_location_fail);
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onPoiItemSearched(PoiItem poiItem, int i) {
+
     }
 }

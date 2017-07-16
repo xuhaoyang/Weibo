@@ -13,10 +13,14 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.HeaderMap;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
@@ -40,7 +44,7 @@ public interface ApiClientImpl {
     @FormUrlEncoded
     @POST(URLs.WEIBO_CHANGE_PASSWORD)
     Observable<Result> changePassword(@FieldMap Map<String, String> maps,
-                                @Field("token") String uname);
+                                      @Field("token") String uname);
 
 
     @FormUrlEncoded
@@ -113,6 +117,11 @@ public interface ApiClientImpl {
                            @Field("mini") String picMini,
                            @Field("medium") String picMedium,
                            @Field("max") String picMax);
+
+    @Headers("Content-Type: application/json")
+    @POST(URLs.WEIBO_SEND_WEIBO_FROM_JSON)
+    Observable<Result> sendWeibo(@Body RequestBody body,
+                                 @HeaderMap Map<String, String> headers);
 
     @FormUrlEncoded
     @POST(URLs.WEIBO_TURN_WEIBO)
