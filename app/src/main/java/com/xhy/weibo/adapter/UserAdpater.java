@@ -24,6 +24,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.common.utils.ActivityUtils;
 
 /**
  * Created by xuhaoyang on 16/5/16.
@@ -111,7 +112,8 @@ public class UserAdpater extends RecyclerView.Adapter {
                             Intent data = new Intent();
                             data.putExtra(Constants.RESULT_DATA_USERNAME_AT, "@" + user.getUsername()+" ");
                             ((BaseActivity) mContext).setResult(Activity.RESULT_OK, data);
-                            ((BaseActivity) mContext).finish();
+//                            ((BaseActivity) mContext).finish();
+                            ActivityUtils.finishActivity();
                         }
                     };
                     break;

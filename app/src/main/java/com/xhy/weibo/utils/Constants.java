@@ -60,4 +60,11 @@ public class Constants {
     public static final String SETTING_ITEM_CONTENT = "setting_item_content";
 
 
+    //jpush
+    public static final String EXTRA_JPUSH_MESSAGE = "extra_jpush_message";
+
+
+    //WebView
+    public static final String EXTRA_URL = "extra_url";
+    public static final String EXTRA_TITLE = "extra_browser";
 }

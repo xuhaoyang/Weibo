@@ -27,6 +27,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.common.utils.ActivityUtils;
 
 public class AtActivity extends BaseActivity implements UserLoginLogic.GetUserFollowListCallBack {
 
@@ -67,7 +68,7 @@ public class AtActivity extends BaseActivity implements UserLoginLogic.GetUserFo
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                ActivityUtils.finishActivity();
             }
         });
 
