@@ -477,7 +477,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                 int inStatusId = 0;
                 String content = commentStr;
                 if (inStatus != null) {
-                    content = content + "//@" + status.getUserinfo().getUsername() + ":" + status.getContent();
+                    content = content + "//@" + status.getUserinfo().getUsername() + " :" + status.getContent();
                     inStatusId = inStatus.getId();
                 }
 
@@ -517,7 +517,6 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
 
                 LogUtils.v(weibo.toJSONString());
 
-
                 ApiClient.getApi().sendWeibo(RequestBody.create(MediaType.parse("charset=utf-8"), weibo.toJSONString()), new HashMap<String, String>() {{
                     put("token", AppConfig.getAccessToken().getToken());
                 }}).subscribeOn(Schedulers.io())
@@ -532,6 +531,7 @@ public class WriteStatusActivity extends BaseActivity implements View.OnClickLis
                                     data.putExtra(Constants.SEND_STATUS_SUCCESS, true);
                                     setResult(RESULT_OK, data);
                                     ActivityUtils.finishActivity();
+                                    WriteStatusActivity.this.finish();
                                 }
                             }
                         }, new Consumer<Throwable>() {
