@@ -6,6 +6,7 @@ import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.BuildConfig;
 import com.xhy.weibo.db.DBManager;
 
+import cn.jpush.android.api.JPushInterface;
 import hk.xhy.android.common.utils.CrashUtils;
 import hk.xhy.android.common.utils.LogUtils;
 
@@ -29,6 +30,9 @@ public class BaseApplication extends hk.xhy.android.common.Application {
 
         initLog();
         initCrash();
+
+        JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
+        JPushInterface.init(this);     		// 初始化 JPush
     }
 
     public static void initLog() {
@@ -41,7 +45,7 @@ public class BaseApplication extends hk.xhy.android.common.Application {
                 .setLogHeadSwitch(true)// 设置log头信息开关，默认为开
                 .setLog2FileSwitch(false)// 打印log时是否存到文件的开关，默认关
                 .setDir("")// 当自定义路径为空时，写入应用的/cache/log/目录中
-                .setBorderSwitch(true)// 输出日志是否带边框开关，默认开
+                .setBorderSwitch(false)// 输出日志是否带边框开关，默认开
                 .setConsoleFilter(LogUtils.V)// log的控制台过滤器，和logcat过滤器同理，默认Verbose
                 .setFileFilter(LogUtils.V);// log文件过滤器，和logcat过滤器同理，默认Verbose
         LogUtils.d(builder.toString());

@@ -30,8 +30,15 @@ import com.xhy.weibo.logic.UserLoginLogic;
 import com.xhy.weibo.model.Login;
 import com.xhy.weibo.ui.base.BaseActivity;
 
+import cn.jpush.android.api.JPushInterface;
 import hk.xhy.android.common.bind.ViewById;
 import hk.xhy.android.common.utils.ActivityUtils;
+
+import com.xhy.weibo.utils.TagAliasOperatorHelper.TagAliasBean;
+
+import org.greenrobot.eventbus.EventBus;
+
+import static com.xhy.weibo.utils.TagAliasOperatorHelper.ACTION_GET;
 
 
 /**
@@ -58,6 +65,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
     private UserDB userDB;
     private View focusView;
 
+    private static int sequence = 1;
+    private String mAlias;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,6 +91,15 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
 
         userDB = new UserDB(this);
 
+        //注册EventBus
+        EventBus.getDefault().register(this);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     private void attemptLogin() {
@@ -148,6 +167,19 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
             //保存当前用户登录信息
             Login.setCurrentLoginUser(login);
 
+            //查看
+            if (JPushInterface.isPushStopped(getApplicationContext())) {
+                //TODO regid和alias 看有没有在开启推送
+            }
+
+            String registrationID = JPushInterface.getRegistrationID(getApplicationContext());
+            TagAliasBean tagAliasBean = new TagAliasBean();
+            tagAliasBean.setAction(ACTION_GET);
+            tagAliasBean.setAliasAction(true);
+            sequence++;
+            TagAliasOperatorHelper.getInstance().handleAction(getApplicationContext(), sequence, tagAliasBean);
+
+
             ActivityUtils.goHome(this, StartActivty.class);
             finish();
         } else {
@@ -188,7 +220,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
                 } else {
                     ActivityOptionsCompat compat = ActivityOptionsCompat
                             .makeSceneTransitionAnimation(this, fab, getString(R.string.tr_fab_name));
-                    startActivity(new Intent(this, RegisterActivity.class), compat.toBundle());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        startActivity(new Intent(this, RegisterActivity.class), compat.toBundle());
+                    }
                 }
                 break;
             case R.id.bt_go:
