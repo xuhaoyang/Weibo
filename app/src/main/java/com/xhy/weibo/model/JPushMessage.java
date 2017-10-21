@@ -7,6 +7,7 @@ package com.xhy.weibo.model;
 public class JPushMessage {
     private String type;
     private String msg;
+    private String title;
 
 
     public String getType() {
@@ -25,4 +26,11 @@ public class JPushMessage {
         this.msg = msg;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

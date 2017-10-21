@@ -155,6 +155,7 @@
 
         <!-- JPush End -->
 
+        <activity android:name=".ui.activity.BrowserActivity"/>
 
         <activity
             android:name=".ui.activity.MainActivity"
@@ -191,7 +192,9 @@
         <activity
             android:name=".ui.activity.NotifyActivity"
             android:label="@string/title_activity_notify"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".ui.activity.MainActivity"
+            />
         <activity
             android:name=".ui.activity.AtActivity"
             android:label="@string/title_activity_at"

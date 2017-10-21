@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,12 +34,17 @@ import com.xhy.weibo.ui.base.BaseActivity;
 import cn.jpush.android.api.JPushInterface;
 import hk.xhy.android.common.bind.ViewById;
 import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.EncryptUtils;
+import hk.xhy.android.common.utils.LogUtils;
 
-import com.xhy.weibo.utils.TagAliasOperatorHelper.TagAliasBean;
+import com.xhy.weibo.utils.JPushTagAliasUtils;
+import com.xhy.weibo.utils.JPushTagAliasUtils.TagAliasModel;
 
 import org.greenrobot.eventbus.EventBus;
 
-import static com.xhy.weibo.utils.TagAliasOperatorHelper.ACTION_GET;
+import static com.xhy.weibo.utils.JPushTagAliasUtils.ACTION_ADD;
+import static com.xhy.weibo.utils.JPushTagAliasUtils.ACTION_GET;
+import static com.xhy.weibo.utils.JPushTagAliasUtils.ACTION_SET;
 
 
 /**
@@ -92,15 +98,16 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
         userDB = new UserDB(this);
 
         //注册EventBus
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+//        EventBus.getDefault().unregister(this);
     }
+
 
     private void attemptLogin() {
 
@@ -168,16 +175,21 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
             Login.setCurrentLoginUser(login);
 
             //查看
-            if (JPushInterface.isPushStopped(getApplicationContext())) {
+            if (!JPushInterface.isPushStopped(getApplicationContext())) {
+                LogUtils.d("极光推送开启推送！！！");
                 //TODO regid和alias 看有没有在开启推送
             }
 
             String registrationID = JPushInterface.getRegistrationID(getApplicationContext());
-            TagAliasBean tagAliasBean = new TagAliasBean();
-            tagAliasBean.setAction(ACTION_GET);
+            LogUtils.d("JPUSH regID: " + registrationID);
+            TagAliasModel tagAliasBean = new TagAliasModel();
+            tagAliasBean.setAction(ACTION_SET);
             tagAliasBean.setAliasAction(true);
+            // 简化开发
+            //EncryptUtils.encryptMD5ToString(Integer.toString(login.getId()).getBytes())
+            tagAliasBean.setAlias(login.getAccount());
             sequence++;
-            TagAliasOperatorHelper.getInstance().handleAction(getApplicationContext(), sequence, tagAliasBean);
+            JPushTagAliasUtils.getIntstance().handleAction(getApplicationContext(), sequence, tagAliasBean);
 
 
             ActivityUtils.goHome(this, StartActivty.class);

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Set;
 
+import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.JPushMessage;
 import hk.xhy.android.common.utils.LogUtils;
 import hk.xhy.android.common.utils.NetworkUtils;
@@ -114,6 +115,60 @@ public class JPushTagAliasUtils {
             }
         }
     };
+    /**
+     * 处理设置tag
+     * */
+    public void handleAction(Context context,int sequence, TagAliasModel tagAliasModel){
+        init(context);
+        if(tagAliasModel == null){
+            LogUtils.w(TAG,"tagAliasBean was null");
+            return;
+        }
+        put(sequence,tagAliasModel);
+        if(tagAliasModel.isAliasAction){
+            switch (tagAliasModel.action){
+                case ACTION_GET:
+                    JPushInterface.getAlias(context,sequence);
+                    break;
+                case ACTION_DELETE:
+                    JPushInterface.deleteAlias(context,sequence);
+                    break;
+                case ACTION_SET:
+                    JPushInterface.setAlias(context,sequence,tagAliasModel.alias);
+                    break;
+                default:
+                    LogUtils.w(TAG,"unsupport alias action type");
+                    return;
+            }
+        }else {
+            switch (tagAliasModel.action) {
+                case ACTION_ADD:
+                    JPushInterface.addTags(context, sequence, tagAliasModel.tags);
+                    break;
+                case ACTION_SET:
+                    JPushInterface.setTags(context, sequence, tagAliasModel.tags);
+                    break;
+                case ACTION_DELETE:
+                    JPushInterface.deleteTags(context, sequence, tagAliasModel.tags);
+                    break;
+                case ACTION_CHECK:
+                    //一次只能check一个tag
+                    String tag = (String)tagAliasModel.tags.toArray()[0];
+                    JPushInterface.checkTagBindState(context,sequence,tag);
+                    break;
+                case ACTION_GET:
+                    JPushInterface.getAllTags(context, sequence);
+                    break;
+                case ACTION_CLEAN:
+                    JPushInterface.cleanTags(context, sequence);
+                    break;
+                default:
+                    LogUtils.w(TAG,"unsupport tag action type");
+                    return;
+            }
+        }
+    }
+
 
     public void onTagOperatorResult(Context context, JPushMessage jPushMessage) {
         int sequence = jPushMessage.getSequence();

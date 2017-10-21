@@ -62,9 +62,12 @@ import hk.xhy.android.common.ui.vh.OnListItemClickListener;
 import hk.xhy.android.common.ui.vh.ViewHolder;
 import hk.xhy.android.common.utils.ActivityUtils;
 import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.utils.LogUtils;
 import hk.xhy.android.common.widget.PullToRefreshMode;
 import hk.xhy.android.common.widget.Toaster;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<Status>>>
         implements NavigationView.OnNavigationItemSelectedListener, StatusLogic.GetStatusGroupCallBack, UserLoginLogic.GetUserinfoCallBack, OnListItemClickListener, PushMessage<Status> {
@@ -131,7 +134,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     @Override
     protected void onStart() {
         super.onStart();
-        initUserinfo();
+//        initUserinfo();
     }
 
     private void init() {
@@ -533,9 +536,27 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
                 onRefresh();
                 break;
             case SETTING_LOGOUT_ITEMID://注销登录
+                ApiClient.getApi().clearRegistrationID(AppConfig.getAccessToken()
+                        .getToken()).enqueue(new Callback<Result>() {
+                    @Override
+                    public void onResponse(Call<Result> call, Response<Result> response) {
+                        if (response.isSuccessful()) {
+                            LogUtils.d(response.body().getMsg());
+                        } else {
+                            LogUtils.w("ErrorCode:" + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result> call, Throwable t) {
+                        LogUtils.w(t);
+                    }
+                });
+
                 Login.setCurrentLoginUser(null);
                 AppConfig.setAccount(null);
                 AppConfig.setPassword(null);
+                //注销服务器的regid
                 ActivityUtils.goHome(MainActivity.this, LoginActivity.class);
                 break;
             default:

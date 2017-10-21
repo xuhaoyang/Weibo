@@ -91,4 +91,8 @@ public interface URLs {
     //消息推送
     String WEIBO_GET_MSG = API_VERSION + "getMsg.html";
     String WEIBO_SET_MSG = API_VERSION + "setMsg.html";
+
+    //RegistrationID
+    String WEIBO_SET_REGISTRATIONID = "setRegistrationID.html";
+    String WEIBO_CLEAR_REGISTRATIONID = "clearRegistrationID.html";
 }

@@ -24,6 +24,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
+import retrofit2.http.Url;
 
 /**
  * Created by xuhaoyang on 16/7/19.
@@ -53,6 +54,16 @@ public interface ApiClientImpl {
                                    @Field("username") String username,
                                    @Field("userid") int userId,
                                    @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SET_REGISTRATIONID)
+    Call<Result> setRegistrationID(@Field("regid") String regid,
+                                   @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_CLEAR_REGISTRATIONID)
+    Call<Result> clearRegistrationID(@Field("token") String token);
+
 
     @FormUrlEncoded
     @POST(URLs.WEIBO_SET_USERINFO)

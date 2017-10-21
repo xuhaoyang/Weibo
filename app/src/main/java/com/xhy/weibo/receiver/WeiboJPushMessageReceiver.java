@@ -13,6 +13,8 @@ import cn.jpush.android.service.JPushMessageReceiver;
 
 public class WeiboJPushMessageReceiver extends JPushMessageReceiver {
 
+
+
     @Override
     public void onTagOperatorResult(Context context, JPushMessage jPushMessage) {
         JPushTagAliasUtils.getIntstance().onTagOperatorResult(context, jPushMessage);
@@ -28,6 +30,7 @@ public class WeiboJPushMessageReceiver extends JPushMessageReceiver {
     @Override
     public void onAliasOperatorResult(Context context, JPushMessage jPushMessage) {
         JPushTagAliasUtils.getIntstance().onAliasOperatorResult(context, jPushMessage);
+
         super.onAliasOperatorResult(context, jPushMessage);
     }
 }
