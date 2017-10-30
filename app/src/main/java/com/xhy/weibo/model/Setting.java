@@ -14,7 +14,7 @@ public class Setting extends Model {
     public static final int ITEM_TWICE = 1003;//双层菜单
 
     public static final int FUNCTION_ITEM_DIALOG = 1101;//弹出窗口菜单
-    public static final int FUNCTION_ITEM_OPTIONS = 1102;
+    public static final int FUNCTION_ITEM_OPTIONS = 1102;//跳转新的页面
 
     private static final String CHECKBOX = "CB";
     private int id;

@@ -25,10 +25,12 @@ import com.xhy.weibo.ui.interfaces.SaveDatas;
 import com.xhy.weibo.ui.vh.SettingHeadViewHolder;
 import com.xhy.weibo.ui.vh.SettingItemViewHolder;
 import com.xhy.weibo.utils.RecycleViewDivider;
+import com.xhy.weibo.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
 import hk.xhy.android.common.ui.vh.OnListItemClickListener;
 import hk.xhy.android.common.ui.vh.ViewHolder;
 import hk.xhy.android.common.utils.ConstUtils;
@@ -132,6 +134,9 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         head.setMainHead(getString(R.string.title_item_regular_settings));
         settings.add(head);
 
+        /**
+         * 开启通知
+         */
         Setting notify = new Setting();
         notify.setId(1);
         notify.setWeight(1);
@@ -140,6 +145,9 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         notify.setMainHead(getString(R.string.title_item_notifications));
         settings.add(notify);
 
+        /**
+         * 免打扰
+         */
         Setting notify2 = new Setting();
         notify2.setId(2);
         notify2.setWeight(2);
@@ -150,6 +158,9 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         settings.add(notify2);
 
 
+        /**
+         * 推送时间
+         */
         final Setting interval = new Setting();
         DialogData<Integer> intervalData = new DialogData();
         intervalData.setConfig(DialogData.RAIDO);
@@ -168,9 +179,39 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         interval.setMainHead(getString(R.string.title_item_notification_interval));
         interval.setSubHead(AppConfig.getNotificaitonInterval() / ConstUtils.MIN + " " + getString(R.string.content_minute));
         interval.setDialogData(intervalData);
-
         settings.add(interval);
 
+
+        /**
+         * 推送方式
+         * 自建 极光
+         */
+
+
+        final Setting mode = new Setting();
+        DialogData<Integer> modeDialogData = new DialogData<>();
+        modeDialogData.setItems(new ArrayList<Item<Integer>>() {{
+            add(new Item<Integer>(0, getString(R.string.dialog_content_name_ourpush), 0, 0));
+            add(new Item<Integer>(1, getString(R.string.dialog_content_name_jpush), 1, 1));
+        }});
+        modeDialogData.setId(0);
+
+        modeDialogData.setConfig(DialogData.RAIDO);
+        mode.setWeight(4);
+        mode.setId(4);
+        mode.setConfig(Setting.ITEM_TWICE);
+        mode.setFunctionConfig(Setting.FUNCTION_ITEM_DIALOG);
+        mode.setMainHead(getString(R.string.title_item_notification_mode));
+        switch (AppConfig.getNotifyMode()) {
+            case 0:
+                mode.setSubHead(getString(R.string.dialog_content_name_ourpush));
+                break;
+            case 1:
+                mode.setSubHead(getString(R.string.dialog_content_name_jpush));
+                break;
+        }
+        mode.setDialogData(modeDialogData);
+        settings.add(mode);
         return settings;
 
     }
@@ -201,6 +242,7 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         final int id = setting.getId();
         switch (id) {
             case 1:
+                //TODO 开启关闭推送 要做
                 if (AppConfig.isNotify()) {
                     AppConfig.setNotify(false);
                 } else {
@@ -208,6 +250,7 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
                 }
                 break;
             case 2:
+                //TODO 极光推送和自建推送做维护
                 if (AppConfig.getDoNotDisturb()) {
                     AppConfig.setDoNotDisturb(false);
                 } else {
@@ -216,11 +259,49 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
 
                 break;
             case 3:
-                showDialog(getmActivity(), setting, new SaveDatas<Integer>() {
+                showDialog(getmActivity(), setting, (Integer.parseInt(AppConfig.getNotificaitonInterval() + "") / ConstUtils.MIN), new SaveDatas<Integer>() {
                     @Override
                     public void save(Integer value) {
                         AppConfig.setNotificationInterval(value);
                         restartLoader();//刷新界面
+                    }
+                });
+                break;
+
+            case 4:
+                showDialog(getmActivity(), setting, AppConfig.getNotifyMode(), new SaveDatas<Integer>() {
+                    @Override
+                    public void save(Integer value) {
+                        AppConfig.setNotifyMode(value);
+
+                        //判断是否开启推送
+                        if (AppConfig.isNotify()) {
+                            switch (value) {
+                                case 0:
+                                    //自带
+
+                                    //关闭极光推送
+                                    if (!JPushInterface.isPushStopped(getmActivity().getApplicationContext())) {
+                                        JPushInterface.stopPush(getmActivity().getApplicationContext());
+                                    }
+                                    //开启自带推送
+                                    //TODO 应该不用TOKEN传入了
+                                    getmActivity().startService(Utils.getPushServiceIntent());
+
+                                    break;
+                                case 1:
+                                    //极光
+                                    //关闭另一个推送
+                                    getmActivity().stopService(Utils.getPushServiceIntent());
+                                    //开启极光推送
+                                    if (JPushInterface.isPushStopped(getmActivity().getApplicationContext())) {
+                                        JPushInterface.resumePush(getmActivity().getApplicationContext());
+                                    }
+                                    break;
+                            }
+                        }
+
+                        restartLoader();
                     }
                 });
                 break;
@@ -236,7 +317,7 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         restartLoader();
     }
 
-    public void showDialog(final Context context, final Setting setting, final SaveDatas callBack) {
+    public void showDialog(final Context context, final Setting setting, final int settingValue, final SaveDatas callBack) {
 
         switch (setting.getDialogData().getConfig()) {
             case DialogData.RAIDO:
@@ -274,7 +355,10 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
                     try {
                         LogUtils.v(item.getValue());
                         LogUtils.v(AppConfig.getNotificaitonInterval());
-                        if (ObjectUtils.compare(item.getValue(), Integer.parseInt(AppConfig.getNotificaitonInterval() + "") / ConstUtils.MIN) == 0) {
+                        /**
+                         * Integer.parseInt(AppConfig.getNotificaitonInterval() + "") / ConstUtils.MIN
+                         */
+                        if (ObjectUtils.compare(item.getValue(), settingValue) == 0) {
                             final RadioButton childAt = (RadioButton) radioGroup.getChildAt(i);
                             childAt.setChecked(true);
 

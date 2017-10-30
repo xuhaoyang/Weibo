@@ -136,6 +136,23 @@ public class AppConfig extends PreferenceUtils {
     }
 
     /**
+     * 获得推送方式 自建/极推送
+     *
+     * @return
+     */
+    public static int getNotifyMode() {
+        return getInt("NotifyMode", 0);
+    }
+
+    /**
+     * 设置推送方式
+     * @param value 自建0/极光推送1
+     */
+    public static void setNotifyMode(int value) {
+        putInt("NotifyMode", value);
+    }
+
+    /**
      * 获取AccessToken
      *
      * @return

@@ -98,6 +98,8 @@
     </integer-array>
 
 
+
+
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
 
@@ -143,4 +145,7 @@
     <string name="content_confirm_password">Confirm password</string>
     <string name="content_location_positioning">Positioning</string>
     <string name="content_location_fail">Position fail</string>
+    <string name="dialog_content_name_ourpush">official Push</string>
+    <string name="dialog_content_name_jpush">JiGuang Push</string>
+    <string name="title_item_notification_mode">Push Service Mode</string>
 </resources>

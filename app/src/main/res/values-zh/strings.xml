@@ -49,4 +49,7 @@
     <string name="content_confirm_password">确认密码</string>
     <string name="content_location_positioning">正在定位</string>
     <string name="content_location_fail">定位失败</string>
+    <string name="dialog_content_name_ourpush">自建推送</string>
+    <string name="dialog_content_name_jpush">极光推送</string>
+    <string name="title_item_notification_mode">推送模式选择</string>
 </resources>
