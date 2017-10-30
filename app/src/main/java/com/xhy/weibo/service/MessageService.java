@@ -125,15 +125,7 @@ public class MessageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-//        CommonConstants.account = intent.getStringExtra("ACCOUNT");
-//        CommonConstants.password = intent.getStringExtra("PASSWORD");
-//        AppConfig.getUserId() = Integer.parseInt(intent.getStringExtra("USERID"));
-        String token = intent.getStringExtra("TOKEN");
-//        if (!TextUtils.isEmpty(CommonConstants.account) || !TextUtils.isEmpty(CommonConstants.password)) {
-        //刷新AccessToken
         AppConfig.getAccessToken();
-        AppConfig.getAccessToken().setToken(token);
-//        }
 
         builder = new NotificationCompat.Builder(this);
         //跳转到Activity

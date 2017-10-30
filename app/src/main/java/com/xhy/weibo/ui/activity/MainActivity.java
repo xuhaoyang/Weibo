@@ -49,6 +49,7 @@ import com.xhy.weibo.ui.vh.StatusViewHolder;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.ImageUtils;
 import com.xhy.weibo.utils.RecycleViewDivider;
+import com.xhy.weibo.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -122,7 +123,9 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         EventBus.getDefault().register(this);
+
         init();
+
     }
 
     @Override
@@ -134,7 +137,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
     @Override
     protected void onStart() {
         super.onStart();
-//        initUserinfo();
+        initUserinfo();
     }
 
     private void init() {
@@ -143,9 +146,8 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         initListener();
 
         //启动推送
-        Intent intent = new Intent(this, MessageService.class);
-        intent.putExtra("TOKEN", AppConfig.getAccessToken().getToken());
-        startService(intent);
+        Intent pushServiceIntent = Utils.getPushServiceIntent();
+        startService(pushServiceIntent);
 
     }
 
@@ -296,7 +298,8 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
 
 
     private void initUserinfo() {
-        initDB();
+
+       /** initDB();
         List<User> users = userDB.QueryUsers(db, "id=?", new String[]{AppConfig.getUserId() + ""});
         dbManager.closeDatabase();
         if (!users.isEmpty()) {
@@ -316,7 +319,9 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
 
         } else {
             UpdataUserinfo();
-        }
+        }*/
+        UpdataUserinfo();
+
     }
 
     private void UpdataUserinfo() {
@@ -364,6 +369,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
      */
     private void initNavigationMenu() {
         menu = navigationView.getMenu();
+
         //參數1:群組id, 參數2:itemId, 參數3:item順序, 參數4:item名稱
         menu.add(STATUS_GROUP, STATUS_GROUP_ITEMID, STATUS_GROUP_ITEMID, "全部");
 

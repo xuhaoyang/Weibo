@@ -210,7 +210,11 @@
             android:enabled="true"
             android:exported="true"
             android:label="消息推送"
-            android:process=":message" />
+            android:process=":message" >
+            <intent-filter>
+                <action android:name="com.xhy.weibo.intent.action.MessageService"/>
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".receiver.NotificationReceiver"
