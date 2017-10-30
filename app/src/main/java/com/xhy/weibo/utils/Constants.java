@@ -63,6 +63,8 @@ public class Constants {
     //jpush
     public static final String EXTRA_JPUSH_MESSAGE = "extra_jpush_message";
 
+    public static final String SERVICE_MESSAGE = "com.xhy.weibo.service.MessageService";
+
 
     //WebView
     public static final String EXTRA_URL = "extra_url";

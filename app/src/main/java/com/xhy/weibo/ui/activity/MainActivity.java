@@ -145,10 +145,6 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         initNavigationMenu();
         initListener();
 
-        //启动推送
-        Intent pushServiceIntent = Utils.getPushServiceIntent();
-        startService(pushServiceIntent);
-
     }
 
     private void initView() {

@@ -247,6 +247,7 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
                     AppConfig.setNotify(false);
                 } else {
                     AppConfig.setNotify(true);
+                    //开启推送
                 }
                 break;
             case 2:
@@ -274,32 +275,7 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
                     public void save(Integer value) {
                         AppConfig.setNotifyMode(value);
 
-                        //判断是否开启推送
-                        if (AppConfig.isNotify()) {
-                            switch (value) {
-                                case 0:
-                                    //自带
-
-                                    //关闭极光推送
-                                    if (!JPushInterface.isPushStopped(getmActivity().getApplicationContext())) {
-                                        JPushInterface.stopPush(getmActivity().getApplicationContext());
-                                    }
-                                    //开启自带推送
-                                    //TODO 应该不用TOKEN传入了
-                                    getmActivity().startService(Utils.getPushServiceIntent());
-
-                                    break;
-                                case 1:
-                                    //极光
-                                    //关闭另一个推送
-                                    getmActivity().stopService(Utils.getPushServiceIntent());
-                                    //开启极光推送
-                                    if (JPushInterface.isPushStopped(getmActivity().getApplicationContext())) {
-                                        JPushInterface.resumePush(getmActivity().getApplicationContext());
-                                    }
-                                    break;
-                            }
-                        }
+                        Utils.switchPushService(value, AppConfig.isNotify());
 
                         restartLoader();
                     }

@@ -12,6 +12,9 @@ import com.xhy.weibo.ui.base.BaseApplication;
 
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+import hk.xhy.android.common.utils.ServiceUtils;
+
 /**
  * Created by xuhaoyang on 16/5/12.
  */
@@ -45,6 +48,7 @@ public class Utils {
 
     /**
      * 隐式启动Service 5.0之后需要转成显式
+     *
      * @param context
      * @param implicitIntent
      * @return
@@ -68,4 +72,55 @@ public class Utils {
         explicitIntent.setComponent(component);
         return explicitIntent;
     }
+
+    /**
+     * 推送服务切换 关闭
+     * @param value 0自带/1极光推送
+     * @param on_off
+     */
+    public static void switchPushService(int value, boolean on_off) {
+        if (on_off) {
+            switch (value){
+                case 0:
+                    //自带
+
+                    //关闭极光推送
+                    if (!JPushInterface.isPushStopped(getContext().getApplicationContext())) {
+                        JPushInterface.stopPush(getContext().getApplicationContext());
+                    }
+                    //开启自带推送
+//                    getContext().startService(Utils.getPushServiceIntent());
+                    ServiceUtils.startService(Constants.SERVICE_MESSAGE);
+                    break;
+                case 1:
+                    //极光
+                    //关闭另一个推送
+//                    getmActivity().stopService(Utils.getPushServiceIntent());
+                    ServiceUtils.stopService(Constants.SERVICE_MESSAGE);
+
+                    //开启极光推送
+                    if (JPushInterface.isPushStopped(getContext().getApplicationContext())) {
+                        JPushInterface.resumePush(getContext().getApplicationContext());
+                    }
+                    break;
+
+            }
+        } else {
+            if (ServiceUtils.isServiceRunning(Constants.SERVICE_MESSAGE)) {
+                ServiceUtils.stopService(Constants.SERVICE_MESSAGE);
+            }
+            if (!JPushInterface.isPushStopped(getContext().getApplicationContext())) {
+                JPushInterface.stopPush(getContext().getApplicationContext());
+            }
+        }
+    }
+
+    /**
+     * 获取Context
+     * @return
+     */
+    public static Context getContext() {
+        return hk.xhy.android.common.utils.Utils.getContext();
+    }
+
 }

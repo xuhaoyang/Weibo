@@ -12,11 +12,13 @@ import com.xhy.weibo.model.Result;
 import com.xhy.weibo.ui.activity.LoginActivity;
 import com.xhy.weibo.ui.activity.MainActivity;
 import com.xhy.weibo.ui.base.StartUpActivity;
+import com.xhy.weibo.utils.Utils;
 
 import cn.jpush.android.api.JPushInterface;
 import hk.xhy.android.common.utils.ActivityUtils;
 import hk.xhy.android.common.utils.LogUtils;
 import hk.xhy.android.common.utils.Logger;
+import hk.xhy.android.common.utils.ServiceUtils;
 import hk.xhy.android.common.widget.Toaster;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,7 +70,6 @@ public class StartActivty extends StartUpActivity {
                     Login.setCurrentLoginUser(login);
 
 
-
                     //获得TOKEN 同时更新该用户UID
                     AppConfig.getAccessToken();
                 }
@@ -105,6 +106,10 @@ public class StartActivty extends StartUpActivity {
         Login currentLoginUser = Login.getCurrentLoginUser();
         if (currentLoginUser != null) {
             ActivityUtils.goHome(StartActivty.this, MainActivity.class);
+            LogUtils.d("是否开启推送: "+AppConfig.isNotify());
+            //推送管理
+            Utils.switchPushService(AppConfig.getNotifyMode(),AppConfig.isNotify());
+            //TODO 是否要管理已经登录状态下的REGID?
             finish();
         } else {
             ActivityUtils.goHome(StartActivty.this, LoginActivity.class);
