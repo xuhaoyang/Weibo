@@ -87,7 +87,7 @@ public class AppConfig extends PreferenceUtils {
      * @return
      */
     public static boolean isNotify() {
-        return getBoolean("isNotify", false);
+        return getBoolean("isNotify", true);
     }
 
     /**

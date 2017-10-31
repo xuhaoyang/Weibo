@@ -52,4 +52,5 @@
     <string name="dialog_content_name_ourpush">自建推送</string>
     <string name="dialog_content_name_jpush">极光推送</string>
     <string name="title_item_notification_mode">推送模式选择</string>
+    <string name="title_item_change_the_password">修改密码</string>
 </resources>

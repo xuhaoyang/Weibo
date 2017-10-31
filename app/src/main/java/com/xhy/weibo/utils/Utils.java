@@ -8,11 +8,13 @@ import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.ui.base.BaseApplication;
 
 import java.util.List;
 
 import cn.jpush.android.api.JPushInterface;
+import hk.xhy.android.common.utils.LogUtils;
 import hk.xhy.android.common.utils.ServiceUtils;
 
 /**
@@ -75,12 +77,24 @@ public class Utils {
 
     /**
      * 推送服务切换 关闭
-     * @param value 0自带/1极光推送
-     * @param on_off
+     *
+     * @param value    0自带/1极光推送
+     * @param on_off   是否开启推送
      */
     public static void switchPushService(int value, boolean on_off) {
+        switchPushService(value, on_off, false);
+    }
+
+    /**
+     * 推送服务切换 关闭
+     *
+     * @param value    0自带/1极光推送
+     * @param on_off   是否开启推送
+     * @param DND_flag 是否开启静默推送
+     */
+    public static void switchPushService(int value, boolean on_off, boolean DND_flag) {
         if (on_off) {
-            switch (value){
+            switch (value) {
                 case 0:
                     //自带
 
@@ -95,12 +109,12 @@ public class Utils {
                 case 1:
                     //极光
                     //关闭另一个推送
-//                    getmActivity().stopService(Utils.getPushServiceIntent());
                     ServiceUtils.stopService(Constants.SERVICE_MESSAGE);
 
                     //开启极光推送
                     if (JPushInterface.isPushStopped(getContext().getApplicationContext())) {
                         JPushInterface.resumePush(getContext().getApplicationContext());
+                        activateDoNotDisturbByJPush(DND_flag);
                     }
                     break;
 
@@ -116,7 +130,30 @@ public class Utils {
     }
 
     /**
+     * 极光推送 静默设置
+     *
+     * @param b
+     * @return
+     */
+    public static boolean activateDoNotDisturbByJPush(boolean b) {
+        boolean flag = true;
+
+        try {
+            if (b) {
+                JPushInterface.setSilenceTime(getContext().getApplicationContext(), 1, 0, 8, 0);
+            } else {
+                JPushInterface.setSilenceTime(getContext().getApplicationContext(), 0, 0, 0, 0);
+            }
+        } catch (Exception e) {
+            LogUtils.e(e);
+            flag = false;
+        }
+        return flag;
+    }
+
+    /**
      * 获取Context
+     *
      * @return
      */
     public static Context getContext() {

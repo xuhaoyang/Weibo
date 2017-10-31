@@ -22,6 +22,7 @@ import com.xhy.weibo.utils.Logger;
 
 import java.util.Calendar;
 
+import hk.xhy.android.common.utils.LogUtils;
 import hk.xhy.android.common.utils.TimeUtils;
 
 public class MessageService extends Service {
@@ -181,22 +182,14 @@ public class MessageService extends Service {
 
                     final int curHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
-                    Logger.show(TAG, "当前小时：" + curHour);
+                    //静默不推送
+                    LogUtils.d(TAG, "当前小时：" + curHour);
                     if (curHour >= 1 && curHour <= 8 && AppConfig.getDoNotDisturb()) {
                         isDND = true;
                     }
 
                     if (is && !isDND) {
                         Logger.show("MessageService", "开启了通知");
-//                        Intent data = new Intent();
-//                        data.setAction("com.xhy.weibo.UPDATE_TOKEN");
-//                        data.putExtra(AppConfig.KEEP_TOKEN, AppConfig.ACCESS_TOKEN.getToken());
-//                        data.putExtra(AppConfig.KEEP_TOKEN_START_TIME, AppConfig.ACCESS_TOKEN.getTokenStartTime());
-//                        //传递账户id比对是否是帐号
-//                        data.putExtra(AppConfig.KEEP_TOKEN_ACCOUNT, AppConfig.getAccount());
-//                        data.putExtra(AppConfig.KEEP_TOKEN_USER_ID, AppConfig.getUserId());
-//                        sendBroadcast(data);
-
                         PushMessageLogic.getMsg(getBaseContext(), AppConfig.getUserId(), AppConfig.getAccessToken().getToken(), new PushMessageLogic.GetMsgCallBack() {
                             @Override
                             public void onGetMsgSuccess(NotifyInfo info) {

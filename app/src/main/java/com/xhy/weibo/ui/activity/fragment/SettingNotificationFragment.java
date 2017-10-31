@@ -242,20 +242,30 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
         final int id = setting.getId();
         switch (id) {
             case 1:
-                //TODO 开启关闭推送 要做
                 if (AppConfig.isNotify()) {
                     AppConfig.setNotify(false);
+                    //关闭推送
+                    Utils.switchPushService(AppConfig.getNotifyMode(), false);
                 } else {
                     AppConfig.setNotify(true);
                     //开启推送
+                    Utils.switchPushService(AppConfig.getNotifyMode(), true);
                 }
                 break;
             case 2:
-                //TODO 极光推送和自建推送做维护
                 if (AppConfig.getDoNotDisturb()) {
                     AppConfig.setDoNotDisturb(false);
+
+                    Utils.switchPushService(AppConfig.getNotifyMode(),
+                            AppConfig.isNotify(), false);
+
+                    //关闭免打扰
                 } else {
                     AppConfig.setDoNotDisturb(true);
+                    Utils.switchPushService(AppConfig.getNotifyMode(),
+                            AppConfig.isNotify(), true);
+
+                    //开启面打扰
                 }
 
                 break;
@@ -264,6 +274,7 @@ public class SettingNotificationFragment extends ListFragment<ViewHolder, Settin
                     @Override
                     public void save(Integer value) {
                         AppConfig.setNotificationInterval(value);
+
                         restartLoader();//刷新界面
                     }
                 });

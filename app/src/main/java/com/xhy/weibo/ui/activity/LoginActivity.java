@@ -97,6 +97,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
 
         userDB = new UserDB(this);
 
+        //TODO 权限获取？
+        JPushInterface.requestPermission(getApplicationContext());
+
         //注册EventBus
 //        EventBus.getDefault().register(this);
 
@@ -174,6 +177,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
             //保存当前用户登录信息
             Login.setCurrentLoginUser(login);
 
+
+
+
             //查看
             if (!JPushInterface.isPushStopped(getApplicationContext())) {
                 LogUtils.d("极光推送开启推送！！！");
@@ -213,6 +219,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener, User
 
     @Override
     public void onLoginError(Throwable error) {
+        LogUtils.e(error);
         showProgress(false);
         etPassword.setError("错误,请稍后重试");
     }

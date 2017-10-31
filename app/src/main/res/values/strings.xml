@@ -131,7 +131,7 @@
     <string name="title_item_regular_settings">Regular settings</string>
     <string name="title_item_notification_interval">Notification interval</string>
     <string name="content_minute">minutes</string>
-    <string name="title_item_user_settings">User</string>
+    <strinchangeg name="title_item_user_settings">User</strinchangeg>
     <string name="title_item_nickname">nick name</string>
     <string name="title_item_truename">real name</string>
     <string name="title_item_sex">gender</string>
