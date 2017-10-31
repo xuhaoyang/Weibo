@@ -7,6 +7,9 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 
 import com.xhy.weibo.R;
+import com.xhy.weibo.api.ApiClient;
+import com.xhy.weibo.model.Hot;
+import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Setting;
 import com.xhy.weibo.ui.base.ListActivity;
 import com.xhy.weibo.ui.vh.SettingHeadViewHolder;
@@ -14,6 +17,7 @@ import com.xhy.weibo.ui.vh.SettingItemViewHolder;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +27,15 @@ import hk.xhy.android.common.ui.vh.OnListItemClickListener;
 import hk.xhy.android.common.ui.vh.ViewHolder;
 import hk.xhy.android.common.utils.ActivityUtils;
 import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.utils.LogUtils;
 import hk.xhy.android.common.utils.ViewUtils;
 import hk.xhy.android.common.widget.PullToRefreshMode;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Setting>> implements OnListItemClickListener {
+
+    public static final String TAG = SettingActivity.class.getSimpleName();
 
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
@@ -100,48 +109,63 @@ public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Sett
 
     @Override
     public List<Setting> onLoadInBackground() throws Exception {
-        List<Setting> settings = new ArrayList<>();
+        List<Setting> settings = null;
+        Call<Result<List<Setting>>> resultCall = ApiClient.getApi().getSettingList();
+        Result<List<Setting>> result = null;
+        try {
+            result = resultCall.execute().body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        Setting head = new Setting();
-        head.setId(0);
-        head.setWeight(0);
-        head.setConfig(Setting.ITEM_HEAD);
-        head.setMainHead("常规设置");
-        settings.add(head);
+        if (result.isSuccess()) {
+            settings = result.getInfo();
+            Setting.saveSettings(settings, TAG);
+        } else {
+            settings =Setting.loadSettings(TAG);
+            if (settings == null) {
+                Setting head = new Setting();
+                head.setId(0);
+                head.setWeight(0);
+                head.setConfig(Setting.ITEM_HEAD);
+                head.setMainHead("常规设置");
+                settings.add(head);
 
-        Setting notify = new Setting();
-        notify.setId(1);
-        notify.setWeight(1);
-        notify.setConfig(Setting.ITEM_SINGLE);
-        notify.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
-        notify.setMainHead("通知设置");
-        settings.add(notify);
+                Setting notify = new Setting();
+                notify.setId(1);
+                notify.setWeight(1);
+                notify.setConfig(Setting.ITEM_SINGLE);
+                notify.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
+                notify.setMainHead("通知设置");
+                settings.add(notify);
 
-        Setting userinfo = new Setting();
-        userinfo.setId(1);
-        userinfo.setWeight(1);
-        userinfo.setConfig(Setting.ITEM_SINGLE);
-        userinfo.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
-        userinfo.setMainHead("用户设置");
-        settings.add(userinfo);
+                Setting userinfo = new Setting();
+                userinfo.setId(1);
+                userinfo.setWeight(1);
+                userinfo.setConfig(Setting.ITEM_SINGLE);
+                userinfo.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
+                userinfo.setMainHead("用户设置");
+                settings.add(userinfo);
 
-        Setting feedback = new Setting();
-        feedback.setId(2);
-        feedback.setWeight(2);
-        feedback.setConfig(Setting.ITEM_SINGLE);
-        feedback.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
-        feedback.setMainHead("意见反馈");
-        settings.add(feedback);
+                Setting feedback = new Setting();
+                feedback.setId(2);
+                feedback.setWeight(2);
+                feedback.setConfig(Setting.ITEM_SINGLE);
+                feedback.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
+                feedback.setMainHead("意见反馈");
+                settings.add(feedback);
 
-        Setting about = new Setting();
-        about.setId(3);
-        about.setWeight(3);
-        about.setConfig(Setting.ITEM_SINGLE);
-        about.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
-        about.setMainHead("关于");
-        settings.add(about);
-
+                Setting about = new Setting();
+                about.setId(3);
+                about.setWeight(3);
+                about.setConfig(Setting.ITEM_SINGLE);
+                about.setFunctionConfig(Setting.FUNCTION_ITEM_OPTIONS);
+                about.setMainHead("关于");
+                settings.add(about);
+            }
+        }
         return settings;
+
     }
 
     @Override
@@ -160,7 +184,7 @@ public class SettingActivity extends ListActivity<ViewHolder, Setting, List<Sett
 
     @Override
     public void OnListItemClick(final int postion) {
-        ActivityUtils.startActivity(this,SettingChildActivity.class,new HashMap<String, Object>(){{
+        ActivityUtils.startActivity(this, SettingChildActivity.class, new HashMap<String, Object>() {{
             put(Constants.SETTING_ITEM_CONTENT, GsonUtil.toJson(getItemsSource().get(postion)));
         }});
 

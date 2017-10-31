@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.xhy.weibo.R;
 import com.xhy.weibo.model.Setting;
+import com.xhy.weibo.ui.activity.fragment.SettingAboutFragment;
 import com.xhy.weibo.ui.activity.fragment.SettingNotificationFragment;
 import com.xhy.weibo.ui.activity.fragment.SettingUserFragment;
 import com.xhy.weibo.ui.base.BaseActivity;
@@ -58,6 +59,15 @@ public class SettingChildActivity extends BaseActivity {
                     if (FragmentUtils.findFragment(fm, SettingUserFragment.class) == null) {
                         FragmentUtils.addFragment(fm,
                                 SettingUserFragment.newInstance(),
+                                R.id.fragment,
+                                false,
+                                true);
+                    }
+                    break;
+                case "关于":
+                    if (FragmentUtils.findFragment(fm, SettingAboutFragment.class) == null) {
+                        FragmentUtils.addFragment(fm,
+                                SettingAboutFragment.newInstance(),
                                 R.id.fragment,
                                 false,
                                 true);

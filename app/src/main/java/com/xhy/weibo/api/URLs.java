@@ -93,6 +93,9 @@ public interface URLs {
     String WEIBO_SET_MSG = API_VERSION + "setMsg.html";
 
     //RegistrationID
-    String WEIBO_SET_REGISTRATIONID = "setRegistrationID.html";
-    String WEIBO_CLEAR_REGISTRATIONID = "clearRegistrationID.html";
+    String WEIBO_SET_REGISTRATIONID = API_VERSION + "setRegistrationID.html";
+    String WEIBO_CLEAR_REGISTRATIONID = API_VERSION + "clearRegistrationID.html";
+
+
+    String WEIBO_SETTING_ONE = API_VERSION + "getSettingList.html";
 }

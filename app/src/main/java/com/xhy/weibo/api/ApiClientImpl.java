@@ -5,6 +5,7 @@ import com.xhy.weibo.model.Hot;
 import com.xhy.weibo.model.Login;
 import com.xhy.weibo.model.NotifyInfo;
 import com.xhy.weibo.model.Result;
+import com.xhy.weibo.model.Setting;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.model.StatusGroup;
 import com.xhy.weibo.model.User;
@@ -19,6 +20,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -221,6 +223,9 @@ public interface ApiClientImpl {
     @POST(URLs.WEIBO_GET_MSG)
     Call<Result<NotifyInfo>> getPushMsg(@Field("token") String token,
                                         @Query("uid") int uid);
+
+    @GET(URLs.WEIBO_SETTING_ONE)
+    Call<Result<List<Setting>>> getSettingList();
 
 
 }

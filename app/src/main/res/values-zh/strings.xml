@@ -53,4 +53,6 @@
     <string name="dialog_content_name_jpush">极光推送</string>
     <string name="title_item_notification_mode">推送模式选择</string>
     <string name="title_item_change_the_password">修改密码</string>
+    <string name="title_item_about">关于</string>
+    <string name="title_item_version">版本</string>
 </resources>

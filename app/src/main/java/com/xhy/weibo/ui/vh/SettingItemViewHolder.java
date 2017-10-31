@@ -48,6 +48,8 @@ public class SettingItemViewHolder extends ViewHolder {
         switch (item.getFunctionConfig()) {
             case Setting.FUNCTION_ITEM_DIALOG://弹出框 隐藏checkbox
             case Setting.FUNCTION_ITEM_OPTIONS:
+            case Setting.FUNCTION_ITEM_BROWSER:
+            case Setting.FUNCTION_ITEM_NONE:
                 item_switch.setVisibility(View.GONE);
                 break;
             default:
@@ -58,7 +60,7 @@ public class SettingItemViewHolder extends ViewHolder {
 
         if (item != null) {
             item_main_title.setText(item.getMainHead());
-            switch (item.getConfig()){
+            switch (item.getConfig()) {
                 case Setting.ITEM_TWICE:
                     item_sub_title.setText(item.getSubHead());
                     break;
