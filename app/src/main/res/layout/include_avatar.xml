@@ -10,25 +10,28 @@
         android:layout_height="40dp"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="16dp"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/user_avatar" />
 
-    <RelativeLayout
+
+    <LinearLayout
         android:id="@+id/right_content"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:padding="16dp">
+        android:layout_marginLeft="8dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_subhead"
             style="@style/TextViewSubhead"
-            android:text="测试文字" />
+            android:layout_marginTop="10dp"
+            android:text="Google谷歌爱好者" />
 
         <TextView
             android:id="@+id/tv_caption"
             style="@style/TextViewCaption"
-            android:layout_alignParentBottom="true"
-            android:text="昨天09:59"
+            android:layout_marginTop="4dp"
+            android:text="昨天09:59 Android"
             android:textColor="@color/txt_gray" />
-
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -89,7 +89,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
         @BindView(R.id.iv_avatar)
         public ImageView iv_avatar;
         @BindView(R.id.right_content)
-        public RelativeLayout right_content;
+        public LinearLayout right_content;
         @BindView(R.id.tv_subhead)
         public TextView tv_subhead;
         @BindView(R.id.tv_caption)

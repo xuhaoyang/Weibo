@@ -217,7 +217,7 @@ public class StatusViewHolder extends ViewHolder {
                 final float scale = include_status_image.getResources().getDisplayMetrics().density;
                 int sixteen = (int) (scale * 16);
                 int ten = (int) (scale * 10);
-                include_status_image.setPadding(sixteen, ten, sixteen, 0);
+//                include_status_image.setPadding(sixteen, ten, sixteen, 0);
 
                 iv_image.setOnClickListener(new View.OnClickListener() {
                     @Override
