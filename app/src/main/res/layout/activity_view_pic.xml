@@ -6,12 +6,17 @@
     android:gravity="center"
     tools:context=".ui.activity.ViewPicActivity">
 
-    <ImageView
+    <!--<ImageView-->
+        <!--android:id="@+id/iv_view_pic"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:scaleType="centerCrop"-->
+        <!---->
+         <!--/>-->
+    <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/iv_view_pic"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:scaleType="centerCrop"
-         />
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

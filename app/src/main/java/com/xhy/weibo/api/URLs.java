@@ -14,7 +14,7 @@ public interface URLs {
     //登录
     String WEIBO_USER_LOGIN = API_VERSION + "userLogin.html";
     //注册
-    String WEIBO_USER_REGISTER= API_VERSION + "userRegister.html";
+    String WEIBO_USER_REGISTER = API_VERSION + "userRegister.html";
     //微博分组
     String WEIBO_GET_GROUP = API_VERSION + "getGroup.html";
     //获取微博列表
@@ -24,6 +24,11 @@ public interface URLs {
 
     //用户信息
     String WEIBO_GET_USERINFO = API_VERSION + "getUserInfo.html";
+    String WEIBO_SET_USERINFO = API_VERSION + "setUserInfo.html";
+
+    //用户修改密码
+    String WEIBO_CHANGE_PASSWORD = API_VERSION + "changePwd.html";
+
 
     //微博添加收藏
     String WEIBO_ADD_KEEP = API_VERSION + "keepWeibo.html";
@@ -34,6 +39,10 @@ public interface URLs {
     String WEIBO_TURN_WEIBO = API_VERSION + "turnWeibo.html";
     //发送微博
     String WEIBO_SEND_WEIBO = API_VERSION + "sendWeibo.html";
+    //
+    String WEIBO_SEND_WEIBO_FROM_JSON = API_VERSION + "sendWeibofromJson";
+
+
     //删除微博
     String WEIBO_DELETE_WEIBO = API_VERSION + "delWeibo.html";
     //发布评论
@@ -61,7 +70,6 @@ public interface URLs {
     String WEIBO_ATM_LIST = API_VERSION + "getAtmList.html";
 
 
-
     //搜索微博
     String WEIBO_SEARCH_LIST = API_VERSION + "getSearchWeibo.html";
     //搜索微博
@@ -76,31 +84,18 @@ public interface URLs {
     String WEIBO_UPLOAD_PIC = API_VERSION + "uploadUserPic.html";
 
 
-
-
-
-
-
-
-
     //获取关注者的ID或粉丝者的ID列表
     String WEIBO_USER_FOLLOW_FANS_LIST = API_VERSION + "getUserFollowList.html";
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     //消息推送
     String WEIBO_GET_MSG = API_VERSION + "getMsg.html";
     String WEIBO_SET_MSG = API_VERSION + "setMsg.html";
+
+    //RegistrationID
+    String WEIBO_SET_REGISTRATIONID = API_VERSION + "setRegistrationID.html";
+    String WEIBO_CLEAR_REGISTRATIONID = API_VERSION + "clearRegistrationID.html";
+
+
+    String WEIBO_SETTING_ONE = API_VERSION + "getSettingList.html";
 }

@@ -5,17 +5,28 @@ import com.xhy.weibo.model.Hot;
 import com.xhy.weibo.model.Login;
 import com.xhy.weibo.model.NotifyInfo;
 import com.xhy.weibo.model.Result;
+import com.xhy.weibo.model.Setting;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.model.StatusGroup;
 import com.xhy.weibo.model.User;
 
 import java.util.List;
+import java.util.Map;
 
+import io.reactivex.Observable;
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
+import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.HeaderMap;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
+import retrofit2.http.Url;
 
 /**
  * Created by xuhaoyang on 16/7/19.
@@ -34,11 +45,42 @@ public interface ApiClientImpl {
                           @Field("uname") String uname);
 
     @FormUrlEncoded
+    @POST(URLs.WEIBO_CHANGE_PASSWORD)
+    Observable<Result> changePassword(@FieldMap Map<String, String> maps,
+                                      @Field("token") String uname);
+
+
+    @FormUrlEncoded
     @POST(URLs.WEIBO_GET_USERINFO)
     Call<Result<User>> getUserinfo(@Field("uid") int uid,
                                    @Field("username") String username,
                                    @Field("userid") int userId,
                                    @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SET_REGISTRATIONID)
+    Call<Result> setRegistrationID(@Field("regid") String regid,
+                                   @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_CLEAR_REGISTRATIONID)
+    Call<Result> clearRegistrationID(@Field("token") String token);
+
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SET_USERINFO)
+    Call<Result> setUserinfo(@Field("uid") int uid,
+                             @Field("username") String username,
+                             @Field("truename") String truename,
+                             @Field("sex") String sex,
+                             @Field("intro") String intro,
+                             @Field("token") String token);
+
+    @FormUrlEncoded
+    @POST(URLs.WEIBO_SET_USERINFO)
+    Observable<Result> setUserinfoRx(@Field("uid") int uid,
+                                     @FieldMap Map<String, String> maps,
+                                     @Field("token") String token);
 
     @FormUrlEncoded
     @POST(URLs.WEIBO_GET_GROUP)
@@ -88,6 +130,11 @@ public interface ApiClientImpl {
                            @Field("mini") String picMini,
                            @Field("medium") String picMedium,
                            @Field("max") String picMax);
+
+    @Headers("Content-Type: application/json")
+    @POST(URLs.WEIBO_SEND_WEIBO_FROM_JSON)
+    Observable<Result> sendWeibo(@Body RequestBody body,
+                                 @HeaderMap Map<String, String> headers);
 
     @FormUrlEncoded
     @POST(URLs.WEIBO_TURN_WEIBO)
@@ -176,6 +223,9 @@ public interface ApiClientImpl {
     @POST(URLs.WEIBO_GET_MSG)
     Call<Result<NotifyInfo>> getPushMsg(@Field("token") String token,
                                         @Query("uid") int uid);
+
+    @GET(URLs.WEIBO_SETTING_ONE)
+    Call<Result<List<Setting>>> getSettingList();
 
 
 }

@@ -1,27 +1,26 @@
 package com.xhy.weibo.ui.base;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.xhy.weibo.utils.Logger;
 
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.ToastUtils;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.ToastUtils;
 
 /**
  * Created by xuhaoyang on 16/5/12.
  */
-public abstract class BaseActivity extends hk.xhy.android.commom.ui.BaseActivity {
+public abstract class BaseActivity extends hk.xhy.android.common.ui.BaseActivity {
 
     protected String TAG = getClass().getSimpleName();
     protected BaseApplication application;
-    protected SharedPreferences sp;
+    protected ProgressDialog mProgressDialog;
+
 
 
     @Override
@@ -47,7 +46,26 @@ public abstract class BaseActivity extends hk.xhy.android.commom.ui.BaseActivity
     }
 
     protected void showToast(String msg) {
-        ToastUtils.showToast(this, msg, Toast.LENGTH_SHORT);
+        ToastUtils.showShort(msg);
+    }
+
+    protected void showProgressDialog(int resId) {
+        showProgressDialog(getString(resId));
+    }
+
+    protected void showProgressDialog(String message) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+        }
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage(message);
+        mProgressDialog.show();
+    }
+
+    protected void dismissProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
     }
 
 }

@@ -3,11 +3,23 @@ package com.xhy.weibo.model;
 /**
  * Created by xuhaoyang on 16/5/31.
  */
-public class Picture {
+public class Picture extends Model {
 
+    private int id;
+    private int wid;//微博的id
     private String max;
     private String medium;
     private String mini;
+
+    public Picture(String mini, String medium, String max) {
+        this.max = max;
+        this.medium = medium;
+        this.mini = mini;
+    }
+
+    public Picture() {
+
+    }
 
     @Override
     public String toString() {
@@ -41,5 +53,21 @@ public class Picture {
 
     public void setMini(String mini) {
         this.mini = mini;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getWid() {
+        return wid;
+    }
+
+    public void setWid(int wid) {
+        this.wid = wid;
     }
 }

@@ -15,20 +15,20 @@ import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
 import com.xhy.weibo.api.ApiClientImpl;
 
-import hk.xhy.android.commom.bind.Bind;
-import hk.xhy.android.commom.ui.RecyclerActivity;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.ErrorUtils;
-import hk.xhy.android.commom.utils.ViewUtils;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import hk.xhy.android.common.bind.Bind;
+import hk.xhy.android.common.ui.RecyclerActivity;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.ErrorUtils;
+import hk.xhy.android.common.utils.ViewUtils;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 
 
 /**
  * Created by xuhaoyang on 16/9/8.
  */
 public abstract class ListActivity<VH extends ViewHolder, Item, Result>
-        extends hk.xhy.android.commom.ui.ListActivity<VH, Item, Result>
+        extends hk.xhy.android.common.ui.ListActivity<VH, Item, Result>
         implements RecyclerActivity.OnLoadMoreListener, SwipeRefreshLayout.OnRefreshListener {
 
     private final String TAG = this.getClass().getSimpleName();
@@ -84,7 +84,7 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
         Log.e(TAG, ">>>onRefresh");
 
         //显示加载效果
-         if (!isLoadMore()) {
+        if (!isLoadMore()) {
             getPullToRefreshLayout().setRefreshing(true);
 
         }
@@ -158,24 +158,16 @@ public abstract class ListActivity<VH extends ViewHolder, Item, Result>
     }
 
     @Override
-    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
-    }
+    public abstract VH onCreateViewHolder(ViewGroup parent, int viewType);
 
     @Override
-    public void onLoadStart() {
-
-    }
+    public abstract void onLoadStart();
 
     @Override
-    public Result onLoadInBackground() throws Exception {
-        return null;
-    }
+    public abstract Result onLoadInBackground() throws Exception;
 
     @Override
-    public void onLoadComplete(Result data) {
-
-    }
+    public abstract void onLoadComplete(Result data);
 
     @Override
     public void onLoadError(Exception e) {

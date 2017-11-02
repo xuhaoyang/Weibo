@@ -49,6 +49,7 @@ import com.xhy.weibo.ui.vh.StatusViewHolder;
 import com.xhy.weibo.utils.Constants;
 import com.xhy.weibo.utils.ImageUtils;
 import com.xhy.weibo.utils.RecycleViewDivider;
+import com.xhy.weibo.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -57,14 +58,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.GsonUtil;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
-import hk.xhy.android.commom.widget.Toaster;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.utils.LogUtils;
+import hk.xhy.android.common.widget.PullToRefreshMode;
+import hk.xhy.android.common.widget.Toaster;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<Status>>>
         implements NavigationView.OnNavigationItemSelectedListener, StatusLogic.GetStatusGroupCallBack, UserLoginLogic.GetUserinfoCallBack, OnListItemClickListener, PushMessage<Status> {
@@ -119,7 +123,9 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         EventBus.getDefault().register(this);
+
         init();
+
     }
 
     @Override
@@ -138,11 +144,6 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         initView();
         initNavigationMenu();
         initListener();
-
-        //启动推送
-        Intent intent = new Intent(this, MessageService.class);
-        intent.putExtra("TOKEN", AppConfig.getAccessToken().getToken());
-        startService(intent);
 
     }
 
@@ -194,6 +195,11 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
                 return viewHolder;
         }
         return null;
+    }
+
+    @Override
+    public void onLoadStart() {
+
     }
 
     @Override
@@ -288,7 +294,8 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
 
 
     private void initUserinfo() {
-        initDB();
+
+       /** initDB();
         List<User> users = userDB.QueryUsers(db, "id=?", new String[]{AppConfig.getUserId() + ""});
         dbManager.closeDatabase();
         if (!users.isEmpty()) {
@@ -308,7 +315,9 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
 
         } else {
             UpdataUserinfo();
-        }
+        }*/
+        UpdataUserinfo();
+
     }
 
     private void UpdataUserinfo() {
@@ -356,6 +365,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
      */
     private void initNavigationMenu() {
         menu = navigationView.getMenu();
+
         //參數1:群組id, 參數2:itemId, 參數3:item順序, 參數4:item名稱
         menu.add(STATUS_GROUP, STATUS_GROUP_ITEMID, STATUS_GROUP_ITEMID, "全部");
 
@@ -411,7 +421,7 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityUtils.startActivity(MainActivity.this, SettingsActivity.class);
+                ActivityUtils.startActivity(MainActivity.this, SettingActivity.class);
             }
         });
 
@@ -528,9 +538,27 @@ public class MainActivity extends ListActivity<ViewHolder, Status, Result<List<S
                 onRefresh();
                 break;
             case SETTING_LOGOUT_ITEMID://注销登录
+                ApiClient.getApi().clearRegistrationID(AppConfig.getAccessToken()
+                        .getToken()).enqueue(new Callback<Result>() {
+                    @Override
+                    public void onResponse(Call<Result> call, Response<Result> response) {
+                        if (response.isSuccessful()) {
+                            LogUtils.d(response.body().getMsg());
+                        } else {
+                            LogUtils.w("ErrorCode:" + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result> call, Throwable t) {
+                        LogUtils.w(t);
+                    }
+                });
+
                 Login.setCurrentLoginUser(null);
                 AppConfig.setAccount(null);
                 AppConfig.setPassword(null);
+                //注销服务器的regid
                 ActivityUtils.goHome(MainActivity.this, LoginActivity.class);
                 break;
             default:

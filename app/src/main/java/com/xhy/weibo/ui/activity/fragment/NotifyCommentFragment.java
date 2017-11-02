@@ -2,8 +2,6 @@ package com.xhy.weibo.ui.activity.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,24 +14,19 @@ import android.widget.FrameLayout;
 
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
-import com.xhy.weibo.adapter.CommentAdpater;
 import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.logic.CommentLogic;
 import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Result;
-import com.xhy.weibo.model.User;
 import com.xhy.weibo.ui.base.ListFragment;
 import com.xhy.weibo.ui.vh.CommentViewHolder;
-import com.xhy.weibo.ui.vh.SearchViewHolder;
 import com.xhy.weibo.utils.RecycleViewDivider;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 import retrofit2.Call;
 
 /**

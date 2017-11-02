@@ -3,8 +3,7 @@
     android:id="@+id/cv_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    >
+    android:layout_marginBottom="4dp">
 
     <LinearLayout
         android:id="@+id/ll_content"
@@ -19,10 +18,10 @@
         <TextView
             android:id="@+id/tv_content"
             style="@style/TextViewBody"
+            android:text="安普里奥厉害了哈哈哈！！"
             android:layout_width="match_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
 
         <!--图片-->
         <include
@@ -35,6 +34,30 @@
             android:id="@+id/include_forward_status"
             layout="@layout/include_forward_status"
             android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/ll_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="16dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_location" />
+
+            <TextView
+                android:id="@+id/tv_location"
+                android:text="深圳职业技术学院创业创业园"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:textColor="@color/txt_location_blue"
+                android:textSize="12dp" />
+        </LinearLayout>
 
         <include layout="@layout/include_bottom_btn" />
     </LinearLayout>

@@ -10,7 +10,7 @@ import com.xhy.weibo.utils.ActivtyUtils;
 /**
  * Created by xuhaoyang on 16/9/8.
  */
-public class StartUpActivity extends hk.xhy.android.commom.ui.StartUpActivity {
+public class StartUpActivity extends hk.xhy.android.common.ui.StartUpActivity {
 
 
     @Override

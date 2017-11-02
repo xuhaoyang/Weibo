@@ -20,6 +20,11 @@ import com.xhy.weibo.model.NotifyInfo;
 import com.xhy.weibo.receiver.NotificationReceiver;
 import com.xhy.weibo.utils.Logger;
 
+import java.util.Calendar;
+
+import hk.xhy.android.common.utils.LogUtils;
+import hk.xhy.android.common.utils.TimeUtils;
+
 public class MessageService extends Service {
 
     private static final String TAG = MessageService.class.getSimpleName();
@@ -121,15 +126,7 @@ public class MessageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-//        CommonConstants.account = intent.getStringExtra("ACCOUNT");
-//        CommonConstants.password = intent.getStringExtra("PASSWORD");
-//        AppConfig.getUserId() = Integer.parseInt(intent.getStringExtra("USERID"));
-        String token = intent.getStringExtra("TOKEN");
-//        if (!TextUtils.isEmpty(CommonConstants.account) || !TextUtils.isEmpty(CommonConstants.password)) {
-        //刷新AccessToken
         AppConfig.getAccessToken();
-        AppConfig.getAccessToken().setToken(token);
-//        }
 
         builder = new NotificationCompat.Builder(this);
         //跳转到Activity
@@ -175,19 +172,24 @@ public class MessageService extends Service {
             while (isRunning) {
                 try {
                     Logger.show("MessageService", "进入了Thread");
-                    //休息
-                    Thread.sleep(15000);
-                    Logger.show("MessageService", "休息时间过了,运行了");
-                    if (AppConfig.isNotify()) {
-//                        Intent data = new Intent();
-//                        data.setAction("com.xhy.weibo.UPDATE_TOKEN");
-//                        data.putExtra(AppConfig.KEEP_TOKEN, AppConfig.ACCESS_TOKEN.getToken());
-//                        data.putExtra(AppConfig.KEEP_TOKEN_START_TIME, AppConfig.ACCESS_TOKEN.getTokenStartTime());
-//                        //传递账户id比对是否是帐号
-//                        data.putExtra(AppConfig.KEEP_TOKEN_ACCOUNT, AppConfig.getAccount());
-//                        data.putExtra(AppConfig.KEEP_TOKEN_USER_ID, AppConfig.getUserId());
-//                        sendBroadcast(data);
 
+                    //通知间隔
+                    long notificationInterval = AppConfig.getNotificaitonInterval();
+                    Thread.sleep(notificationInterval);
+
+                    boolean is = AppConfig.isNotify();
+                    boolean isDND = false;
+
+                    final int curHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
+                    //静默不推送
+                    LogUtils.d(TAG, "当前小时：" + curHour);
+                    if (curHour >= 1 && curHour <= 8 && AppConfig.getDoNotDisturb()) {
+                        isDND = true;
+                    }
+
+                    if (is && !isDND) {
+                        Logger.show("MessageService", "开启了通知");
                         PushMessageLogic.getMsg(getBaseContext(), AppConfig.getUserId(), AppConfig.getAccessToken().getToken(), new PushMessageLogic.GetMsgCallBack() {
                             @Override
                             public void onGetMsgSuccess(NotifyInfo info) {
@@ -201,7 +203,7 @@ public class MessageService extends Service {
 
                             @Override
                             public void onGetMsgFailure(String message) {
-                                Logger.show(TAG,message);
+                                Logger.show(TAG, message);
                             }
 
                             @Override

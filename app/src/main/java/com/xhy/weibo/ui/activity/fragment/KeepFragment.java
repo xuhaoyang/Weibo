@@ -17,7 +17,6 @@ import android.widget.FrameLayout;
 import com.xhy.weibo.AppConfig;
 import com.xhy.weibo.R;
 import com.xhy.weibo.api.ApiClient;
-import com.xhy.weibo.event.CommentListChangeEvent;
 import com.xhy.weibo.event.KeepListChangeEvent;
 import com.xhy.weibo.model.Result;
 import com.xhy.weibo.model.Status;
@@ -34,9 +33,9 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 import java.util.List;
 
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 import retrofit2.Call;
 
 /**

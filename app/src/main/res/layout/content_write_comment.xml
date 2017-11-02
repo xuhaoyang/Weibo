@@ -50,8 +50,30 @@
 
             </com.xhy.weibo.ui.widget.WrapHeightGridView>
 
+
+
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:layout_margin="8dp"
+        android:id="@+id/ll_location"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_location" />
+
+        <TextView
+            android:layout_gravity="center"
+            android:id="@+id/tv_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/txt_black"
+            android:textSize="16dp" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/send_layout"
@@ -66,6 +88,16 @@
             android:minHeight="?actionBarSize"
             android:orientation="horizontal">
 
+            <ImageButton
+                android:id="@+id/new_location"
+                android:layout_width="48.0dip"
+                android:layout_height="48.0dip"
+                android:layout_gravity="center_vertical"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/image_deccribtion"
+                android:gravity="center_vertical"
+                android:padding="10.0dip"
+                android:src="@drawable/ic_location_2_light" />
 
             <ImageButton
                 android:id="@+id/new_take_photo"

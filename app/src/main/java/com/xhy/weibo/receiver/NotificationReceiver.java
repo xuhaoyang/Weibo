@@ -8,7 +8,7 @@ import android.util.Log;
 import com.xhy.weibo.ui.activity.MainActivity;
 import com.xhy.weibo.ui.activity.NotifyActivity;
 
-import hk.xhy.android.commom.utils.AppUtils;
+import hk.xhy.android.common.utils.AppUtils;
 
 /**
  * Created by xuhaoyang on 16/6/5.
@@ -17,8 +17,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        //判断app进程是否存活
-        if (AppUtils.isAppBackground(context)){
+        //判断app是否在前台
+        if (AppUtils.isAppForeground()){
             Log.i("NotificationReceiver", "the app process is alive");
             Intent mainIntent = new Intent(context, MainActivity.class);
             mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

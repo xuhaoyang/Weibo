@@ -53,4 +53,20 @@ public class Constants {
     //Request
     public static final int REQUEST_CODE_WRITE_FORWARD = 2;
     public static final int REQUEST_CODE_WRITE_STATUS = 3;
+
+    /**
+     * Settings
+     */
+    public static final String SETTING_ITEM_CONTENT = "setting_item_content";
+
+
+    //jpush
+    public static final String EXTRA_JPUSH_MESSAGE = "extra_jpush_message";
+
+    public static final String SERVICE_MESSAGE = "com.xhy.weibo.service.MessageService";
+
+
+    //WebView
+    public static final String EXTRA_URL = "extra_url";
+    public static final String EXTRA_TITLE = "extra_browser";
 }

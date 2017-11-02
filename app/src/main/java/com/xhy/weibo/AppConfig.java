@@ -2,7 +2,10 @@ package com.xhy.weibo;
 
 import com.xhy.weibo.model.Login;
 
-import hk.xhy.android.commom.utils.PreferenceUtils;
+import hk.xhy.android.common.utils.ConstUtils;
+import hk.xhy.android.common.utils.PreferenceUtils;
+import hk.xhy.android.common.utils.TimeUtils;
+import hk.xhy.android.common.utils.Utils;
 
 /**
  * Created by xuhaoyang on 16/7/21.
@@ -84,7 +87,7 @@ public class AppConfig extends PreferenceUtils {
      * @return
      */
     public static boolean isNotify() {
-        return getBoolean("isNotify", false);
+        return getBoolean("isNotify", true);
     }
 
     /**
@@ -96,6 +99,58 @@ public class AppConfig extends PreferenceUtils {
         putBoolean("isNotify", flag);
     }
 
+    /**
+     * 获得通知间隔
+     *
+     * @return 单位毫秒
+     */
+    public static long getNotificaitonInterval() {
+        return getLong("notificationinterval", TimeUtils.convertTimeMillis(2, ConstUtils.MIN));
+    }
+
+    /**
+     * 保存通知间隔时间
+     *
+     * @param time 单位分
+     */
+    public static void setNotificationInterval(int time) {
+        putLong("notificationinterval", TimeUtils.convertTimeMillis(time, ConstUtils.MIN));
+    }
+
+    /**
+     * 设置免打扰开关
+     *
+     * @param flag true开/false关
+     */
+    public static void setDoNotDisturb(boolean flag) {
+        putBoolean("DoNotDisturb", flag);
+    }
+
+    /**
+     * 获得免打扰开关值
+     *
+     * @return
+     */
+    public static boolean getDoNotDisturb() {
+        return getBoolean("DoNotDisturb", false);
+    }
+
+    /**
+     * 获得推送方式 自建/极推送
+     *
+     * @return
+     */
+    public static int getNotifyMode() {
+        return getInt("NotifyMode", 0);
+    }
+
+    /**
+     * 设置推送方式
+     * @param value 自建0/极光推送1
+     */
+    public static void setNotifyMode(int value) {
+        putInt("NotifyMode", value);
+    }
 
     /**
      * 获取AccessToken
@@ -104,7 +159,7 @@ public class AppConfig extends PreferenceUtils {
      */
     public static AccessToken getAccessToken() {
         if (ACCESS_TOKEN == null) {
-            ACCESS_TOKEN = new AccessToken(getAccount(), getPassword(), getContext());
+            ACCESS_TOKEN = new AccessToken(getAccount(), getPassword(), Utils.getContext());
         }
         return ACCESS_TOKEN;
     }

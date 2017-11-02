@@ -46,6 +46,7 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
         }
     }
 
+
     // Same animation that FloatingActionButton.Behavior uses to hide the FAB when the AppBarLayout exits
     private void animateOut(final FloatingActionButton button) {
         if (Build.VERSION.SDK_INT >= 14) {
@@ -61,7 +62,13 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
 
                         public void onAnimationEnd(View view) {
                             ScrollAwareFABBehavior.this.mIsAnimatingOut = false;
-                            view.setVisibility(View.GONE);
+                            view.setVisibility(View.INVISIBLE);
+                            /**
+                             * 对于25.1.0版本来说对floating action button设置View.GONE，
+                             * floating action button就回跳过执行onNestedScroll方法
+                             * （它会跳过所有visibility为GONE的views）
+                             * 为了不跳过，则设定成INVISIBLE
+                             */
                         }
                     }).start();
         } else {

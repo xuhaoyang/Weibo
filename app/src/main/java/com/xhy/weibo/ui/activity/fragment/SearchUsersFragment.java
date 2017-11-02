@@ -27,12 +27,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.GsonUtil;
-import hk.xhy.android.commom.utils.ViewUtils;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 import retrofit2.Call;
 
 /**

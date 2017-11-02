@@ -6,7 +6,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,11 +23,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.Logger;
-import hk.xhy.android.commom.widget.PullToRefreshMode;
+import butterknife.BindView;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.Logger;
+import hk.xhy.android.common.widget.PullToRefreshMode;
 import retrofit2.Call;
 
 public class HotsActivity extends ListActivity<HotViewHolder, Hot, Result<List<Hot>>> implements OnListItemClickListener {
@@ -38,6 +38,7 @@ public class HotsActivity extends ListActivity<HotViewHolder, Hot, Result<List<H
 
     @ViewById(R.id.hot_Car)
     CoordinatorLayout mCoordinatorLayout;
+
 
     private int currentPage = 1;
 
@@ -115,6 +116,11 @@ public class HotsActivity extends ListActivity<HotViewHolder, Hot, Result<List<H
     public HotViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_nav, parent, false);
         return new HotViewHolder(currentView);
+    }
+
+    @Override
+    public void onLoadStart() {
+
     }
 
     @Override

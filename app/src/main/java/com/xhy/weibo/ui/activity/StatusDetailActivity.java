@@ -39,9 +39,8 @@ import com.xhy.weibo.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.widget.Toaster;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.utils.ActivityUtils;
 
 public class StatusDetailActivity extends BaseActivity {
 
@@ -133,14 +132,14 @@ public class StatusDetailActivity extends BaseActivity {
     }
 
     private void initData() {
-        getSupportActionBar().setTitle(status.getUsername());
+        getSupportActionBar().setTitle(status.getUserinfo().getUsername());
         getSupportActionBar().setSubtitle(DateUtils.getShotTime(status.getTime()));
         //微博正文
         tv_content.setText(StringUtils.getWeiboContent(this, tv_content, status.getContent()));
         //带图片的微博
-        if (!TextUtils.isEmpty(status.getMedium())) {
+        if (status.getPicture() != null) {
 
-            String url = URLs.PIC_URL + status.getMedium();
+            String url = URLs.PIC_URL + status.getPicture().getMedium();
             setImage(iv_image, url);
             include_status_detail_image.setVisibility(View.VISIBLE);
             iv_image.setVisibility(View.VISIBLE);
@@ -148,7 +147,7 @@ public class StatusDetailActivity extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(StatusDetailActivity.this, ViewPicActivity.class);
-                    intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + status.getMax());
+                    intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + status.getPicture().getMax());
                     startActivity(intent);
                 }
             });
@@ -161,18 +160,18 @@ public class StatusDetailActivity extends BaseActivity {
         //显示转发内容
         final Status forward_status = status.getStatus();
         if (forward_status != null) {
-            tv_retweeted_content.setText(StringUtils.getWeiboContent(this, tv_retweeted_content, "@" + forward_status.getUsername() + ": " + forward_status.getContent()));
+            tv_retweeted_content.setText(StringUtils.getWeiboContent(this, tv_retweeted_content, "@" + forward_status.getUserinfo().getUsername() + ": " + forward_status.getContent()));
             include_forward_detail_status.setVisibility(View.VISIBLE);
-            if (!TextUtils.isEmpty(forward_status.getMedium())) {
+            if (forward_status.getPicture() != null) {
                 layout_forward_img.setVisibility(View.VISIBLE);
                 iv_image_forward.setVisibility(View.VISIBLE);
-                String url = URLs.PIC_URL + forward_status.getMedium();
+                String url = URLs.PIC_URL + forward_status.getPicture().getMedium();
                 setImage(iv_image_forward, url);
                 iv_image_forward.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(StatusDetailActivity.this, ViewPicActivity.class);
-                        intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + forward_status.getMax());
+                        intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + forward_status.getPicture().getMax());
                         startActivity(intent);
                     }
                 });
@@ -226,7 +225,7 @@ public class StatusDetailActivity extends BaseActivity {
             case R.id.action_comment:
                 Intent intent = new Intent(this, WriteStatusActivity.class);
                 intent.putExtra(Constants.TYPE, Constants.COMMENT_TYPE);
-                intent.putExtra(Constants.STATUS_INTENT, status);
+                intent.putExtra(Constants.STATUS_INTENT, status.toJSONString());
                 intent.putExtra(Constants.TAG, Constants.DETAIL_ATY_CODE);
                 startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
                 break;
@@ -234,7 +233,7 @@ public class StatusDetailActivity extends BaseActivity {
             case R.id.action_forward:
                 Intent forwardIntent = new Intent(this, WriteStatusActivity.class);
                 forwardIntent.putExtra(Constants.TYPE, Constants.FORWARD_TYPE);
-                forwardIntent.putExtra(Constants.STATUS_INTENT, status);
+                forwardIntent.putExtra(Constants.STATUS_INTENT, status.toJSONString());
                 startActivityForResult(forwardIntent, REQUEST_CODE_WRITE_FORWARD);
 
                 break;

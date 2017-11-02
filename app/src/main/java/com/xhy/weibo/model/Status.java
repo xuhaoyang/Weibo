@@ -15,17 +15,14 @@ public class Status extends Model implements Serializable {
     private int keep;//收藏次数
     private int comment;//评论次数
     private int uid;//所属用户的ID
-    private String username;
-    private String face;
-    private String mini;
-    private String medium;
-    private String max;
     private Status status;
     private int isturn;
     private boolean isKeep;//是否被收藏
     private int kid;
     private int ktime;
-
+    private Userinfo userinfo;
+    private Picture picture;
+    private Map maps;
 
     /**
      * 转换json为Model
@@ -37,29 +34,6 @@ public class Status extends Model implements Serializable {
         return Model.parseObject(json, Status.class);
     }
 
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("Status{");
-        sb.append("id=").append(id);
-        sb.append(", content='").append(content).append('\'');
-        sb.append(", time=").append(time);
-        sb.append(", turn=").append(turn);
-        sb.append(", keep=").append(keep);
-        sb.append(", comment=").append(comment);
-        sb.append(", uid=").append(uid);
-        sb.append(", username='").append(username).append('\'');
-        sb.append(", face='").append(face).append('\'');
-        sb.append(", mini='").append(mini).append('\'');
-        sb.append(", medium='").append(medium).append('\'');
-        sb.append(", max='").append(max).append('\'');
-        sb.append(", status=").append(status);
-        sb.append(", isturn=").append(isturn);
-        sb.append(", isKeep=").append(isKeep);
-        sb.append(", kid=").append(kid);
-        sb.append(", ktime=").append(ktime);
-        sb.append('}');
-        return sb.toString();
-    }
 
     public int getKid() {
         return kid;
@@ -157,43 +131,27 @@ public class Status extends Model implements Serializable {
         this.uid = uid;
     }
 
-    public String getUsername() {
-        return username;
+    public Userinfo getUserinfo() {
+        return userinfo;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserinfo(Userinfo userinfo) {
+        this.userinfo = userinfo;
     }
 
-    public String getFace() {
-        return face;
+    public Picture getPicture() {
+        return picture;
     }
 
-    public void setFace(String face) {
-        this.face = face;
+    public void setPicture(Picture picture) {
+        this.picture = picture;
     }
 
-    public String getMini() {
-        return mini;
+    public Map getMaps() {
+        return maps;
     }
 
-    public void setMini(String mini) {
-        this.mini = mini;
-    }
-
-    public String getMedium() {
-        return medium;
-    }
-
-    public void setMedium(String medium) {
-        this.medium = medium;
-    }
-
-    public String getMax() {
-        return max;
-    }
-
-    public void setMax(String max) {
-        this.max = max;
+    public void setMaps(Map maps) {
+        this.maps = maps;
     }
 }

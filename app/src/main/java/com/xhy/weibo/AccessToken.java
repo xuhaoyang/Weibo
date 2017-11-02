@@ -10,6 +10,8 @@ import com.xhy.weibo.utils.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import hk.xhy.android.common.utils.LogUtils;
+
 /**
  * Created by xuhaoyang on 16/5/30.
  */
@@ -144,8 +146,7 @@ public class AccessToken implements UserLoginLogic.LoginCallback {
         TokenModel model = getTokenModel();
         model.setAccessTokenStartTime(model.getOldTIme());
         tokenRefreshing.set(false);
-        Logger.show(TAG, error.getMessage(), Log.ERROR);
-
+        LogUtils.e(TAG, error.getMessage());
         setTokenModel(model);
     }
 

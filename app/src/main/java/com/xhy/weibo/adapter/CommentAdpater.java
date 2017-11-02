@@ -14,7 +14,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bobomee.android.common.util.ScreenUtil;
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.R;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
@@ -29,6 +28,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hk.xhy.android.common.utils.ScreenUtils;
 
 /**
  * Created by xuhaoyang on 16/5/16.
@@ -147,7 +147,7 @@ public class CommentAdpater extends RecyclerView.Adapter {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(ScreenUtil.getScreenWidth(mContext) / 2);
+            itemView.setTranslationY(ScreenUtils.getScreenWidth() / 2);
             itemView.animate()
                     .translationY(0)
                     .setInterpolator(new DecelerateInterpolator(2.f))

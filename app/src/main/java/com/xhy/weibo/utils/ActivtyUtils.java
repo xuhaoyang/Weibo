@@ -4,7 +4,7 @@ import android.content.Intent;
 
 import com.xhy.weibo.ui.activity.MainActivity;
 
-import hk.xhy.android.commom.utils.ActivityUtils;
+import hk.xhy.android.common.utils.ActivityUtils;
 
 /**
  * Created by xuhaoyang on 16/8/24.

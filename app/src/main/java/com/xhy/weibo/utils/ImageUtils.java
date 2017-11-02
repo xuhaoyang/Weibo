@@ -16,7 +16,6 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -25,7 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import hk.xhy.android.commom.utils.ToastUtils;
+import hk.xhy.android.common.utils.ToastUtils;
 
 /**
  * Created by xuhaoyang on 16/5/30.
@@ -107,7 +106,7 @@ public class ImageUtils {
         // 未安装SD卡时不做保存
         String storageState = Environment.getExternalStorageState();
         if (!storageState.equals(Environment.MEDIA_MOUNTED)) {
-            ToastUtils.showToast(context, "未检测到SD卡", Toast.LENGTH_SHORT);
+            ToastUtils.showShort("未检测到SD卡");
             return;
         }
 

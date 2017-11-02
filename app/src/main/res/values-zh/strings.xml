@@ -19,4 +19,40 @@
     <string name="error_field_required">必须填写</string>
     <string name="nickname">昵称</string>
     <string name="error_not_match_password">密码不一致</string>
+    <string name="title_activity_setting">设置</string>
+    <string name="title_item_notifications">开启通知提醒</string>
+    <string name="title_item_donotdisturb_mode">开启免打扰模式</string>
+    <string name="title_item_donotdisturb_mode_content">凌晨1点-8点不会开启通知提醒</string>
+    <string name="title_item_regular_settings">常规设置</string>
+    <string name="title_item_notification_interval">设置通知时间间隔</string>
+
+
+    <string-array name="dialog_content_item_notification_interval">
+        <item>2分钟</item>
+        <item>5分钟</item>
+        <item>10分钟</item>
+        <item>15分钟</item>
+        <item>30分钟</item>
+        <item>1小时</item>
+    </string-array>
+    <string name="content_minute">分钟</string>
+    <string name="title_item_user_settings">用户设置</string>
+    <string name="title_item_nickname">昵称</string>
+    <string name="title_item_truename">真实姓名</string>
+    <string name="title_item_sex">性别</string>
+    <string name="title_item_intro">介绍</string>
+    <string name="content_cancel">取消</string>
+    <string name="content_ok">确定</string>
+    <string name="content_please_input">请输入</string>
+    <string name="content_old_password">旧密码</string>
+    <string name="content_new_password">新密码</string>
+    <string name="content_confirm_password">确认密码</string>
+    <string name="content_location_positioning">正在定位</string>
+    <string name="content_location_fail">定位失败</string>
+    <string name="dialog_content_name_ourpush">自建推送</string>
+    <string name="dialog_content_name_jpush">极光推送</string>
+    <string name="title_item_notification_mode">推送模式选择</string>
+    <string name="title_item_change_the_password">修改密码</string>
+    <string name="title_item_about">关于</string>
+    <string name="title_item_version">版本</string>
 </resources>

@@ -4,7 +4,15 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorPrimarytext">#000</color>
+
+    <color name="green">#AACE30</color>
+    <color name="blue">#142D3E</color>
+    <color name="blue_dark">#001425</color>
+
     <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="gray">#bebebe</color>
+
     <color name="txt_black">#232323</color>
     <color name="txt_gray">#565656</color>
     <color name="txt_light_gray">#898989</color>
@@ -22,8 +30,11 @@
     <color name="nav_gray">#eeeeee</color>
     <color name="nav_fenge">#bebebe</color>
     <color name="status_detail_forward">#5b6fea</color>
+    <color name="txt_location_blue">#1296db</color>
 
     <color name="primaryGrayPre">#aa777777</color>
     <color name="primaryGrayLine">#dfdfdf</color>
+
+
 
 </resources>

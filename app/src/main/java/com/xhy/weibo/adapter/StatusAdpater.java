@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.AppConfig;
@@ -36,8 +35,8 @@ import com.xhy.weibo.utils.DateUtils;
 import com.xhy.weibo.utils.Logger;
 import com.xhy.weibo.utils.StringUtils;
 
-import hk.xhy.android.commom.utils.ScreenUtils;
-import hk.xhy.android.commom.utils.ToastUtils;
+import hk.xhy.android.common.utils.ScreenUtils;
+import hk.xhy.android.common.utils.ToastUtils;
 
 import java.util.List;
 
@@ -90,7 +89,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
         @BindView(R.id.iv_avatar)
         public ImageView iv_avatar;
         @BindView(R.id.right_content)
-        public RelativeLayout right_content;
+        public LinearLayout right_content;
         @BindView(R.id.tv_subhead)
         public TextView tv_subhead;
         @BindView(R.id.tv_caption)
@@ -195,12 +194,12 @@ public class StatusAdpater extends RecyclerView.Adapter {
             }
 
 
-            viewHolder.tv_subhead.setText(status.getUsername());
+            viewHolder.tv_subhead.setText(status.getUserinfo().getUsername());
             viewHolder.tv_caption.setText(DateUtils.getShotTime(status.getTime()));
-            if (TextUtils.isEmpty(status.getFace())) {
+            if (TextUtils.isEmpty(status.getUserinfo().getFace50())) {
                 viewHolder.iv_avatar.setImageResource(R.drawable.user_avatar);
             } else {
-                String url = URLs.AVATAR_IMG_URL + status.getFace();
+                String url = URLs.AVATAR_IMG_URL + status.getUserinfo().getUsername();
                 Glide.with(viewHolder.iv_avatar.getContext()).load(url).
                         fitCenter().into(viewHolder.iv_avatar);
             }
@@ -221,9 +220,9 @@ public class StatusAdpater extends RecyclerView.Adapter {
 
             //带图片的微博
 
-            if (!TextUtils.isEmpty(status.getMedium())) {
+            if (status.getPicture() != null) {
 
-                String url = URLs.PIC_URL + status.getMedium();
+                String url = URLs.PIC_URL + status.getPicture().getMedium();
                 setImage(viewHolder.iv_image, url);
                 viewHolder.include_status_image.setVisibility(View.VISIBLE);
                 viewHolder.iv_image.setVisibility(View.VISIBLE);
@@ -235,7 +234,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(context, ViewPicActivity.class);
-                        intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + status.getMax());
+                        intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + status.getPicture().getMax());
                         context.startActivity(intent);
                     }
                 });
@@ -249,18 +248,18 @@ public class StatusAdpater extends RecyclerView.Adapter {
             final Status forward_status = status.getStatus();
             if (forward_status != null) {
                 viewHolder.tv_retweeted_content
-                        .setText(StringUtils.getWeiboContent(context, viewHolder.tv_retweeted_content, "@" + forward_status.getUsername() + ": " + forward_status.getContent()));
+                        .setText(StringUtils.getWeiboContent(context, viewHolder.tv_retweeted_content, "@" + forward_status.getUserinfo().getUsername() + ": " + forward_status.getContent()));
                 viewHolder.include_forward_status.setVisibility(View.VISIBLE);
-                if (!TextUtils.isEmpty(forward_status.getMedium())) {
+                if (forward_status.getPicture() != null) {
                     viewHolder.include_status_image_forward.setVisibility(View.VISIBLE);
                     viewHolder.iv_image_forward.setVisibility(View.VISIBLE);
-                    String url = URLs.PIC_URL + forward_status.getMedium();
+                    String url = URLs.PIC_URL + forward_status.getPicture().getMedium();
                     setImage(viewHolder.iv_image_forward, url);
                     viewHolder.iv_image_forward.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(context, ViewPicActivity.class);
-                            intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + forward_status.getMax());
+                            intent.putExtra(ViewPicActivity.PIC_URL, URLs.PIC_URL + forward_status.getPicture().getMax());
                             context.startActivity(intent);
                         }
                     });
@@ -312,7 +311,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                                         status.setKeep(false);
                                         status.setKeep(status.getKeep() - 1);
                                         notifyItemChanged(position);
-                                        ToastUtils.showToast(context, result.getMsg(), Toast.LENGTH_SHORT);
+                                        ToastUtils.showShort(result.getMsg());
                                         if (mHandler != null) {
                                             Message message = new Message();
                                             message.what = KeepStatusActivity.REFRESH_DATA;
@@ -323,7 +322,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
                                     @Override
                                     public void onDelKeepFailure(String message) {
 
-                                        ToastUtils.showToast(context, message, Toast.LENGTH_SHORT);
+                                        ToastUtils.showShort(message);
 
                                     }
 
@@ -340,12 +339,12 @@ public class StatusAdpater extends RecyclerView.Adapter {
                                         status.setKeep(true);
                                         status.setKeep(status.getKeep() + 1);
                                         notifyItemChanged(position);
-                                        ToastUtils.showToast(context, result.getMsg(), Toast.LENGTH_SHORT);
+                                        ToastUtils.showShort(result.getMsg());
                                     }
 
                                     @Override
                                     public void onAddKeepFailure(String message) {
-                                        ToastUtils.showToast(context, message, Toast.LENGTH_SHORT);
+                                        ToastUtils.showShort(message);
                                     }
 
                                     @Override
@@ -402,7 +401,7 @@ public class StatusAdpater extends RecyclerView.Adapter {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(ScreenUtils.getScreenHeight(context) / 2);
+            itemView.setTranslationY(ScreenUtils.getScreenHeight() / 2);
             itemView.animate()
                     .translationY(0)
 //                    .setStartDelay(100 * position)

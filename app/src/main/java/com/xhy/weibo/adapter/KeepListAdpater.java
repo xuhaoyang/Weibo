@@ -92,10 +92,10 @@ public class KeepListAdpater extends RecyclerView.Adapter {
 
 
             //设置头像
-            if (TextUtils.isEmpty(status.getFace())) {
+            if (TextUtils.isEmpty(status.getUserinfo().getFace50())) {
                 viewHolder.iv_avatar.setImageResource(R.mipmap.ic_launcher);
             } else {
-                String url = URLs.AVATAR_IMG_URL + status.getFace();
+                String url = URLs.AVATAR_IMG_URL + status.getUserinfo().getFace50();
                 Glide.with(viewHolder.iv_avatar.getContext()).load(url).
                         fitCenter().into(viewHolder.iv_avatar);
             }
@@ -110,7 +110,7 @@ public class KeepListAdpater extends RecyclerView.Adapter {
             });
 
             //设置用户名
-            viewHolder.tv_subhead.setText(status.getUsername());
+            viewHolder.tv_subhead.setText(status.getUserinfo().getUsername());
             //设置时间
             viewHolder.tv_caption.setText(DateUtils.getShotTime(status.getTime()));
             //设置正文

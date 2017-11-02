@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.xhy.weibo.R;
-import com.xhy.weibo.model.Comment;
 import com.xhy.weibo.model.Status;
 import com.xhy.weibo.api.URLs;
 import com.xhy.weibo.ui.activity.UserInfoActivity;
@@ -23,12 +22,12 @@ import com.xhy.weibo.utils.StringUtils;
 
 import java.util.HashMap;
 
-import hk.xhy.android.commom.bind.ViewById;
-import hk.xhy.android.commom.ui.vh.OnListItemClickListener;
-import hk.xhy.android.commom.ui.vh.ViewHolder;
-import hk.xhy.android.commom.utils.ActivityUtils;
-import hk.xhy.android.commom.utils.GsonUtil;
-import hk.xhy.android.commom.utils.ScreenUtils;
+import hk.xhy.android.common.bind.ViewById;
+import hk.xhy.android.common.ui.vh.OnListItemClickListener;
+import hk.xhy.android.common.ui.vh.ViewHolder;
+import hk.xhy.android.common.utils.ActivityUtils;
+import hk.xhy.android.common.utils.GsonUtil;
+import hk.xhy.android.common.utils.ScreenUtils;
 
 /**
  * Created by xuhaoyang on 2017/2/25.
@@ -70,10 +69,10 @@ public class KeepViewHolder extends ViewHolder {
             runEnterAnimation(this.itemView, getAdapterPosition());
 
             //设置头像
-            if (TextUtils.isEmpty(model.getFace())) {
+            if (TextUtils.isEmpty(model.getUserinfo().getFace50())) {
                 iv_avatar.setImageResource(R.drawable.user_avatar);
             } else {
-                String url = URLs.AVATAR_IMG_URL + model.getFace();
+                String url = URLs.AVATAR_IMG_URL + model.getUserinfo().getFace50();
                 Glide.with(iv_avatar.getContext()).load(url).error(R.drawable.user_avatar).
                         fitCenter().into(iv_avatar);
             }
@@ -89,7 +88,7 @@ public class KeepViewHolder extends ViewHolder {
             });
 
             //设置用户名
-            tv_subhead.setText(model.getUsername());
+            tv_subhead.setText(model.getUserinfo().getUsername());
             //设置时间
             tv_caption.setText(DateUtils.getShotTime(model.getTime()));
             //设置正文
@@ -119,7 +118,7 @@ public class KeepViewHolder extends ViewHolder {
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            itemView.setTranslationY(ScreenUtils.getScreenHeight(itemView.getContext()) / 2);
+            itemView.setTranslationY(ScreenUtils.getScreenHeight() / 2);
             itemView.animate()
                     .translationY(0)
 //                    .setStartDelay(100 * position)
