@@ -19,9 +19,9 @@ allprojects {
     repositories {
         jcenter()
         maven { url "https://jitpack.io" }
-        maven {
-            url "http://maven.bughd.com/public"
-        }
+//        maven {
+//            url "http://maven.bughd.com/public"
+//        }
 //        maven{
 //            url "https://dl.bintray.com/xuhaoyang/maven"
 //        }

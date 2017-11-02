@@ -70,8 +70,8 @@
         <service
             android:name="cn.jpush.android.service.PushService"
             android:enabled="true"
-            android:process=":pushcore"
-            android:exported="false">
+            android:exported="false"
+            android:process=":pushcore">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTER" />
                 <action android:name="cn.jpush.android.intent.REPORT" />
@@ -84,10 +84,11 @@
         <activity
             android:name="cn.jpush.android.ui.PushActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:exported="false">
+            android:exported="false"
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="cn.jpush.android.ui.PushActivity" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="com.xhy.weibo" />
             </intent-filter>
@@ -155,7 +156,7 @@
 
         <!-- JPush End -->
 
-        <activity android:name=".ui.activity.BrowserActivity"/>
+        <activity android:name=".ui.activity.BrowserActivity" />
 
         <activity
             android:name=".ui.activity.MainActivity"
@@ -170,7 +171,9 @@
             android:name=".ui.activity.WriteStatusActivity"
             android:label="@string/title_activity_write_comment"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.activity.ViewPicActivity" />
+        <activity
+            android:name=".ui.activity.ViewPicActivity"
+            android:theme="@style/AppTheme2.FullScreen" />
         <activity
             android:name=".ui.activity.UserInfoActivity"
             android:label="@string/title_OtherUserInfoActivity"
@@ -192,9 +195,8 @@
         <activity
             android:name=".ui.activity.NotifyActivity"
             android:label="@string/title_activity_notify"
-            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".ui.activity.MainActivity"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.AtActivity"
             android:label="@string/title_activity_at"
@@ -210,9 +212,9 @@
             android:enabled="true"
             android:exported="true"
             android:label="消息推送"
-            android:process=":message" >
+            android:process=":message">
             <intent-filter>
-                <action android:name="com.xhy.weibo.intent.action.MessageService"/>
+                <action android:name="com.xhy.weibo.intent.action.MessageService" />
             </intent-filter>
         </service>
 

@@ -4,6 +4,11 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorPrimarytext">#000</color>
+
+    <color name="green">#AACE30</color>
+    <color name="blue">#142D3E</color>
+    <color name="blue_dark">#001425</color>
+
     <color name="white">#fff</color>
     <color name="black">#000</color>
     <color name="gray">#bebebe</color>

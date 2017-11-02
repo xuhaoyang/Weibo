@@ -34,7 +34,9 @@ android {
         }
         debug {
             buildConfigField 'String', 'BASE_URL', '"http://192.168.1.176"'
+            buildConfigField 'String', 'BASE_URL_OUT', '"https://weibo.xhy.hk/weibo"'
             debuggable true
+
         }
     }
     packagingOptions {
@@ -89,7 +91,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.0.1'
     compile 'com.jakewharton:butterknife:8.0.1'
     compile 'com.getbase:floatingactionbutton:1.10.1'
-    compile 'com.github.chrisbanes:PhotoView:1.2.6'
+    compile 'com.github.chrisbanes:PhotoView:2.1.3'
     compile 'de.hdodenhof:circleimageview:1.3.0'
     compile 'net.qiujuer.genius:ui:2.0.0-beta4'
     compile 'net.qiujuer.genius:res:2.0.0-beta4'
